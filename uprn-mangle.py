@@ -7,6 +7,7 @@
 # - removing all the unneeded columns (configurable)
 
 import os
+from glob import glob
 
 # get script path
 our_path = os.getcwd()
@@ -18,3 +19,10 @@ HEADER_DIR = os.path.join(our_path, "header-files")
 
 # list of the available codes
 CODES_AVAIL = [10, 11, 15, 21, 23, 24, 28, 29, 30, 31, 32, 99]
+
+# get list of all *csv to process
+input_files = glob(os.path.join(RAW_DIR, "*.csv"))
+
+# loop over all the files
+for count, filename in enumerate(input_files, start=1):
+    print(f"Dealing with file {count} ({filename})")
