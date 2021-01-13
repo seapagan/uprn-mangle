@@ -1,15 +1,15 @@
 # this will take the raw CSV files provide by Ordinance Survey
-# 'AddressBase Premium and tweak into more useful formats.j
+# 'AddressBase Premium and tweak into a more useful format.
 
 # it will merge all the separate 5km files into combined files with the same
-# header numbers
+# header numbers.
 # it will also create one combined file suitable for inserting into a database
 # - removing all the unneeded columns (configurable)
 
 import os
 from glob import glob
-from shutil import copyfile
 from pathlib import Path
+from shutil import copyfile
 
 # get script path
 our_path = os.getcwd()
