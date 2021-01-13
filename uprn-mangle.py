@@ -31,7 +31,7 @@ for filepath in header_files:
     header_filename = os.path.basename(filepath)
     # get the record number
     record = header_filename.split("Record_")[1].split("_")[0]
-    filename = f"record-{record}-addressbase.csv"
+    filename = header_filename[:-11] + ".csv"
     # add it to the dictionary with the record as a key
     CODE_LIST[record] = filename
 
