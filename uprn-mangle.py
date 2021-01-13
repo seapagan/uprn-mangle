@@ -8,6 +8,8 @@
 
 import os
 from glob import glob
+from shutil import copyfile
+from pathlib import Path
 
 # get script path
 our_path = os.getcwd()
@@ -17,12 +19,31 @@ RAW_DIR = os.path.join(our_path, "raw-csv")
 MANGLED_DIR = os.path.join(our_path, "mangled-csv")
 HEADER_DIR = os.path.join(our_path, "header-files")
 
-# list of the available codes
-CODES_AVAIL = [10, 11, 15, 21, 23, 24, 28, 29, 30, 31, 32, 99]
+# loop through the header csv files and make a list of the codes and filenames.
+# generating this dynamically in case it changes in the future.
+header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
+# delete the current *.csv here first
+[f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
+# set up the dictionary and create the skeleton files
+CODES_AVAIL = {}
+for count, filepath in enumerate(header_files):
+    # drop the path
+    header_filename = os.path.basename(filepath)
+    # get the record number
+    record = header_filename.split("Record_")[1].split("_")[0]
+    # add it to the dictionary with the record as a key
+    filename = f"record-{record}-addressbase.csv"
+    CODES_AVAIL[record] = filename
+
+    # create an empty file with the contents of the heaeder file
+    # we basically just copy the file over and rename
+    destpath = os.path.join(MANGLED_DIR, filename)
+    copyfile(filepath, destpath)
 
 # get list of all *csv to process
 input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 
 # loop over all the files
 for count, filename in enumerate(input_files, start=1):
-    print(f"Dealing with file {count} ({filename})")
+    #     print(f"Dealing with file {count} ({filename})")
+    pass
