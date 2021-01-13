@@ -25,15 +25,15 @@ header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
 # delete the current *.csv here first
 [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
 # set up the dictionary and create the skeleton files
-CODES_AVAIL = {}
-for count, filepath in enumerate(header_files):
+CODE_LIST = {}
+for filepath in header_files:
     # drop the path
     header_filename = os.path.basename(filepath)
     # get the record number
     record = header_filename.split("Record_")[1].split("_")[0]
     # add it to the dictionary with the record as a key
     filename = f"record-{record}-addressbase.csv"
-    CODES_AVAIL[record] = filename
+    CODE_LIST[record] = filename
 
     # create an empty file with the contents of the heaeder file
     # we basically just copy the file over and rename
@@ -42,8 +42,7 @@ for count, filepath in enumerate(header_files):
 
 # get list of all *csv to process
 input_files = glob(os.path.join(RAW_DIR, "*.csv"))
-
 # loop over all the files
 for count, filename in enumerate(input_files, start=1):
-    #     print(f"Dealing with file {count} ({filename})")
+    # print(f"Dealing with file {count} ({filename})")
     pass
