@@ -5,5 +5,10 @@
     "emmet.triggerExpansionOnTab": true,
     "python.linting.pylintEnabled": true,
     "editor.rulers": [80, 120],
-    "python.linting.pylintArgs": ["--load-plugins", "pylint_django"]
+    "python.linting.pylintArgs": [
+        "--load-plugins",
+        "pylint_django"
+    ],
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true
 }
