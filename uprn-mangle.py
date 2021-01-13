@@ -15,7 +15,3 @@ our_path = os.getcwd()
 RAW_DIR = os.path.join(our_path, "raw-csv")
 MANGLED_DIR = os.path.join(our_path, "mangled-csv")
 HEADER_DIR = os.path.join(our_path, "header-files")
-
-print(RAW_DIR)
-print(MANGLED_DIR)
-print(HEADER_DIR)
