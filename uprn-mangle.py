@@ -15,3 +15,6 @@ our_path = os.getcwd()
 RAW_DIR = os.path.join(our_path, "raw-csv")
 MANGLED_DIR = os.path.join(our_path, "mangled-csv")
 HEADER_DIR = os.path.join(our_path, "header-files")
+
+# list of the available codes
+CODES_AVAIL = [10, 11, 15, 21, 23, 24, 28, 29, 30, 31, 32, 99]
