@@ -5,3 +5,15 @@
 # header numbers
 # it will also create one combined file suitable for inserting into a database
 # - removing all the unneeded columns (configurable)
+
+import os
+
+# get script path
+our_path = os.getcwd()
+
+# set some constants
+RAW_DIR = os.path.join(our_path, "raw-csv")
+MANGLED_DIR = os.path.join(our_path, "mangled-csv")
+
+print(RAW_DIR)
+print(MANGLED_DIR)
