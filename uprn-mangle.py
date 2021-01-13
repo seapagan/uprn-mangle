@@ -31,11 +31,11 @@ for filepath in header_files:
     header_filename = os.path.basename(filepath)
     # get the record number
     record = header_filename.split("Record_")[1].split("_")[0]
-    # add it to the dictionary with the record as a key
     filename = f"record-{record}-addressbase.csv"
+    # add it to the dictionary with the record as a key
     CODE_LIST[record] = filename
 
-    # create an empty file with the contents of the heaeder file
+    # create an empty file with the contents of the header file
     # we basically just copy the file over and rename
     destpath = os.path.join(MANGLED_DIR, filename)
     copyfile(filepath, destpath)
@@ -43,6 +43,21 @@ for filepath in header_files:
 # get list of all *csv to process
 input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 # loop over all the files
-for count, filename in enumerate(input_files, start=1):
-    # print(f"Dealing with file {count} ({filename})")
-    pass
+for filename in input_files:
+    print(f"Dealing with file {filename}")
+    with open(filename) as fp:
+        # get the next line
+        line = fp.readline()
+        while line:
+            # get the record type
+            record = line.split(",")[0]
+            # get the correct output file for this record type
+            output_filename = os.path.join(MANGLED_DIR, CODE_LIST[record])
+            # append this line to the output file
+            with open(output_filename, "a") as f:
+                f.write(line)
+                if record == "99":
+                    # record type 99 is always at the end of the file, so
+                    # is lacking a LF. Add one.
+                    f.write("\n")
+            line = fp.readline()
