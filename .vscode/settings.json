@@ -4,11 +4,13 @@
     "files.eol": "\n",
     "emmet.triggerExpansionOnTab": true,
     "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=80"],
     "editor.rulers": [80, 120],
-    "python.linting.pylintArgs": [
-        "--load-plugins",
-        "pylint_django"
-    ],
     "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length=80"],
+    "editor.formatOnSave": true
 }
