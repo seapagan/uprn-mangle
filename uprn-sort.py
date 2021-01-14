@@ -11,13 +11,8 @@ from glob import glob
 from pathlib import Path
 from shutil import copyfile
 
-# get script path
-our_path = os.getcwd()
-
-# set some constants
-RAW_DIR = os.path.join(our_path, "raw-csv")
-MANGLED_DIR = os.path.join(our_path, "mangled-csv")
-HEADER_DIR = os.path.join(our_path, "header-files")
+# load constants from external file so we can share it
+from constants import RAW_DIR, MANGLED_DIR, HEADER_DIR
 
 # loop through the header csv files and make a list of the codes and filenames.
 # generating this dynamically in case it changes in the future.
