@@ -12,5 +12,7 @@
     "files.trimFinalNewlines": true,
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": ["--line-length=80"],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cornflakes.linter.run": "onType",
+    "editor.formatOnType": true
 }
