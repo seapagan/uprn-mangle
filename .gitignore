@@ -8,6 +8,8 @@
 # dont want to put the csv files into repo, copyrighted files
 mangled-csv/*.csv
 raw-csv/*.csv
+output-csv/*.csv
+
 # or its too bloody big - below file is 4.5G!
 cross-ref-csv/*.csv
 
