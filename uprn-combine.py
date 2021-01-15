@@ -124,7 +124,7 @@ result = pd.concat(
 print("Optimizing Output...")
 optimized_result = result[result["LOGICAL_STATUS"].notnull()]
 
-output_file = os.path.join(OUTPUT_DIR, "2processed-addressbase.csv")
+output_file = os.path.join(OUTPUT_DIR, "processed-addressbase.csv")
 print(f"\nSaving to {output_file}")
 optimized_result.to_csv(output_file, index_label="UPRN")
 # result.to_csv(output_file, index_label="UPRN")
