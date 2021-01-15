@@ -8,6 +8,8 @@ from glob import glob
 # load constants from external file so we can share it
 from constants import MANGLED_DIR, CROSSREF_DIR, CROSSREF_NAME, OUTPUT_DIR
 
+print(f"We are running from : {os.path.dirname(OUTPUT_DIR)}\n")
+
 # first we need to get a list of the sorted files.
 mangled_files = sorted(glob(os.path.join(MANGLED_DIR, "*.csv")))
 
@@ -40,13 +42,15 @@ raw_record_21 = pd.read_csv(
     os.path.join(MANGLED_DIR, CODE_LIST["21"]),
     usecols=[
         "UPRN",
+        "LOGICAL_STATUS",
         "BLPU_STATE",
         "X_COORDINATE",
         "Y_COORDINATE",
         "LATITUDE",
         "LONGITUDE",
+        "COUNTRY",
     ],
-    dtype={"BLPU_STATE": "str"},
+    dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
 )
 raw_record_21.set_index(["UPRN"], inplace=True)
 
@@ -88,22 +92,20 @@ cross_ref = pd.read_csv(
     dtype={"IDENTIFIER_2": "str"},
 )
 
-# drop duplicates of the UPRN
-print("Dropping duplicate UPRN's in the cross reference file")
-cross_ref.drop_duplicates(subset=["IDENTIFIER_1"], inplace=True)
 # lets rename these 2 headers to the better names
 cross_ref.rename(
     columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}, inplace=True
 )
-# IDENTIFIER_1 is the UPRN, so we Index on this.
+
+# drop duplicates of the UPRN
+print("Dropping duplicate UPRN's in the cross reference file")
+cross_ref.drop_duplicates(subset=["UPRN"], inplace=True)
+# index on the UPRN
 cross_ref.set_index(["UPRN"], inplace=True)
 
 # TODO : Would be good to pull in the proper STREETDESCRIPTOR data from Record
 # 15 at this time, before the merge. We will need this in the final output.
 
-# TODO : After concating, output has UPRN that were not in the original dataset
-# since the cross ref file is the whole of the UK and generally the AddressBase
-# is not. So, we will need to remove these extra rows before concating.
 
 print("Concating data ...")
 result = pd.concat(
@@ -116,6 +118,14 @@ result = pd.concat(
     axis=1,
 )
 
-output_file = os.path.join(OUTPUT_DIR, "processed-addressbase.csv")
-print(f"Saving to {output_file}")
-result.to_csv(output_file, index_label="UPRN")
+# After concating, the output has UPRN that were not in the original dataset
+# since the cross ref file is the whole of the UK and generally the AddressBase
+# is not. So, we will need to remove these extra rows.
+print("Optimizing Output...")
+optimized_result = result[result["LOGICAL_STATUS"].notnull()]
+
+output_file = os.path.join(OUTPUT_DIR, "2processed-addressbase.csv")
+print(f"\nSaving to {output_file}")
+optimized_result.to_csv(output_file, index_label="UPRN")
+# result.to_csv(output_file, index_label="UPRN")
+print("Done!")

@@ -14,5 +14,3 @@ OUTPUT_DIR = os.path.join(our_path, "output-csv")
 
 # this name should never change
 CROSSREF_NAME = "BLPU_UPRN_Street_USRN_11.csv"
-
-print(our_path)
