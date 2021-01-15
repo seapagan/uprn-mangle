@@ -1,7 +1,8 @@
 # get script path
 import os
 
-our_path = os.getcwd()
+# our_path = os.getcwd()
+our_path = os.path.abspath(os.path.dirname(__file__))
 
 # set some constants
 RAW_DIR = os.path.join(our_path, "raw-csv")
