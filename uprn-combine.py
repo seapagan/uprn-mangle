@@ -35,6 +35,7 @@ raw_record_15 = pd.read_csv(
         "TOWN_NAME",
         "ADMINISTRATIVE_AREA",
     ],
+    dtype={"USRN": "str"},
 )
 
 # get record 21 (BPLU)
@@ -83,13 +84,18 @@ filtered_record_32 = raw_record_32[
     raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
 ]
 
+#
+#
+#
+#
+
 # now bring in the cross reference file to link UPRN to USRN
 print("Reading the UPRN <-> USRN reference file")
 cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
 cross_ref = pd.read_csv(
     cross_ref_file,
     usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
-    dtype={"IDENTIFIER_2": "str"},
+    dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
 )
 
 # lets rename these 2 headers to the better names
@@ -97,35 +103,52 @@ cross_ref.rename(
     columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}, inplace=True
 )
 
+print("Merging in the STREETDATA")
+# concat the STREETDESCRIPTOR to the cross ref file in this step
+merged_usrn = pd.merge(
+    cross_ref,
+    raw_record_15,
+    how="left",
+    left_on="USRN",
+    right_on="USRN",
+)
+
 # drop duplicates of the UPRN
 print("Dropping duplicate UPRN's in the cross reference file")
-cross_ref.drop_duplicates(subset=["UPRN"], inplace=True)
-# index on the UPRN
-cross_ref.set_index(["UPRN"], inplace=True)
+merged_usrn.drop_duplicates(subset=["UPRN"], inplace=True)
 
-# TODO : Would be good to pull in the proper STREETDESCRIPTOR data from Record
-# 15 at this time, before the merge. We will need this in the final output.
+# index this back to the UPRN for next merge
+merged_usrn.set_index(["UPRN"], inplace=True)
 
+# output_file = os.path.join(OUTPUT_DIR, "merged_street.csv")
+# print(f"\nSaving to {output_file}")
+# merged_usrn.to_csv(output_file, index_label="UPRN")
 
 print("Concating data ...")
-result = pd.concat(
+chunk1 = pd.concat(
     [
         raw_record_28,
         raw_record_21,
         filtered_record_32.drop(columns=["CLASS_SCHEME"]),
-        cross_ref,
     ],
     axis=1,
 )
 
-# After concating, the output has UPRN that were not in the original dataset
-# since the cross ref file is the whole of the UK and generally the AddressBase
-# is not. So, we will need to remove these extra rows.
-print("Optimizing Output...")
-optimized_result = result[result["LOGICAL_STATUS"].notnull()]
+
+result = pd.concat(
+    [chunk1, merged_usrn],
+    axis=1,
+)
+
+
+# # After concating, the output has UPRN that were not in the original dataset
+# # since the cross ref file is the whole of the UK and generally the AddressBase
+# # is not. So, we will need to remove these extra rows.
+# print("Optimizing Output...")
+# optimized_result = result[result["LOGICAL_STATUS"].notnull()]
 
 output_file = os.path.join(OUTPUT_DIR, "processed-addressbase.csv")
 print(f"\nSaving to {output_file}")
-optimized_result.to_csv(output_file, index_label="UPRN")
-# result.to_csv(output_file, index_label="UPRN")
+# optimized_result.to_csv(output_file, index_label="UPRN")
+result.to_csv(output_file, index_label="UPRN")
 print("Done!")
