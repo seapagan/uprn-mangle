@@ -1,6 +1,9 @@
 # this script will take the sorted data and create a single file containing
 # only the required data columns, suitable for loading into a database.
 
+# probably not the most elegant way to do this, but works for now and can be
+# improved later.
+
 import os
 import pandas as pd
 from glob import glob
@@ -84,11 +87,6 @@ filtered_record_32 = raw_record_32[
     raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
 ]
 
-#
-#
-#
-#
-
 # now bring in the cross reference file to link UPRN to USRN
 print("Reading the UPRN <-> USRN reference file")
 cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
@@ -113,17 +111,6 @@ merged_usrn = pd.merge(
     right_on="USRN",
 )
 
-# drop duplicates of the UPRN
-print("Dropping duplicate UPRN's in the cross reference file")
-merged_usrn.drop_duplicates(subset=["UPRN"], inplace=True)
-
-# index this back to the UPRN for next merge
-merged_usrn.set_index(["UPRN"], inplace=True)
-
-# output_file = os.path.join(OUTPUT_DIR, "merged_street.csv")
-# print(f"\nSaving to {output_file}")
-# merged_usrn.to_csv(output_file, index_label="UPRN")
-
 print("Concating data ...")
 chunk1 = pd.concat(
     [
@@ -134,21 +121,25 @@ chunk1 = pd.concat(
     axis=1,
 )
 
+# we dont want it indexed for the next stage, and need to clearly specifiy the
+# UPRN datatype
+chunk1.reset_index(inplace=True)
+merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
-result = pd.concat(
-    [chunk1, merged_usrn],
-    axis=1,
+print("Merging in the Street data ...")
+final_output = pd.merge(
+    chunk1,
+    merged_usrn,
+    how="left",
+    left_on="UPRN",
+    right_on="UPRN",
 )
 
+# set the index back onto the UPRN
+final_output.set_index(["UPRN"], inplace=True)
 
-# # After concating, the output has UPRN that were not in the original dataset
-# # since the cross ref file is the whole of the UK and generally the AddressBase
-# # is not. So, we will need to remove these extra rows.
-# print("Optimizing Output...")
-# optimized_result = result[result["LOGICAL_STATUS"].notnull()]
-
+# finally, save the formatted data to a new CSV file and we are done for this.
 output_file = os.path.join(OUTPUT_DIR, "processed-addressbase.csv")
 print(f"\nSaving to {output_file}")
-# optimized_result.to_csv(output_file, index_label="UPRN")
-result.to_csv(output_file, index_label="UPRN")
+final_output.to_csv(output_file, index_label="UPRN")
 print("Done!")
