@@ -9,7 +9,13 @@ import pandas as pd
 from glob import glob
 
 # load constants from external file so we can share it
-from constants import MANGLED_DIR, CROSSREF_DIR, CROSSREF_NAME, OUTPUT_DIR
+from constants import (
+    MANGLED_DIR,
+    CROSSREF_DIR,
+    CROSSREF_NAME,
+    OUTPUT_DIR,
+    OUTPUT_NAME,
+)
 
 print(f"We are running from : {os.path.dirname(OUTPUT_DIR)}\n")
 
@@ -139,7 +145,7 @@ final_output = pd.merge(
 final_output.set_index(["UPRN"], inplace=True)
 
 # finally, save the formatted data to a new CSV file and we are done for this.
-output_file = os.path.join(OUTPUT_DIR, "processed-addressbase.csv")
+output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
 print(f"\nSaving to {output_file}")
 final_output.to_csv(output_file, index_label="UPRN")
 print("Done!")
