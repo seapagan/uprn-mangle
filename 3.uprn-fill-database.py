@@ -50,7 +50,7 @@ ab_data = pd.read_csv(
     },
 )
 
-# TODO : at this point we want to create an extra field in the DataFrame, with
+# at this point we want to create an extra field in the DataFrame, with
 # the address data concated for easier display.
 ab_data.insert(1, "FULL_ADDRESS", "")
 
@@ -66,6 +66,9 @@ ab_data["FULL_ADDRESS"] = ab_data["SUB_BUILDING_NAME"].str.cat(
     ],
     sep=" ",
 )
+# trim extra space from the first stage caused by empty fields
+ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.strip()
+# now add the next section
 ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.cat(
     ab_data[
         [
