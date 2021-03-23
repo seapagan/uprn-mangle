@@ -1,4 +1,5 @@
 import os
+import string
 import pandas as pd
 
 from sqlalchemy import create_engine
@@ -56,15 +57,17 @@ ab_data.insert(1, "FULL_ADDRESS", "")
 
 # now create a clean combined address from the relevant fields
 print("Combining Address Fields...")
-ab_data["FULL_ADDRESS"] = ab_data["SUB_BUILDING_NAME"].str.cat(
-    ab_data[
-        [
-            "BUILDING_NAME",
-            "BUILDING_NUMBER",
-            "THOROUGHFARE",
-        ]
-    ],
-    sep=" ",
+ab_data["FULL_ADDRESS"] = string.capwords(
+    ab_data["SUB_BUILDING_NAME"].str.cat(
+        ab_data[
+            [
+                "BUILDING_NAME",
+                "BUILDING_NUMBER",
+                "THOROUGHFARE",
+            ]
+        ],
+        sep=" ",
+    )
 )
 # trim extra space from the first stage caused by empty fields
 ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.strip()
@@ -72,9 +75,9 @@ ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.strip()
 ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.cat(
     ab_data[
         [
-            "POST_TOWN",
+            string.capwords("POST_TOWN"),
             "POSTCODE",
-            "ADMINISTRATIVE_AREA",
+            string.capwords("ADMINISTRATIVE_AREA"),
         ]
     ],
     sep=", ",
