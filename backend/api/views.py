@@ -1,3 +1,21 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from .models import Addressbase
+from .serializers import AddressbaseSerializer
+
+
+class SearchViewSet(viewsets.ModelViewSet):
+    # queryset = Addressbase.objects.all().order_by("uprn")[:10]
+    serializer_class = AddressbaseSerializer
+
+    def get_queryset(self):
+        srch_param = self.request.query_params.get("q")
+
+        queryset = Addressbase.objects.all().order_by("uprn")[:20]
+
+        if srch_param:
+            queryset = Addressbase.objects.filter(
+                full_address__icontains=srch_param
+            ).order_by("uprn")
+
+        return queryset
