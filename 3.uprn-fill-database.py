@@ -1,5 +1,4 @@
 import os
-import string
 import pandas as pd
 
 from sqlalchemy import create_engine
@@ -56,9 +55,12 @@ ab_data = pd.read_csv(
 ab_data.insert(1, "FULL_ADDRESS", "")
 
 # now create a clean combined address from the relevant fields
+# doing this in 2 runs so we can sort out formatting in the first due to any
+# missing data.
 print("Combining Address Fields...")
-ab_data["FULL_ADDRESS"] = string.capwords(
-    ab_data["SUB_BUILDING_NAME"].str.cat(
+ab_data["FULL_ADDRESS"] = (
+    ab_data["SUB_BUILDING_NAME"]
+    .str.cat(
         ab_data[
             [
                 "BUILDING_NAME",
@@ -68,19 +70,15 @@ ab_data["FULL_ADDRESS"] = string.capwords(
         ],
         sep=" ",
     )
+    .str.strip()  # trim extra space
+    .str.title()  # convert to Title Case
 )
-# trim extra space from the first stage caused by empty fields
-ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.strip()
-# now add the next section
-ab_data["FULL_ADDRESS"] = ab_data["FULL_ADDRESS"].str.cat(
-    ab_data[
-        [
-            string.capwords("POST_TOWN"),
-            "POSTCODE",
-            string.capwords("ADMINISTRATIVE_AREA"),
-        ]
-    ],
-    sep=", ",
+# add the rest...
+ab_data["FULL_ADDRESS"] = (
+    ab_data["FULL_ADDRESS"]
+    .str.cat(ab_data["POST_TOWN"].str.title(), sep=", ")
+    .str.cat(ab_data["POSTCODE"], sep=", ")  # no Title mod for the Postcode
+    .str.cat(ab_data["ADMINISTRATIVE_AREA"].str.title(), sep=", ")
 )
 
 # create a postgresql engine with SQLAlchemy that is linked to our database
