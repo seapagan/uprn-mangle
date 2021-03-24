@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 
 class Addressbase(models.Model):
@@ -49,7 +51,9 @@ class Addressbase(models.Model):
     administrative_area = models.TextField(
         db_column="ADMINISTRATIVE_AREA", blank=True, null=True
     )
+    tsv = SearchVectorField(null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "addressbase"
+        indexes = (GinIndex(fields=["tsv"]),)
