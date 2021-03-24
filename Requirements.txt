@@ -1,3 +1,6 @@
 pandas
 sqlalchemy
 psycopg2
+django
+djangorestframework
+cursor
