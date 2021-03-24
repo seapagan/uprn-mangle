@@ -16,7 +16,8 @@ class SearchViewSet(viewsets.ModelViewSet):
 
         srch_param = self.request.query_params.get("q")
 
-        queryset = Addressbase.objects.all().order_by("uprn")[:20]
+        # queryset = Addressbase.objects.all().order_by("uprn")[:20]
+        queryset = Addressbase.objects.all().order_by("uprn")
 
         if srch_param:
             # queryset = Addressbase.objects.filter(
