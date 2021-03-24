@@ -15,7 +15,7 @@ class SearchViewSet(viewsets.ModelViewSet):
 
         if srch_param:
             queryset = Addressbase.objects.filter(
-                full_address__icontains=srch_param
+                full_address__search=srch_param
             ).order_by("uprn")
 
         return queryset
