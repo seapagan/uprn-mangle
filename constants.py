@@ -2,15 +2,16 @@
 import os
 from inspect import getsourcefile
 
-# our_path = os.path.abspath(os.path.dirname(__file__))
+# get our running path, then create the data_path from this.
 our_path = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
+data_path = os.path.join(our_path, "data")
 
-# set some constants
-RAW_DIR = os.path.join(our_path, "raw-csv")
-MANGLED_DIR = os.path.join(our_path, "mangled-csv")
-HEADER_DIR = os.path.join(our_path, "header-files")
-CROSSREF_DIR = os.path.join(our_path, "cross-ref-csv")
-OUTPUT_DIR = os.path.join(our_path, "output-csv")
+# set some constants for the other paths.
+RAW_DIR = os.path.join(data_path, "raw-csv")
+MANGLED_DIR = os.path.join(data_path, "mangled-csv")
+HEADER_DIR = os.path.join(data_path, "header-files")
+CROSSREF_DIR = os.path.join(data_path, "cross-ref-csv")
+OUTPUT_DIR = os.path.join(data_path, "output-csv")
 
 # this name should never change
 CROSSREF_NAME = "BLPU_UPRN_Street_USRN_11.csv"
