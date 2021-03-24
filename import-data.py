@@ -214,7 +214,7 @@ final_output.set_index(["UPRN"], inplace=True)
 # finally, save the formatted data to a new CSV file and we are done for this.
 output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
 print(f"\nSaving to {output_file}")
-final_output.to_csv(output_file, index_label="UPRN")
+final_output.to_csv(output_file, index_label="UPRN", sep="|")
 
 
 print("\n|", "-" * 50, "|")
@@ -226,6 +226,7 @@ ab_data = pd.read_csv(
     os.path.join(OUTPUT_DIR, OUTPUT_NAME),
     # lets spell out the exact column types for clarity
     na_filter=False,
+    sep="|",
     dtype={
         "UPRN": "int",
         "SUB_BUILDING_NAME": "str",
@@ -300,8 +301,12 @@ engine = create_engine(db_url)
 # will look at later once the scripts are proven and trusted.
 print("Exporting data to the Postgresql database ... this will take a while")
 ab_data.to_sql(
-    DB_TABLE, engine, if_exists="replace", index=False, chunksize=100
+    DB_TABLE,
+    engine,
+    if_exists="append",
+    index=False,
+    chunksize=10000,
+    method="multi",
 )
-print("Done")
 
 cursor.show()
