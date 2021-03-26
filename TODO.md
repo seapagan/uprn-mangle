@@ -14,3 +14,5 @@
 - Put the constants, especially DB info into a .env file and use this instead of
   hard coding.
 - Write the README for both backend and frontend.
+- Add extra Django commands to recreate the tsvector, indexes etc.
+- Add authentication to the API (probably token based)
