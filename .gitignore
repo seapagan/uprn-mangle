@@ -9,6 +9,8 @@
 data/*/*.csv
 # but keep these header files for now.
 !data/header-files/*.csv
+# ignore the below dir .keep file used to store full data during tests...
+data/raw-csv-full/.keep
 
 # Local History for Visual Studio Code
 .history/
