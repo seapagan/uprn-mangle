@@ -14,4 +14,5 @@ class AddressbaseSerializer(serializers.ModelSerializer):
             "longitude",
             "country",
             "classification_code",
+            "street_description",
         ]
