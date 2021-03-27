@@ -6,12 +6,12 @@
 *.code-workspace
 
 # dont want to put the csv files into repo, copyrighted files
-mangled-csv/*.csv
-raw-csv/*.csv
-output-csv/*.csv
-
-# or its too bloody big - below file is 4.5G!
-cross-ref-csv/*.csv
+data/*/*.csv
+# but keep these header files for now.
+!data/header-files/*.csv
+# ignore the below dir .keep files used to store full data during tests...
+data/raw-csv-full/.keep
+data/raw-csv-small/.keep
 
 # Local History for Visual Studio Code
 .history/
