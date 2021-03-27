@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from cursor import cursor
 
 # load constants from external file so we can share it
-from .constants import (
+from ..support.constants import (
     RAW_DIR,
     MANGLED_DIR,
     HEADER_DIR,
@@ -103,7 +103,7 @@ class Command(BaseCommand):
                             # so is lacking a LF. Add one.
                             f.write("\n")
                     line = fp.readline()
-        self.stdout.write("Done." + " " * 50 + "\n")
+        self.stdout.write(" Done." + " " * 50 + "\n")
 
     def phase_two(self):
         self.show_header(["Phase2", "Consolidate data"])
@@ -183,7 +183,7 @@ class Command(BaseCommand):
         ]
 
         # now bring in the cross reference file to link UPRN to USRN
-        self.stdout.write("Reading the UPRN <-> USRN reference file")
+        self.stdout.write(" Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
         cross_ref = pd.read_csv(
             cross_ref_file,
@@ -197,7 +197,7 @@ class Command(BaseCommand):
             inplace=True,
         )
 
-        self.stdout.write("Merging in the STREETDATA")
+        self.stdout.write(" Merging in the STREETDATA")
         # concat the STREETDESCRIPTOR to the cross ref file in this step
         merged_usrn = pd.merge(
             cross_ref,
@@ -207,7 +207,7 @@ class Command(BaseCommand):
             right_on="USRN",
         )
 
-        self.stdout.write("Concating data ...")
+        self.stdout.write(" Concating data ...")
         chunk1 = pd.concat(
             [
                 raw_record_28,
@@ -222,7 +222,7 @@ class Command(BaseCommand):
         chunk1.reset_index(inplace=True)
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
-        self.stdout.write("Merging in the Street data ...")
+        self.stdout.write(" Merging in the Street data ...")
         final_output = pd.merge(
             chunk1,
             merged_usrn,
@@ -236,7 +236,7 @@ class Command(BaseCommand):
 
         # finally, save the formatted data to a new CSV file.
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-        self.stdout.write(f"\nSaving to {output_file}")
+        self.stdout.write(f"\n Saving to {output_file}")
         final_output.to_csv(output_file, index_label="UPRN", sep="|")
 
     def phase_three(self):
@@ -244,7 +244,7 @@ class Command(BaseCommand):
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
-        self.stdout.write("Importing the Formatted AddressBase CSV file...")
+        self.stdout.write(" Importing the Formatted AddressBase CSV file...")
         ab_data = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
             # lets spell out the exact column types for clarity
@@ -285,7 +285,7 @@ class Command(BaseCommand):
         # now create a clean combined address from the relevant fields
         # doing this in 2 runs so we can sort out formatting in the first due
         # to any missing data.
-        self.stdout.write("Combining Address Fields...")
+        self.stdout.write(" Combining Address Fields...")
         ab_data["FULL_ADDRESS"] = (
             ab_data["SUB_BUILDING_NAME"]
             .str.cat(
@@ -328,7 +328,7 @@ class Command(BaseCommand):
         # dothis which I will look at later once the scripts are proven and
         # trusted.
         self.stdout.write(
-            "Exporting data to the Postgresql database "
+            " Exporting data to the Postgresql database "
             "... this will take a while"
         )
         ab_data.to_sql(

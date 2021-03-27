@@ -5,8 +5,6 @@ from inspect import getsourcefile
 
 # get our running path, then create the data_path from this.
 our_path = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
-# data_path = os.path.join(our_path, "data")
-# data_path = str(Path(our_path).parents[2])
 data_path = os.path.join(str(Path(our_path).parents[3]), "data")
 
 # set some constants for the other paths.
