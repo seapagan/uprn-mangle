@@ -259,7 +259,8 @@ class Command(BaseCommand):
                 "POST_TOWN": "str",
                 "POSTCODE": "str",
                 "LOGICAL_STATUS": "int",
-                # needs to be a string as annoyingly the data includes null values
+                # needs to be a string as annoyingly the data includes null
+                # values
                 "BLPU_STATE": "str",
                 "X_COORDINATE": "double",
                 "X_COORDINATE": "double",
@@ -267,8 +268,8 @@ class Command(BaseCommand):
                 "LONGITUDE": "double",
                 "COUNTRY": "str",
                 "CLASSIFICATION_CODE": "str",
-                # also contains Null values for demolished buildings so must  be a
-                # string
+                # also contains Null values for demolished buildings so must
+                # be a string
                 "USRN": "str",
                 "STREET_DESCRIPTION": "str",
                 "LOCALITY": "str",
