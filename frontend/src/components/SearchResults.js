@@ -10,12 +10,13 @@ const SearchResults = ({ searchString }) => {
 
   const [searchResults, setSearchResults] = useState({ results: [] });
   const [searchURL, setSearchURL] = useState("");
-  const [firstPage, setFirstPage] = useState("");
-  const [lastPage, setLastPage] = useState("");
+  const [firstPageURL, setFirstPageURL] = useState("");
+  const [lastPageURL, setLastPageURL] = useState("");
 
   useEffect(() => {
     if (searchString) {
       setSearchURL(baseURL + "search/?q=" + encodeURI(searchString));
+      setFirstPageURL(baseURL + "search/?page=1&q=" + encodeURI(searchString));
     }
   }, [searchString]);
 
@@ -38,11 +39,14 @@ const SearchResults = ({ searchString }) => {
       <div>Number of Results : {searchResults.count}</div>
       {console.log(searchResults)}
       {searchResults.results.map((result, index) => (
-        <ResultItem key={index} result={result} index={index} />
+        <ResultItem key={index} result={result} />
       ))}
+      {console.log("SearchURL: ", searchURL)}
       {searchResults.previous ? (
         <span>
-          <button>&lt;&lt; First</button>
+          <button onClick={() => setSearchURL(firstPageURL)}>
+            &lt;&lt; First
+          </button>
           <button
             onClick={() => setSearchURL(getPathname(searchResults.previous))}>
             &lt; Previous
