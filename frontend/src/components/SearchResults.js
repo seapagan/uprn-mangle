@@ -7,15 +7,26 @@ const SearchResults = ({ searchString }) => {
   const baseURL = "/api/v1/";
 
   const [searchResults, setSearchResults] = useState({ results: [] });
+  const [searchURL, setSearchURL] = useState("");
 
   useEffect(() => {
     if (searchString) {
-      const searchURL = baseURL + "search/?q=" + encodeURI(searchString);
+      setSearchURL(baseURL + "search/?q=" + encodeURI(searchString));
+    }
+  }, [searchString]);
+
+  useEffect(() => {
+    if (searchURL) {
       fetch(searchURL)
         .then(response => response.json())
         .then(data => setSearchResults(data));
     }
-  }, [searchString]);
+  }, [searchURL]);
+
+  const getPathname = url => {
+    const fullPath = new URL(url);
+    return fullPath.pathname + fullPath.search;
+  };
 
   return (
     <>
@@ -29,6 +40,21 @@ const SearchResults = ({ searchString }) => {
           {result.longitude}
         </div>
       ))}
+      {searchResults.previous ? (
+        <button
+          onClick={() => setSearchURL(getPathname(searchResults.previous))}>
+          Previous
+        </button>
+      ) : (
+        ""
+      )}
+      {searchResults.next ? (
+        <button onClick={() => setSearchURL(getPathname(searchResults.next))}>
+          Next
+        </button>
+      ) : (
+        ""
+      )}
     </>
   );
 };
