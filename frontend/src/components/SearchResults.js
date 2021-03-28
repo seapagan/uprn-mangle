@@ -52,7 +52,6 @@ const SearchResults = ({ searchString }) => {
         ))}
       </div>
 
-      {console.log("SearchURL: ", searchURL)}
       {searchResults.previous ? (
         <span>
           <button onClick={() => setSearchURL(getFirstPageLink())}>

@@ -7,7 +7,6 @@ const SearchBox = ({ setSearchString }) => {
     e.preventDefault();
     if (!searchTerm) return;
     setSearchString(searchTerm);
-    console.log(searchTerm);
   };
 
   const clearSearchBox = e => {
