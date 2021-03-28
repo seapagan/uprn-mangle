@@ -1,4 +1,12 @@
-/* .grid-container {
-  display: grid;
-  grid-template-columns: repeat (6, auto);
-} */
+.result {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  /* background-color: aquamarine; */
+  padding: 0.3em;
+}
+
+.result.address {
+  justify-self: start;
+  text-align: justify;
+}

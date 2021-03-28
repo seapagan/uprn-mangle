@@ -21,7 +21,14 @@
 - Add authentication to the API (probably token based).
 - Filter out results where the postcode is empty, this will remove a lot of the
   useless stuff. Ideally, this should be done on the raw data import.
+- Remove duplicated UPRN lines.
 
 ## Frontend
 
 - Write the README File.
+- Clickable titles to sort results
+- add the street info as a smaller text below the address
+- complete the styling
+- make fully responsive
+- does this need to be fully Flexbox instead of Grid to improve the styling?
+- Add a footer

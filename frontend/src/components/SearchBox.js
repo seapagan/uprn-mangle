@@ -21,6 +21,7 @@ const SearchBox = ({ setSearchString }) => {
     <div>
       <form className="search-box-wrapper">
         <input
+          autofocus="true"
           className="input"
           type="text"
           placeholder="Search the Address Database"
