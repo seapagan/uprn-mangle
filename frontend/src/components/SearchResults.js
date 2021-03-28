@@ -12,13 +12,10 @@ const SearchResults = ({ searchString }) => {
 
   const [searchResults, setSearchResults] = useState({ results: [] });
   const [searchURL, setSearchURL] = useState("");
-  const [firstPageURL, setFirstPageURL] = useState("");
-  const [lastPageURL, setLastPageURL] = useState("");
 
   useEffect(() => {
     if (searchString) {
       setSearchURL(`${baseURL}search/?q=${encodeURI(searchString)}`);
-      setFirstPageURL(`${baseURL}search/?page=1&q=${encodeURI(searchString)}`);
     }
   }, [searchString]);
 
@@ -30,6 +27,15 @@ const SearchResults = ({ searchString }) => {
     }
   }, [searchURL]);
 
+  const getLastPageLink = count => {
+    const numPages = Math.floor(count / 20) + 1;
+    return `${baseURL}search/?page=${numPages}&q=${encodeURI(searchString)}`;
+  };
+
+  const getFirstPageLink = () => {
+    return `${baseURL}search/?page=1&q=${encodeURI(searchString)}`;
+  };
+
   const getPathname = url => {
     const fullPath = new URL(url);
     return fullPath.pathname + fullPath.search;
@@ -37,8 +43,6 @@ const SearchResults = ({ searchString }) => {
 
   return (
     <>
-      <div>Search Term is : {searchString}</div>
-      <div>Number of Results : {searchResults.count}</div>
       {console.log(searchResults)}
 
       <div className="grid-container">
@@ -51,7 +55,7 @@ const SearchResults = ({ searchString }) => {
       {console.log("SearchURL: ", searchURL)}
       {searchResults.previous ? (
         <span>
-          <button onClick={() => setSearchURL(firstPageURL)}>
+          <button onClick={() => setSearchURL(getFirstPageLink())}>
             &lt;&lt; First
           </button>
           <button
@@ -67,7 +71,10 @@ const SearchResults = ({ searchString }) => {
           <button onClick={() => setSearchURL(getPathname(searchResults.next))}>
             Next &gt;
           </button>
-          <button>Last &gt;&gt;</button>
+          <button
+            onClick={() => setSearchURL(getLastPageLink(searchResults.count))}>
+            Last &gt;&gt;
+          </button>
         </span>
       ) : (
         ""
