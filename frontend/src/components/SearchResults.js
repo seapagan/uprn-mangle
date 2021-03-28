@@ -17,8 +17,8 @@ const SearchResults = ({ searchString }) => {
 
   useEffect(() => {
     if (searchString) {
-      setSearchURL(baseURL + "search/?q=" + encodeURI(searchString));
-      setFirstPageURL(baseURL + "search/?page=1&q=" + encodeURI(searchString));
+      setSearchURL(`${baseURL}search/?q=${encodeURI(searchString)}`);
+      setFirstPageURL(`${baseURL}search/?page=1&q=${encodeURI(searchString)}`);
     }
   }, [searchString]);
 
