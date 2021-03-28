@@ -4,7 +4,7 @@
   display: grid;
   grid-column-gap: 10px;
   grid-row-gap: 10px;
-  grid-template-columns: 1fr 7fr repeat(4, 1fr);
+  grid-template-columns: 1fr minmax(300px, 7fr) repeat(4, 1fr);
   justify-items: start;
   align-items: center;
 }
