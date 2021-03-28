@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import ResultItem from "./ResultItem";
+
 const SearchResults = ({ searchString }) => {
   // in here we will do the actual search, using the 'searchString' variable
   // passed into us.
@@ -8,6 +10,8 @@ const SearchResults = ({ searchString }) => {
 
   const [searchResults, setSearchResults] = useState({ results: [] });
   const [searchURL, setSearchURL] = useState("");
+  const [firstPage, setFirstPage] = useState("");
+  const [lastPage, setLastPage] = useState("");
 
   useEffect(() => {
     if (searchString) {
@@ -34,24 +38,26 @@ const SearchResults = ({ searchString }) => {
       <div>Number of Results : {searchResults.count}</div>
       {console.log(searchResults)}
       {searchResults.results.map((result, index) => (
-        <div key={index}>
-          {index + 1} : {result.uprn}, {result.full_address},
-          {result.x_coordinate}, {result.y_coordinate}, {result.latitude},
-          {result.longitude}
-        </div>
+        <ResultItem key={index} result={result} index={index} />
       ))}
       {searchResults.previous ? (
-        <button
-          onClick={() => setSearchURL(getPathname(searchResults.previous))}>
-          Previous
-        </button>
+        <span>
+          <button>&lt;&lt; First</button>
+          <button
+            onClick={() => setSearchURL(getPathname(searchResults.previous))}>
+            &lt; Previous
+          </button>
+        </span>
       ) : (
         ""
       )}
       {searchResults.next ? (
-        <button onClick={() => setSearchURL(getPathname(searchResults.next))}>
-          Next
-        </button>
+        <span>
+          <button onClick={() => setSearchURL(getPathname(searchResults.next))}>
+            Next &gt;
+          </button>
+          <button>Last &gt;&gt;</button>
+        </span>
       ) : (
         ""
       )}
