@@ -1,6 +1,6 @@
 import React from "react";
 
-const ResultItem = ({ result, index }) => {
+const ResultItem = ({ result }) => {
   return (
     <div>
       <span>{result.uprn} </span>
