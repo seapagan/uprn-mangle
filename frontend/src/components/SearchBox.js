@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "../css/searchbox.css";
+
 const SearchBox = ({ setSearchString }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -17,18 +19,21 @@ const SearchBox = ({ setSearchString }) => {
 
   return (
     <div>
-      <form>
+      <form className="search-box-wrapper">
         <input
+          className="input"
           type="text"
           placeholder="Search the Address Database"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
 
-        <button type="submit" onClick={search}>
+        <button className="btn btn-search" type="submit" onClick={search}>
           Search
         </button>
-        <button onClick={clearSearchBox}>Clear</button>
+        <button className="btn btn-search" onClick={clearSearchBox}>
+          Clear
+        </button>
       </form>
     </div>
   );

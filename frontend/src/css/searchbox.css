@@ -1,0 +1,21 @@
+.search-box-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+.input {
+  --border-color: #aaa;
+  border: 1px solid var(--border-color);
+  outline: none;
+  font-size: inherit;
+  padding: 0.5em;
+  border-radius: 0.2em;
+  width: 100%;
+}
+
+.input:focus {
+  --border-color: #0af;
+  box-shadow: 0 0 5px 0 var(--border-color);
+}
