@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import "../css/searchresults.css";
+import ResultHeader from "./ResultHeader";
 import ResultItem from "./ResultItem";
 
 const SearchResults = ({ searchString }) => {
@@ -38,9 +40,14 @@ const SearchResults = ({ searchString }) => {
       <div>Search Term is : {searchString}</div>
       <div>Number of Results : {searchResults.count}</div>
       {console.log(searchResults)}
-      {searchResults.results.map((result, index) => (
-        <ResultItem key={index} result={result} />
-      ))}
+
+      <div className="grid-container">
+        <ResultHeader />
+        {searchResults.results.map((result, index) => (
+          <ResultItem key={index} result={result} />
+        ))}
+      </div>
+
       {console.log("SearchURL: ", searchURL)}
       {searchResults.previous ? (
         <span>
