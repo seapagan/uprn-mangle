@@ -5,4 +5,6 @@
   border: 1px solid #aaa;
   border-radius: 0.4em;
   padding: 10px;
+  background-color: hsl(60, 20%, 90%);
+  margin-bottom: 20px;
 }

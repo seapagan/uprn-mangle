@@ -1,22 +1,25 @@
 .btn {
-  /* margin: 0;
-  background: none;
-  border: none;
-  background-color: hsl(160, 100%, 60%);
-  border-radius: 9999px; */
-  color: white;
-  background-color: hsl(200, 100%, 50%);
-  border: none;
+  color: black;
+  background-color: hsl(60, 20%, 90%);
+  /* border: 1px solid hsl(60, 20%, 70%); */
+  border: 1px solid #aaa;
   outline: none;
   padding: 0.5em 1em;
   border-radius: 0.3em;
   cursor: pointer;
 }
 
-.btn:hover {
-  animation: blink 500ms ease-in-out infinite, grow 1s ease-in-out infinite;
+.btn:hover,
+.btn:focus {
+  background-color: hsl(60, 20%, 80%);
+  box-shadow: 0 0 5px 0 hsl(60, 20%, 70%);
 }
 
-.btn.btn-search {
+.btn.btn-search,
+.btn.btn-nav {
   margin-left: 5px;
+}
+
+.btn.btn-nav:first-child {
+  margin-left: 0;
 }

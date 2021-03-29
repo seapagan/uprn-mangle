@@ -15,7 +15,8 @@
   width: 100%;
 }
 
-.input:focus {
-  --border-color: #0af;
+.input:focus,
+.input:hover {
+  --border-color: hsl(60, 20%, 70%);
   box-shadow: 0 0 5px 0 var(--border-color);
 }
