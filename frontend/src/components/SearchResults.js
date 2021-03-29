@@ -54,10 +54,13 @@ const SearchResults = ({ searchString }) => {
 
       {searchResults.previous ? (
         <span>
-          <button onClick={() => setSearchURL(getFirstPageLink())}>
+          <button
+            className="btn btn-nav"
+            onClick={() => setSearchURL(getFirstPageLink())}>
             &lt;&lt; First
           </button>
           <button
+            className="btn btn-nav"
             onClick={() => setSearchURL(getPathname(searchResults.previous))}>
             &lt; Previous
           </button>
@@ -67,10 +70,13 @@ const SearchResults = ({ searchString }) => {
       )}
       {searchResults.next ? (
         <span>
-          <button onClick={() => setSearchURL(getPathname(searchResults.next))}>
+          <button
+            className="btn btn-nav"
+            onClick={() => setSearchURL(getPathname(searchResults.next))}>
             Next &gt;
           </button>
           <button
+            className="btn btn-nav"
             onClick={() => setSearchURL(getLastPageLink(searchResults.count))}>
             Last &gt;&gt;
           </button>
