@@ -30,8 +30,6 @@ const SearchResults = ({ searchString }) => {
 
   return (
     <>
-      {console.log(searchResults)}
-
       <div className="grid-container">
         <ResultHeader />
         {searchResults.results.map((result, index) => (
@@ -42,6 +40,7 @@ const SearchResults = ({ searchString }) => {
         baseURL={baseURL}
         searchResults={searchResults}
         searchString={searchString}
+        searchURL={searchURL}
         setSearchURL={setSearchURL}
       />
     </>
