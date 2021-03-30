@@ -22,6 +22,8 @@
 - Filter out results where the postcode is empty, this will remove a lot of the
   useless stuff. Ideally, this should be done on the raw data import.
 - Remove duplicated UPRN lines.
+- Add another search parameter to return the JSON results sorted on the passed
+  column name. Default to UPRN as it is now if none specified.
 
 ## Frontend
 
@@ -32,3 +34,5 @@
 - make fully responsive
 - does this need to be fully Flexbox instead of Grid to improve the styling?
 - Add a footer
+- modify Pager component. if more than (eg) 12 pages, only show a subset in the
+  page links
