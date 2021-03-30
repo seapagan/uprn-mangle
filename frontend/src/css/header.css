@@ -5,10 +5,11 @@
   width: 90%;
   margin: auto;
   font-size: 1.5rem;
+  justify-content: center;
 }
 
 .header-text {
-  font-family: "Bangers", cursive;
+  font-family: "Bangers", sans-serif;
   font-variant: small-caps;
   font-size: 3rem;
   -webkit-text-fill-color: #eee;
