@@ -22,5 +22,9 @@
   margin: 0 0.1em;
 }
 
-.pager-link:hover {
+@media (max-width: 480px) {
+  /* hide the page links on mobile devices */
+  .pager-link {
+    display: none;
+  }
 }
