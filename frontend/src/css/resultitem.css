@@ -35,11 +35,11 @@
 }
 
 .result.link {
-  color: hsl(200, 70%, 50%);
+  color: hsl(350, 60%, 60%);
   font-size: 1.4em;
 }
 
 .result.link:hover {
-  color: hsl(200, 100%, 30%);
+  color: hsl(350, 60%, 40%);
   cursor: pointer;
 }
