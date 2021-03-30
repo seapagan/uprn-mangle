@@ -3,7 +3,8 @@ import React from "react";
 import "../css/pager.css";
 
 const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
-  const totalPages = Math.floor(searchResults.count / 20) + 1;
+  // calc the total pages for this result, ser to zero if no results
+  const totalPages = Math.floor(searchResults.count / 20) + 1 || 0;
   console.log("Total Pages : ", totalPages);
 
   const getLastPageLink = count => {
@@ -20,11 +21,7 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
   };
 
   return (
-    <div
-      className={`pager-container ${
-        !searchResults.count || totalPages < 2 ? "pager-hidden" : ""
-      }`}>
-      {/* <span> */}
+    <div className={`pager-container ${totalPages < 2 ? "pager-hidden" : ""}`}>
       <button
         disabled={!searchResults.previous ? true : false}
         className="btn btn-nav"
@@ -37,9 +34,6 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
         onClick={() => setSearchURL(getPathname(searchResults.previous))}>
         &lt; Previous
       </button>
-      {/* </span> */}
-
-      {/* <span> */}
       <button
         disabled={!searchResults.next ? true : false}
         className="btn btn-nav"
@@ -52,7 +46,6 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
         onClick={() => setSearchURL(getLastPageLink(totalPages))}>
         Last &gt;&gt;
       </button>
-      {/* </span> */}
     </div>
   );
 };
