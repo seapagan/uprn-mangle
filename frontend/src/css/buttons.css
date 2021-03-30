@@ -3,8 +3,9 @@
   background-color: hsl(60, 20%, 90%);
   /* border: 1px solid hsl(60, 20%, 70%); */
   border: 1px solid #aaa;
-  outline: none;
-  padding: 0.5em 1em;
+  /* below needs to be important to overrule the normalize */
+  outline: none !important;
+  padding: 0.3em 1em;
   border-radius: 0.3em;
   cursor: pointer;
 }
