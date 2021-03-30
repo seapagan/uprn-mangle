@@ -1,5 +1,25 @@
+.header-wrapper {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-around; */
+  border-bottom: 2px solid hsl(0, 0%, 50%);
+  margin: 0;
+  padding: 0;
+}
+
 .header-item {
   font-weight: bold;
-  justify-self: center;
+  align-self: center;
   padding-bottom: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+.header-item.uprn {
+  font-size: 1.1em;
+  padding-right: 10px;
+}
+
+.header-item.address {
+  min-width: 350px;
 }
