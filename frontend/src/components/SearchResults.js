@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import "../css/searchresults.css";
+import Pager from "./Pager";
 import ResultHeader from "./ResultHeader";
 import ResultItem from "./ResultItem";
 
@@ -27,20 +28,6 @@ const SearchResults = ({ searchString }) => {
     }
   }, [searchURL]);
 
-  const getLastPageLink = count => {
-    const numPages = Math.floor(count / 20) + 1;
-    return `${baseURL}search/?page=${numPages}&q=${encodeURI(searchString)}`;
-  };
-
-  const getFirstPageLink = () => {
-    return `${baseURL}search/?page=1&q=${encodeURI(searchString)}`;
-  };
-
-  const getPathname = url => {
-    const fullPath = new URL(url);
-    return fullPath.pathname + fullPath.search;
-  };
-
   return (
     <>
       {console.log(searchResults)}
@@ -51,39 +38,12 @@ const SearchResults = ({ searchString }) => {
           <ResultItem key={index} result={result} />
         ))}
       </div>
-
-      {searchResults.previous ? (
-        <span>
-          <button
-            className="btn btn-nav"
-            onClick={() => setSearchURL(getFirstPageLink())}>
-            &lt;&lt; First
-          </button>
-          <button
-            className="btn btn-nav"
-            onClick={() => setSearchURL(getPathname(searchResults.previous))}>
-            &lt; Previous
-          </button>
-        </span>
-      ) : (
-        ""
-      )}
-      {searchResults.next ? (
-        <span>
-          <button
-            className="btn btn-nav"
-            onClick={() => setSearchURL(getPathname(searchResults.next))}>
-            Next &gt;
-          </button>
-          <button
-            className="btn btn-nav"
-            onClick={() => setSearchURL(getLastPageLink(searchResults.count))}>
-            Last &gt;&gt;
-          </button>
-        </span>
-      ) : (
-        ""
-      )}
+      <Pager
+        baseURL={baseURL}
+        searchResults={searchResults}
+        searchString={searchString}
+        setSearchURL={setSearchURL}
+      />
     </>
   );
 };

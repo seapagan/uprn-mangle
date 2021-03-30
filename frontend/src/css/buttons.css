@@ -23,3 +23,10 @@
 .btn.btn-nav:first-child {
   margin-left: 0;
 }
+
+.btn:disabled {
+  cursor: not-allowed;
+  color: gray;
+  box-shadow: none;
+  background-color: inherit;
+}
