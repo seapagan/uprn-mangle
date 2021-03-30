@@ -2,13 +2,18 @@ import React from "react";
 
 import "../css/pager.css";
 
-const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
+const Pager = ({
+  baseURL,
+  searchResults,
+  searchString,
+  searchURL,
+  setSearchURL,
+}) => {
   // calc the total pages for this result, ser to zero if no results
   const totalPages = Math.floor(searchResults.count / 20) + 1 || 0;
-  console.log("Total Pages : ", totalPages);
 
   const getPageLink = count => {
-    return `${baseURL}search/?page=${count}&q=${encodeURI(searchString)}`;
+    return `${baseURL}search/?q=${encodeURI(searchString)}&page=${count}`;
   };
 
   const getFirstPageLink = () => {
@@ -18,6 +23,13 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
   const getPathname = url => {
     const fullPath = new URL(url);
     return fullPath.pathname + fullPath.search;
+  };
+
+  const isCurrentPage = page => {
+    const fullURL = new URL("http://localhost" + searchURL);
+    const searchParams = fullURL.searchParams;
+    const thisPage = parseInt(searchParams.get("page")) || 1;
+    return thisPage === page;
   };
 
   return (
@@ -38,6 +50,7 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
         {[...Array(totalPages)].map((e, page) => (
           <button
             key={page + 1}
+            disabled={isCurrentPage(page + 1)}
             className="btn pager-link"
             onClick={() => setSearchURL(getPageLink(page + 1))}>
             {page + 1}
