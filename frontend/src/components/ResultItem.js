@@ -2,9 +2,14 @@ import React from "react";
 
 import { FaMap } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
+
 import "../css/resultitem.css";
+import MapLink from "./MapLink";
 
 const ResultItem = ({ result }) => {
+  const GoogleURL = `https://www.google.com/maps/dir/?api=1&destination=${result.latitude},${result.longitude}`;
+  const OSMapsURL = `https://osmaps.ordnancesurvey.co.uk/${result.latitude},${result.longitude},15/pin`;
+
   return (
     <div className="result-container">
       <div className="result uprn">{result.uprn}</div>
@@ -14,10 +19,10 @@ const ResultItem = ({ result }) => {
       <div className="result lat">{result.latitude}</div>
       <div className="result lon">{result.longitude}</div>
       <div className="result link google">
-        <SiGooglemaps />
+        <MapLink Link={GoogleURL} Icon={SiGooglemaps} />
       </div>
       <div className="result link openstreet">
-        <FaMap />
+        <MapLink Link={OSMapsURL} Icon={FaMap} />
       </div>
     </div>
   );

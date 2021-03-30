@@ -12,7 +12,7 @@ const ResultHeader = () => {
       <div className="header-item">Lat</div>
       <div className="header-item">Lon</div>
       <div className="header-item">Google Directions</div>
-      <div className="header-item">Open StreetMap</div>
+      <div className="header-item">OS Maps</div>
     </div>
   );
 };

@@ -33,13 +33,3 @@
   text-align: left;
   min-width: 350px;
 }
-
-.result.link {
-  color: hsl(350, 60%, 60%);
-  font-size: 1.4em;
-}
-
-.result.link:hover {
-  color: hsl(350, 60%, 40%);
-  cursor: pointer;
-}
