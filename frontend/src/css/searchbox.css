@@ -1,9 +1,9 @@
 .search-box-wrapper {
-  width: 100%;
+  width: 50%;
   display: flex;
   flex-direction: row;
-  justify-content: center;
   padding-bottom: 10px;
+  margin: auto;
 }
 
 .input {
@@ -20,4 +20,21 @@
 .input:hover {
   --border-color: hsl(60, 20%, 70%);
   box-shadow: 0 0 5px 0 var(--border-color);
+}
+
+.nav-button-group {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 480px) {
+  .search-box-wrapper {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .nav-button-group {
+    justify-content: center;
+    margin-top: 5px;
+  }
 }

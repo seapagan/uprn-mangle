@@ -29,12 +29,14 @@ const SearchBox = ({ setSearchString }) => {
           onChange={e => setSearchTerm(e.target.value)}
         />
 
-        <button className="btn btn-search" type="submit" onClick={search}>
-          Search
-        </button>
-        <button className="btn btn-search" onClick={clearSearchBox}>
-          Clear
-        </button>
+        <div className="nav-button-group">
+          <button className="btn btn-search" type="submit" onClick={search}>
+            Search
+          </button>
+          <button className="btn btn-search" onClick={clearSearchBox}>
+            Clear
+          </button>
+        </div>
       </form>
     </div>
   );

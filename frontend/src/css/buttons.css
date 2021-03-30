@@ -31,3 +31,11 @@
   box-shadow: none;
   background-color: inherit;
 }
+
+@media (max-width: 480px) {
+  /* hide the page links on mobile devices */
+  .btn.btn-search {
+    width: 30%;
+    align-self: center;
+  }
+}
