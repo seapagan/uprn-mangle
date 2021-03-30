@@ -29,8 +29,15 @@ const SearchResults = ({ searchString }) => {
   }, [searchURL]);
 
   return (
-    <>
-      <div className="grid-container">
+    <div>
+      <Pager
+        baseURL={baseURL}
+        searchResults={searchResults}
+        searchString={searchString}
+        searchURL={searchURL}
+        setSearchURL={setSearchURL}
+      />
+      <div className="search-results-container">
         <ResultHeader />
         {searchResults.results.map((result, index) => (
           <ResultItem key={index} result={result} />
@@ -43,7 +50,7 @@ const SearchResults = ({ searchString }) => {
         searchURL={searchURL}
         setSearchURL={setSearchURL}
       />
-    </>
+    </div>
   );
 };
 
