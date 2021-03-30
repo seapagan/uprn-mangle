@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import "../css/search.css";
+import Loading from "./Loading";
 import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
 
@@ -10,7 +11,11 @@ const Search = () => {
   return (
     <div className="search-container">
       <SearchBox setSearchString={setSearchString} />
-      <SearchResults searchString={searchString} />
+      {searchString ? (
+        <SearchResults searchString={searchString} />
+      ) : (
+        <Loading />
+      )}
     </div>
   );
 };
