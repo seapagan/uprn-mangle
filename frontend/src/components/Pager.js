@@ -7,7 +7,7 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
   const totalPages = Math.floor(searchResults.count / 20) + 1 || 0;
   console.log("Total Pages : ", totalPages);
 
-  const getLastPageLink = count => {
+  const getPageLink = count => {
     return `${baseURL}search/?page=${count}&q=${encodeURI(searchString)}`;
   };
 
@@ -22,28 +22,39 @@ const Pager = ({ baseURL, searchResults, searchString, setSearchURL }) => {
 
   return (
     <div className={`pager-container ${totalPages < 2 ? "pager-hidden" : ""}`}>
-      <button
+      <button // 'First'
         disabled={!searchResults.previous ? true : false}
         className="btn btn-nav"
         onClick={() => setSearchURL(getFirstPageLink())}>
         &lt;&lt; First
       </button>
-      <button
+      <button // 'Previous'
         disabled={!searchResults.previous ? true : false}
         className="btn btn-nav"
         onClick={() => setSearchURL(getPathname(searchResults.previous))}>
         &lt; Previous
       </button>
-      <button
+      <div className="pager-links">
+        {[...Array(totalPages)].map((e, page) => (
+          <button
+            key={page + 1}
+            className="btn pager-link"
+            onClick={() => setSearchURL(getPageLink(page + 1))}>
+            {page + 1}
+          </button>
+        ))}
+      </div>
+
+      <button // 'Next'
         disabled={!searchResults.next ? true : false}
         className="btn btn-nav"
         onClick={() => setSearchURL(getPathname(searchResults.next))}>
         Next &gt;
       </button>
-      <button
+      <button // 'Last'
         disabled={!searchResults.next ? true : false}
         className="btn btn-nav"
-        onClick={() => setSearchURL(getLastPageLink(totalPages))}>
+        onClick={() => setSearchURL(getPageLink(totalPages))}>
         Last &gt;&gt;
       </button>
     </div>
