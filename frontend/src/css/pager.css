@@ -2,6 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* margin-bottom: 10px; */
+}
+
+.pager-container:first-child {
   margin-bottom: 10px;
 }
 
