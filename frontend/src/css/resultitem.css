@@ -33,3 +33,22 @@
   text-align: left;
   min-width: 350px;
 }
+
+@media (max-width: 900px) {
+  .result.uprn {
+    font-size: 1em;
+    width: auto;
+  }
+
+  .result.address {
+    min-width: auto;
+  }
+
+  .result.x-coord,
+  .result.y-coord,
+  .result.lat,
+  .result.lon,
+  .result.link {
+    display: none;
+  }
+}
