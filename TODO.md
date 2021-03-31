@@ -32,7 +32,8 @@
 - add the street info as a smaller text below the address
 - complete the styling
 - make fully responsive
-- does this need to be fully Flexbox instead of Grid to improve the styling?
+- <del>does this need to be fully Flexbox instead of Grid to improve the
+  styling?<del>
 - Add a footer
 - modify Pager component. if more than (eg) 12 pages, only show a subset in the
   page links
