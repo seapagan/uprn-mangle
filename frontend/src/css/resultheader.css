@@ -17,16 +17,18 @@
 .header-item.uprn {
   font-size: 1.1em;
   padding-right: 10px;
+  width: max-content;
 }
 
-.header-item.address {
-  min-width: 350px;
+.header-item.link {
+  width: 200px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .header-item.uprn {
     font-size: 1em;
-    width: auto;
+    /* width: auto; */
+    width: 120px;
   }
 
   .header-item.address {

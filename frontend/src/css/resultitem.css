@@ -1,7 +1,11 @@
 .result-container {
+  border-bottom: 1px solid hsl(0, 0%, 70%);
+}
+
+.result-details {
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid hsl(0, 0%, 70%);
+  cursor: pointer;
 }
 
 .result-container:nth-child(2n) {
@@ -27,17 +31,21 @@
 .result.uprn {
   font-size: 1.1em;
   padding-right: 10px;
+  width: 150px;
 }
 
 .result.address {
   text-align: left;
-  min-width: 350px;
 }
 
-@media (max-width: 900px) {
+.result.link {
+  width: 200px;
+}
+
+@media (max-width: 768px) {
   .result.uprn {
     font-size: 1em;
-    width: auto;
+    width: 120px;
   }
 
   .result.address {

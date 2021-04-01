@@ -12,18 +12,32 @@ const ResultItem = ({ result }) => {
 
   return (
     <div className="result-container">
-      <div className="result uprn">{result.uprn}</div>
-      <div className="result address">{result.full_address}</div>
-      <div className="result x-coord">{result.x_coordinate}</div>
-      <div className="result y-coord">{result.y_coordinate}</div>
-      <div className="result lat">{result.latitude}</div>
-      <div className="result lon">{result.longitude}</div>
-      <div className="result link google">
-        <MapLink Link={GoogleURL} Icon={SiGooglemaps} />
+      <div className="result-details">
+        <div className="result uprn">{result.uprn}</div>
+        <div className="result address">{result.full_address}</div>
+
+        <div className="result link">
+          <MapLink Link={GoogleURL} Icon={SiGooglemaps} />
+        </div>
+        <div className="result link">
+          <MapLink Link={OSMapsURL} Icon={FaMap} />
+        </div>
       </div>
-      <div className="result link openstreet">
-        <MapLink Link={OSMapsURL} Icon={FaMap} />
-      </div>
+      {/* <div className="result-extra">
+        <div className="result-coords">
+          <div className="result-extra-coords-title">X / Y Coords: </div>
+          <div className="result-extra-coords-values">
+            {result.x_coordinate},&nbsp;{result.y_coordinate}
+          </div>
+        </div>
+
+        <div className="result-coords">
+          <div className="result-extra-coords-title">Lat / Lon Coords: </div>
+          <div className="result-extra-coords-values">
+            {result.latitude},&nbsp;{result.longitude}
+          </div>
+        </div>
+      </div> */}
     </div>
   );
 };
