@@ -12,9 +12,13 @@ class SearchViewSet(viewsets.ModelViewSet):
         # This search is very fast, using the Postgresql Full-Text-Search and
         # pre-computed ts_vectors from the 'tsv' column. These were manually
         # added. We need to add this to the import scripts. This will not be
-        # needed to be implemented forreal-time since the database is static.
+        # needed to be implemented for real-time since the database is static.
 
         srch_param = self.request.query_params.get("q")
+        # get the requested sort order, default to uprn if not specified.
+        sort_order = self.request.query_params.get("order", "uprn")
+
+        print(sort_order)
 
         # queryset = Addressbase.objects.all().order_by("uprn")[:20]
         queryset = Addressbase.objects.all().order_by("uprn")
@@ -24,7 +28,7 @@ class SearchViewSet(viewsets.ModelViewSet):
             #     full_address__search=srch_param
             # ).order_by("uprn")
             queryset = Addressbase.objects.filter(tsv=srch_param).order_by(
-                "uprn"
+                sort_order
             )
 
         return queryset
