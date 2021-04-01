@@ -18,7 +18,7 @@
 .header-item.uprn {
   font-size: 1.1em;
   padding-right: 10px;
-  width: max-content;
+  min-width: 120px;
 }
 
 .header-item.address {
