@@ -29,9 +29,10 @@
 
 - Write the README File.
 - Clickable titles to sort results
-- add the street info as a smaller text below the address
+- add the street info as a smaller text below the address, also show the links
+  to maps in this for smaller screen sizes
 - complete the styling
-- make fully responsive
+- make fully responsive **[ Basically Complete for existing code ]**
 - <del>does this need to be fully Flexbox instead of Grid to improve the
   styling?<del>
 - Add a footer
