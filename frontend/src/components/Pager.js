@@ -26,10 +26,26 @@ const Pager = ({
   };
 
   const isCurrentPage = page => {
+    return getCurrentPage() === page;
+  };
+
+  const getCurrentPage = () => {
     const fullURL = new URL("http://localhost" + searchURL);
     const searchParams = fullURL.searchParams;
-    const thisPage = parseInt(searchParams.get("page")) || 1;
-    return thisPage === page;
+    return parseInt(searchParams.get("page")) || 1;
+  };
+
+  const getPageArray = (howMany = 12) => {
+    let startValue = 1;
+
+    if (totalPages > howMany && getCurrentPage() > howMany / 2) {
+      // we only want to return a subset of the pages
+      startValue = getCurrentPage() - howMany / 2;
+      if (getCurrentPage() >= totalPages - howMany / 2) {
+        startValue = totalPages - howMany + 1;
+      }
+    }
+    return Array.from({ length: howMany }, (x, index) => index + startValue);
   };
 
   return (
@@ -47,13 +63,13 @@ const Pager = ({
         &lt; Previous
       </button>
       <div className="pager-links">
-        {[...Array(totalPages)].map((e, page) => (
+        {getPageArray(12).map(page => (
           <button
-            key={page + 1}
-            disabled={isCurrentPage(page + 1)}
+            key={page}
+            disabled={isCurrentPage(page)}
             className="btn pager-link"
-            onClick={() => setSearchURL(getPageLink(page + 1))}>
-            {page + 1}
+            onClick={() => setSearchURL(getPageLink(page))}>
+            {page}
           </button>
         ))}
       </div>
