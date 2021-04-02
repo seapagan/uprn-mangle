@@ -38,6 +38,9 @@ const Pager = ({
   const getPageArray = (howMany = 12) => {
     let startValue = 1;
 
+    // never want more pages than we actually have...
+    if (totalPages < howMany) howMany = totalPages;
+
     if (totalPages > howMany && getCurrentPage() > howMany / 2) {
       // we only want to return a subset of the pages
       startValue = getCurrentPage() - howMany / 2;
@@ -48,8 +51,11 @@ const Pager = ({
     return Array.from({ length: howMany }, (x, index) => index + startValue);
   };
 
+  // no pager needed for a single page of results...
+  if (totalPages < 2) return null;
+  // otherwise return the pager...
   return (
-    <div className={`pager-container ${totalPages < 2 ? "pager-hidden" : ""}`}>
+    <div className="pager-container">
       <button // 'First'
         disabled={!searchResults.previous ? true : false}
         className="btn btn-nav"
