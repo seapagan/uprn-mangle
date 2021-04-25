@@ -42,5 +42,6 @@
   "python.linting.pylintEnabled": true,
   "python.pythonPath": "/home/seapagan/.pyenv/versions/uprn/bin/python",
   "css.customData": ["./.vscode/custom.css-data.json"],
-  "explorer.compactFolders": false
+  "explorer.compactFolders": false,
+  "git.enableCommitSigning": true
 }
