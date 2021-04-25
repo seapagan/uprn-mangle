@@ -16,10 +16,6 @@ const Pager = ({
     return `${baseURL}search/?q=${encodeURI(searchString)}&page=${count}`;
   };
 
-  const getFirstPageLink = () => {
-    return `${baseURL}search/?page=1&q=${encodeURI(searchString)}`;
-  };
-
   const getPathname = url => {
     const fullPath = new URL(url);
     return fullPath.pathname + fullPath.search;
@@ -59,7 +55,7 @@ const Pager = ({
       <button // 'First'
         disabled={!searchResults.previous ? true : false}
         className="btn btn-nav"
-        onClick={() => setSearchURL(getFirstPageLink())}>
+        onClick={() => setSearchURL(getPageLink(1))}>
         &lt;&lt; First
       </button>
       <button // 'Previous'
