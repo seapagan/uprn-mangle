@@ -21,7 +21,6 @@ class SearchViewSet(viewsets.ModelViewSet):
         print(sort_order)
 
         # queryset = Addressbase.objects.all().order_by("uprn")[:20]
-        queryset = Addressbase.objects.all().order_by("uprn")
 
         if srch_param:
             # queryset = Addressbase.objects.filter(
@@ -30,5 +29,7 @@ class SearchViewSet(viewsets.ModelViewSet):
             queryset = Addressbase.objects.filter(tsv=srch_param).order_by(
                 sort_order
             )
+        else:
+            queryset = Addressbase.objects.all().order_by(sort_order)
 
         return queryset
