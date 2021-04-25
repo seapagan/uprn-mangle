@@ -14,7 +14,10 @@ const ResultItem = ({ result }) => {
     <div className="result-container">
       <div className="result-details">
         <div className="result uprn">{result.uprn}</div>
-        <div className="result address">{result.full_address}</div>
+        <div className="result address">
+          <div className="result address-main">{result.full_address}</div>
+          <div className="result address-extra">Extra Stuff</div>
+        </div>
 
         <div className="result link">
           <MapLink Link={GoogleURL} Icon={SiGooglemaps} />
@@ -23,21 +26,6 @@ const ResultItem = ({ result }) => {
           <MapLink Link={OSMapsURL} Icon={FaMap} />
         </div>
       </div>
-      {/* <div className="result-extra">
-        <div className="result-coords">
-          <div className="result-extra-coords-title">X / Y Coords: </div>
-          <div className="result-extra-coords-values">
-            {result.x_coordinate},&nbsp;{result.y_coordinate}
-          </div>
-        </div>
-
-        <div className="result-coords">
-          <div className="result-extra-coords-title">Lat / Lon Coords: </div>
-          <div className="result-extra-coords-values">
-            {result.latitude},&nbsp;{result.longitude}
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };
