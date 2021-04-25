@@ -1,6 +1,6 @@
 ## this is very slow, approx 20 to 25 sec.
 
-- SELECT \* from "addressbase" WHERE to_tsvector("FULL_ADDRESS") @@
+- SELECT * from "addressbase" WHERE to_tsvector("FULL_ADDRESS") @@
   to_tsquery('blackadder');
 
 ## prepare the table with extra col and index...
@@ -14,12 +14,12 @@
 
 ## now test .... much faster, less than 10ms!!!
 
-- SELECT \* from "addressbase", plainto_tsquery('blackadder') AS q WHERE (tsv @@
+- SELECT * from "addressbase", plainto_tsquery('blackadder') AS q WHERE (tsv @@
   q);
 
 ## next 2 are around the 3ms mark!!!!
 
-- SELECT \_ from "addressbase", plainto_tsquery('blackadder west') AS q WHERE
+- SELECT * from "addressbase", plainto_tsquery('blackadder west') AS q WHERE
   (tsv @@ q);
-- SELECT \_ from "addressbase", plainto_tsquery('blackadder west') AS q WHERE
+- SELECT * from "addressbase", plainto_tsquery('blackadder west') AS q WHERE
   (tsv @@ q) ORDER BY "UPRN";
