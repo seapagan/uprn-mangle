@@ -9,11 +9,11 @@ const ResultHeader = () => {
   return (
     <div className="header-wrapper">
       <div className="header-item uprn">
-        <BsCaretDown className="select-order" />
+        {/* <BsCaretDown className="select-order" /> */}
         UPRN
       </div>
       <div className="header-item address">
-        <BsCaretDown className="select-order" />
+        {/* <BsCaretDown className="select-order" /> */}
         Address
       </div>
 
