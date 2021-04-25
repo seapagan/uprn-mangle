@@ -10,7 +10,7 @@ const Pager = ({
   setSearchURL,
 }) => {
   // calc the total pages for this result, ser to zero if no results
-  const totalPages = Math.floor(searchResults.count / 20) + 1 || 0;
+  const totalPages = Math.ceil(searchResults.count / 20) || 0;
 
   const getPageLink = count => {
     return `${baseURL}search/?q=${encodeURI(searchString)}&page=${count}`;
