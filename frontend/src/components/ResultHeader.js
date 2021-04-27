@@ -1,7 +1,7 @@
 import React from "react";
 
-import { BsCaretDown } from "react-icons/bs";
-import { BsCaretUp } from "react-icons/bs";
+// import { BsCaretDown } from "react-icons/bs";
+// import { BsCaretUp } from "react-icons/bs";
 
 import "../css/resultheader.css";
 
