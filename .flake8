@@ -1,6 +1,6 @@
 [flake8]
 exclude =
-    addressbase/backend/migrations,
-    addressbase/backend/tests.py,
-    addressbase/addressbase/settings.py,
-    addressbase/manage.py,
+    api/migrations,
+    api/tests.py,
+    backend/settings.py,
+    manage.py,
