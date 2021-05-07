@@ -36,5 +36,7 @@
 - <del>does this need to be fully Flexbox instead of Grid to improve the
   styling?<del>
 - Add a footer
-- modify Pager component. if more than (eg) 12 pages, only show a subset in the
-  page links
+- <del>
+    modify Pager component. if more than (eg) 12 pages, only show a subset in the
+      page links
+  </del>
