@@ -1,9 +1,9 @@
 # UPRN Search Tool
 
-THIS README IS CURRENTLY A STUB, WILL BVE UPDATED PROPERLY SHORTLY.
+THIS README IS CURRENTLY A STUB, WILL BE UPDATED PROPERLY SHORTLY.
 
-This is a (work in progress) tool to take the Ordnance Survey 'Address Base Pro'
-data and mangle it into a more ussable form. This is then loaded into a database
+This is a (work in progress) tool to take the Ordnance Survey 'Address Base Premium'
+data and mangle it into a more usable form. This is then loaded into a database
 and provided as a Backend API. There is then a Frontend web app which will allow
 searching of this data - eg addresses, and return the UPRN along with links for
 Google maps and OpenStreetMap.
