@@ -1,6 +1,7 @@
-pandas
-sqlalchemy
-psycopg2
+cursor
 django
 djangorestframework
-cursor
+pandas
+psycopg2
+setproctitle
+sqlalchemy
