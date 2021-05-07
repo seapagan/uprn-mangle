@@ -2,11 +2,11 @@
 
 THIS README IS CURRENTLY A STUB, WILL BE UPDATED PROPERLY SHORTLY.
 
-This is a (work in progress) tool to take the Ordnance Survey 'Address Base Premium'
-data and mangle it into a more usable form. This is then loaded into a database
-and provided as a Backend API. There is then a Frontend web app which will allow
-searching of this data - eg addresses, and return the UPRN along with links for
-Google maps and OpenStreetMap.
+This is a (work in progress) tool to take the Ordnance Survey 'Address Base
+Premium' data and mangle it into a more usable form. This is then loaded into a
+database and provided as a Backend API. There is then a Frontend web app which
+will allow searching of this data - eg addresses, and return the UPRN along with
+links for Google maps and OpenStreetMap.
 
 - Backend and mangle scripts written in Django (Python)
 - Basic Frontend written in React
@@ -24,14 +24,16 @@ You will also need a PostgreSQL database set up, with the `abuser` user and
 an `.env` file)
 
 1. Clone or download the repository to your local machine
-2. Backend :
+2. UPRN Data
+   1. `To be updated`
+3. Backend :
    1. In a terminal, change to the **backend** directory and run
       `pip install -r ../Requirements.txt`. This will install all the required
       dependencies.
    2. In the same terminal and still in the **backend** directory, run
       `python manage.py migrate`
    3. Finally run `python manage.py runserver`
-3. Frontend :
+4. Frontend :
    1. In a terminal, change to the **frontend** directory and run `yarn` or
       (`npm install` if you prefer. I will use Yarn throughout, you can
       substitute with NPM if that is your preference). This will install all the
