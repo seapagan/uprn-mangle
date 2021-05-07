@@ -46,8 +46,8 @@
 
 .result.address-extra {
   display: none;
-  padding: 10;
-  border: 1 solid gray;
+  padding: 10px;
+  border: 1px solid gray;
 }
 
 .result.link {
