@@ -99,11 +99,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": str(os.getenv("BLOG_DB_NAME")),
-        "USER": str(os.getenv("BLOG_DB_USER")),
-        "PASSWORD": str(os.getenv("BLOG_DB_PASSWORD")),
-        "HOST": str(os.getenv("BLOG_DB_HOST")),
-        "PORT": str(os.getenv("BLOG_DB_PORT")),
+        "NAME": str(os.getenv("UPRN_DB_NAME")),
+        "USER": str(os.getenv("UPRN_DB_USER")),
+        "PASSWORD": str(os.getenv("UPRN_DB_PASSWORD")),
+        "HOST": str(os.getenv("UPRN_DB_HOST")),
+        "PORT": str(os.getenv("UPRN_DB_PORT")),
     }
 }
 
