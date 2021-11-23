@@ -1,7 +1,0 @@
-cursor
-django
-djangorestframework
-pandas
-psycopg2
-setproctitle
-sqlalchemy

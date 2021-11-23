@@ -1,18 +1,9 @@
 {
-  "cornflakes.linter.run": "onType",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+  "autoDocstring.startOnNewLine": true,
+  "editor.formatOnPaste": false,
+  "emmet.includeLanguages": {
+    "django-html": "html"
   },
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnType": true,
-  "editor.linkedEditing": true,
-  "editor.rulers": [80, 120],
-  "editor.snippetSuggestions": "top",
-  "editor.tabSize": 2,
-  "emmet.showAbbreviationSuggestions": true,
-  "emmet.showExpandedAbbreviation": "always",
-  "emmet.showSuggestionsAsSnippets": true,
   "emmet.triggerExpansionOnTab": true,
   "eslint.codeActionsOnSave.mode": "problems",
   "eslint.format.enable": true,
@@ -24,24 +15,44 @@
     "typescriptreact"
   ],
   "files.associations": {
-    "*.js": "javascriptreact"
+    "**/*.html": "html",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements",
+    "**/templates/**/*": "django-txt",
+    "**/templates/**/*.html": "django-html"
   },
   "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "files.trimFinalNewlines": true,
-  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/__pycache__": true
+  },
+  "git.alwaysSignOff": true,
+  "git.enableCommitSigning": true,
+  "html.format.indentHandlebars": true,
+  "html.format.templating": true,
   "prettier.arrowParens": "avoid",
   "prettier.jsxBracketSameLine": true,
-  "prettier.packageManager": "yarn",
   "prettier.tabWidth": 2,
-  "python.formatting.blackArgs": ["--line-length=79"],
+  "python.analysis.extraPaths": [],
+  "python.analysis.stubPath": "/home/seapagan/stubs",
+  "python.formatting.blackArgs": ["--line-length=80"],
   "python.formatting.provider": "black",
-  "python.linting.flake8Args": ["--max-line-length=79"],
+  "python.languageServer": "Pylance",
+  "python.linting.flake8Args": ["--max-line-length=80"],
   "python.linting.flake8Enabled": true,
-  "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
+  "python.linting.pydocstyleArgs": ["--convention=google"],
+  "python.linting.pylintArgs": [
+    "--load-plugins",
+    "pylint_django",
+    "--django-settings-module",
+    "myblog.settings"
+  ],
   "python.linting.pylintEnabled": true,
-  "python.pythonPath": "/home/seapagan/.pyenv/versions/uprn/bin/python",
-  "css.customData": ["./.vscode/custom.css-data.json"],
-  "explorer.compactFolders": false,
-  "git.enableCommitSigning": true
+  "python.linting.pylintUseMinimalCheckers": false,
+  "python.pythonPath": "/home/seapagan/.pyenv/versions/myblog/bin/python",
+  "python.sortImports.args": ["--profile", "black", "--src=${workspaceFolder}"],
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.promptToConfigure": false,
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "*_test.py"],
+  "python.testing.unittestEnabled": false,
+  "testExplorer.addToEditorContextMenu": true
 }
