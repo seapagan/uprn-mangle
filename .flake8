@@ -1,6 +1,0 @@
-[flake8]
-exclude =
-    api/migrations,
-    api/tests.py,
-    backend/settings.py,
-    manage.py,
