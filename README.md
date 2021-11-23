@@ -11,6 +11,17 @@ links for Google maps and OpenStreetMap.
 - Backend and mangle scripts written in Django (Python)
 - Basic Frontend written in React
 
+## Update 23rd November 2021
+The Backend and Frontend are going through rewrites and tidy right now, __they 
+are not really usable__. Also needed is to optimize the management command to 
+mangle and import the csv files, it is massively memory hungry - using the 
+entire Scotland dataset as an example, it will crash on less than 12GB (Physical +
+Swap) usable memory. This is a priority to fix, likely at the expense of further
+increasing the time take to process the files.
+
+The installation process documentation below needs to be updated to the new changes
+involving reading settings from the `.env` file.
+
 ## Installation
 
 On your local machine, you need a working copy of [Python][python] and
