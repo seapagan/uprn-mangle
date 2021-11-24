@@ -106,8 +106,7 @@ class Command(BaseCommand):
         input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 
         # loop over all the files if empty
-        for filename in tqdm(input_files, ncols=80, unit=" files"):
-
+        for filename in tqdm(input_files, ncols=80, unit=" files", leave=False):
             with open(filename) as fp:
                 # get the next line
                 line = fp.readline()
@@ -265,7 +264,11 @@ class Command(BaseCommand):
     def phase_three(self):
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
-            ["Phase 3", "Load to database", "This may take a LONG time!!"]
+            [
+                "Phase 3",
+                "Load to database",
+                "This may take a while depending on the amount of data.",
+            ]
         )
 
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
@@ -326,7 +329,6 @@ class Command(BaseCommand):
             ),
             ignore_index=True,
         )
-        # self.stdout.write(" Concating finished...")
 
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
@@ -386,7 +388,10 @@ class Command(BaseCommand):
         cursor.hide()
 
         # self.phase_one()
-        # self.phase_two()
-        self.phase_three()
+        self.phase_two()
+        # self.phase_three()
+
+        self.stdout.write("\n Finished!")
+        self.stdout.write(" You may now run the API Server.\n\n")
 
         cursor.show()
