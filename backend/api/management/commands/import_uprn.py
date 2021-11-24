@@ -47,7 +47,9 @@ class Command(BaseCommand):
 
     def chunker(self, seq, size):
         """Return chunks of the dataframe."""
-        return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+        # fmt: off
+        return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+        # fmt: on
 
     def insert_with_progress(self, df, engine):
         """Insert the data to SQL, with a progress bar."""
@@ -57,7 +59,6 @@ class Command(BaseCommand):
         chunksize = int(len(df) / 100)
         with tqdm(total=len(df), ncols=80, unit=" records") as pbar:
             for i, cdf in enumerate(self.chunker(df, chunksize)):
-                replace = "replace" if i == 0 else "append"
                 cdf.to_sql(
                     name=table_name,
                     con=conn,
@@ -140,7 +141,7 @@ class Command(BaseCommand):
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write("Reading in the required Records...")
+        self.stdout.write(" Reading in the required Records...")
 
         # get record 15 (STREETDESCRIPTOR)
         raw_record_15 = pd.read_csv(
@@ -346,22 +347,9 @@ class Command(BaseCommand):
         engine = create_engine(db_url)
 
         # now use the Pandas to_sql function to write to the database...
-        # this will take a long time (Scotland is 5.7 Million rows for example
-        # and this takes 25 minutes on my decent PC). There are quicker ways to
-        # dothis which I will look at later once the scripts are proven and
-        # trusted.
-        self.stdout.write(
-            " Exporting data to the Postgresql database "
-            "... this will take a while"
-        )
-        # ab_data.to_sql(
-        #     str(os.getenv("UPRN_DB_TABLE")),
-        #     engine,
-        #     if_exists="replace",
-        #     index=False,
-        #     chunksize=10000,
-        #     method="multi",
-        # )
+        # using the chunking function allows us to display a progress bar and
+        # actually seriously speeds up the process.
+        self.stdout.write(" Exporting data to the Postgresql database... ")
         self.insert_with_progress(ab_data, engine)
 
     def handle(self, *args, **options):
