@@ -1,35 +1,33 @@
-from django.core.management.base import BaseCommand
-
+"""Django command to format and import UPRN data to our database."""
 import os
 from glob import glob
 from pathlib import Path
 from shutil import copyfile
+
 import pandas as pd
-from sqlalchemy import create_engine
-from cursor import cursor
 
 # load constants from external file so we can share it
-from ..support.constants import (
-    RAW_DIR,
-    MANGLED_DIR,
-    HEADER_DIR,
+from api.management.support.constants import (
     CROSSREF_DIR,
     CROSSREF_NAME,
+    HEADER_DIR,
+    MANGLED_DIR,
     OUTPUT_DIR,
     OUTPUT_NAME,
-    DB_HOST,
-    DB_NAME,
-    DB_USER,
-    DB_PASSWORD,
-    DB_TABLE,
+    RAW_DIR,
 )
+from cursor import cursor
+from django.core.management.base import BaseCommand
+from sqlalchemy import create_engine
 
 
 class Command(BaseCommand):
+    """Base command class for import_uprn."""
+
     help = "Import raw data from CSV files into the database"
 
     def show_header(self, text_list, width=50):
-        """Show a section Header with an arbitrary number of lines
+        """Show a section Header with an arbitrary number of lines.
 
         Args:
             text_list (list): A list of Strings to be show, one per line
@@ -46,6 +44,11 @@ class Command(BaseCommand):
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
 
     def phase_one(self):
+        """Run phase 1 : Read in the raw CSV and mangle.
+
+        Take the raw CSV files and mangle them into a format that is easier to
+        work with, seperate files for each record type.
+        """
         self.show_header(["Phase1", "Mangle the Raw Files"])
 
         # loop through the header csv files and make a list of the codes and
@@ -56,7 +59,7 @@ class Command(BaseCommand):
         [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
 
         # set up the dictionary and create the skeleton files
-        CODE_LIST = {}
+        code_list = {}
         for filepath in header_files:
             # drop the path
             header_filename = os.path.basename(filepath)
@@ -64,7 +67,7 @@ class Command(BaseCommand):
             record = header_filename.split("Record_")[1].split("_")[0]
             filename = header_filename[:-11] + ".csv"
             # add it to the dictionary with the record as a key
-            CODE_LIST[record] = filename
+            code_list[record] = filename
 
             # create an empty file with the contents of the header file
             # we basically just copy the file over and rename
@@ -76,7 +79,6 @@ class Command(BaseCommand):
 
         # how many files to deal with?
         num_files = len(input_files)
-        # self.stdout.write(num_files)
 
         # loop over all the files if empty
         for index, filename in enumerate(input_files, start=1):
@@ -93,7 +95,7 @@ class Command(BaseCommand):
                     record = line.split(",")[0]
                     # get the correct output file for this record type
                     output_filename = os.path.join(
-                        MANGLED_DIR, CODE_LIST[record]
+                        MANGLED_DIR, code_list[record]
                     )
                     # append this line to the output file
                     with open(output_filename, "a") as f:
@@ -106,26 +108,27 @@ class Command(BaseCommand):
         self.stdout.write(" Done." + " " * 50 + "\n")
 
     def phase_two(self):
+        """Run phase 2 : Format as we need and export to CSV for next stage."""
         self.show_header(["Phase2", "Consolidate data"])
 
         # first we need to get a list of the sorted files.
         mangled_files = sorted(glob(os.path.join(MANGLED_DIR, "*.csv")))
 
         # get a list of the codes linked to their actual files
-        CODE_LIST = {}
+        code_list = {}
         for filepath in mangled_files:
             # drop the path
             filename = os.path.basename(filepath)
             # get the record number
             record = filename.split("Record_")[1].split("_")[0]
             # add it to the dictionary with the record as a key
-            CODE_LIST[record] = filename
+            code_list[record] = filename
 
         self.stdout.write("Reading in the required Records...")
 
         # get record 15 (STREETDESCRIPTOR)
         raw_record_15 = pd.read_csv(
-            os.path.join(MANGLED_DIR, CODE_LIST["15"]),
+            os.path.join(MANGLED_DIR, code_list["15"]),
             usecols=[
                 "USRN",
                 "STREET_DESCRIPTION",
@@ -138,7 +141,7 @@ class Command(BaseCommand):
 
         # get record 21 (BPLU)
         raw_record_21 = pd.read_csv(
-            os.path.join(MANGLED_DIR, CODE_LIST["21"]),
+            os.path.join(MANGLED_DIR, code_list["21"]),
             usecols=[
                 "UPRN",
                 "LOGICAL_STATUS",
@@ -155,7 +158,7 @@ class Command(BaseCommand):
 
         # get record 28 (DeliveryPointAddress)
         raw_record_28 = pd.read_csv(
-            os.path.join(MANGLED_DIR, CODE_LIST["28"]),
+            os.path.join(MANGLED_DIR, code_list["28"]),
             usecols=[
                 "UPRN",
                 "SUB_BUILDING_NAME",
@@ -171,7 +174,7 @@ class Command(BaseCommand):
 
         # get record 32 (CLASSIFICATION)
         raw_record_32 = pd.read_csv(
-            os.path.join(MANGLED_DIR, CODE_LIST["32"]),
+            os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
         raw_record_32.set_index(["UPRN"], inplace=True)
@@ -240,6 +243,7 @@ class Command(BaseCommand):
         final_output.to_csv(output_file, index_label="UPRN", sep="|")
 
     def phase_three(self):
+        """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
@@ -314,11 +318,11 @@ class Command(BaseCommand):
         # create a postgresql engine with SQLAlchemy that is linked to our
         # database
         db_url = "postgresql://{}:{}@{}:{}/{}".format(
-            DB_USER,
-            DB_PASSWORD,
-            DB_HOST,
-            5432,
-            DB_NAME,
+            str(os.getenv("UPRN_DB_USER")),
+            str(os.getenv("UPRN_DB_PASSWORD")),
+            str(os.getenv("UPRN_DB_HOST")),
+            str(os.getenv("UPRN_DB_PORT")),
+            str(os.getenv("UPRN_DB_NAME")),
         )
         engine = create_engine(db_url)
 
@@ -332,7 +336,7 @@ class Command(BaseCommand):
             "... this will take a while"
         )
         ab_data.to_sql(
-            DB_TABLE,
+            str(os.getenv("UPRN_DB_TABLE")),
             engine,
             if_exists="replace",
             index=False,
@@ -341,10 +345,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Actual function called by the command."""
         cursor.hide()
 
         self.phase_one()
-        self.phase_two()
-        self.phase_three()
+        # self.phase_two()
+        # self.phase_three()
 
         cursor.show()
