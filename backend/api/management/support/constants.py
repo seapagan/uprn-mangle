@@ -1,7 +1,8 @@
+"""Set some support constants etc we need for the import."""
 # get script path
 import os
-from pathlib import Path
 from inspect import getsourcefile
+from pathlib import Path
 
 # get our running path, then create the data_path from this.
 our_path = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
@@ -22,9 +23,9 @@ OUTPUT_NAME = "processed-addressbase.csv"
 # Database login stuff. These will eventually be put into ENV variables for
 # security in a real situation.
 # These already need to be setup in your Postgresql database.
-DB_HOST = "localhost"
-DB_NAME = "addressbase"
-DB_USER = "abuser"
-DB_PASSWORD = ".`)sA`=J|eyWd}8V~"
+# DB_HOST = "localhost"
+# DB_NAME = "addressbase"
+# DB_USER = "abuser"
+# DB_PASSWORD = "xx"
 # this table will be created in the script and dropped first if exists.
-DB_TABLE = "addressbase"
+# DB_TABLE = "addressbase"

@@ -31,7 +31,7 @@
   "prettier.arrowParens": "avoid",
   "prettier.jsxBracketSameLine": true,
   "prettier.tabWidth": 2,
-  "python.analysis.extraPaths": [],
+  "python.analysis.extraPaths": ["backend"],
   "python.analysis.stubPath": "/home/seapagan/stubs",
   "python.formatting.blackArgs": ["--line-length=80"],
   "python.formatting.provider": "black",
@@ -43,11 +43,11 @@
     "--load-plugins",
     "pylint_django",
     "--django-settings-module",
-    "myblog.settings"
+    "uprn.settings"
   ],
   "python.linting.pylintEnabled": true,
   "python.linting.pylintUseMinimalCheckers": false,
-  "python.pythonPath": "/home/seapagan/.pyenv/versions/myblog/bin/python",
+  "python.pythonPath": "/home/seapagan/.pyenv/versions/3.9.9/envs/uprn/bin/python",
   "python.sortImports.args": ["--profile", "black", "--src=${workspaceFolder}"],
   "python.testing.nosetestsEnabled": false,
   "python.testing.promptToConfigure": false,
