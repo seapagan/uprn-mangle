@@ -1,4 +1,5 @@
 """Django command to format and import UPRN data to our database."""
+import math
 import os
 from glob import glob
 from pathlib import Path
@@ -57,7 +58,9 @@ class Command(BaseCommand):
         conn = engine.connect()
         conn.execute(f"TRUNCATE TABLE {table_name}")
         chunksize = int(len(df) / 100)
-        with tqdm(total=len(df), ncols=80, unit=" records") as pbar:
+        with tqdm(
+            total=len(df), ncols=80, unit=" records", leave=False
+        ) as pbar:
             for i, cdf in enumerate(self.chunker(df, chunksize)):
                 cdf.to_sql(
                     name=table_name,
@@ -266,12 +269,23 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
+
+        # set a chunk size for reading the csv file
+        chunk_size = 1000
+
+        # work out number of rows in CVS, then calc # of chunks for the progress
+        # bar
+        number_of_rows = sum(
+            1 for row in open(os.path.join(OUTPUT_DIR, OUTPUT_NAME), "r")
+        )
+        number_of_chunks = math.ceil(number_of_rows / chunk_size)
+
         tp = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
             # lets spell out the exact column types for clarity
             na_filter=False,
             iterator=True,
-            chunksize=1000,
+            chunksize=chunk_size,
             sep="|",
             dtype={
                 "UPRN": "int",
@@ -300,7 +314,19 @@ class Command(BaseCommand):
                 "ADMINISTRATIVE_AREA": "str",
             },
         )
-        ab_data = pd.concat(tp, ignore_index=True)
+
+        # actually read each chunk and concat them into one dataframe
+        ab_data = pd.concat(
+            tqdm(
+                tp,
+                ncols=80,
+                total=number_of_chunks,
+                unit=" chunks",
+                leave=False,
+            ),
+            ignore_index=True,
+        )
+        # self.stdout.write(" Concating finished...")
 
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
@@ -310,6 +336,7 @@ class Command(BaseCommand):
         # doing this in 2 runs so we can sort out formatting in the first due
         # to any missing data.
         self.stdout.write(" Combining Address Fields...")
+        tqdm.pandas(desc="First Pass", ncols=80, leave=False, unit=" records")
         ab_data["FULL_ADDRESS"] = (
             ab_data["SUB_BUILDING_NAME"]
             .str.cat(
@@ -324,8 +351,10 @@ class Command(BaseCommand):
             )
             .str.strip()  # trim extra space
             .str.title()  # convert to Title Case
-        )
+        ).progress_apply(lambda x: x)
+
         # add the rest...
+        tqdm.pandas(desc="Second Pass", ncols=80, leave=False, unit=" records")
         ab_data["FULL_ADDRESS"] = (
             ab_data["FULL_ADDRESS"]
             .str.cat(ab_data["POST_TOWN"].str.title(), sep=", ")
@@ -333,7 +362,7 @@ class Command(BaseCommand):
                 ab_data["POSTCODE"], sep=", "
             )  # no Title mod for the Postcode
             .str.cat(ab_data["ADMINISTRATIVE_AREA"].str.title(), sep=", ")
-        )
+        ).progress_apply(lambda x: x)
 
         # create a postgresql engine with SQLAlchemy that is linked to our
         # database
@@ -349,7 +378,7 @@ class Command(BaseCommand):
         # now use the Pandas to_sql function to write to the database...
         # using the chunking function allows us to display a progress bar and
         # actually seriously speeds up the process.
-        self.stdout.write(" Exporting data to the Postgresql database... ")
+        self.stdout.write(" Loading data to the Postgresql database... ")
         self.insert_with_progress(ab_data, engine)
 
     def handle(self, *args, **options):
