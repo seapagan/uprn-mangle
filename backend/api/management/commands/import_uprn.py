@@ -45,6 +45,28 @@ class Command(BaseCommand):
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
         self.stdout.write("\n")
 
+    def chunker(self, seq, size):
+        """Return chunks of the dataframe."""
+        return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+
+    def insert_with_progress(self, df, engine):
+        """Insert the data to SQL, with a progress bar."""
+        table_name = str(os.getenv("UPRN_DB_TABLE"))
+        conn = engine.connect()
+        conn.execute(f"TRUNCATE TABLE {table_name}")
+        chunksize = int(len(df) / 100)
+        with tqdm(total=len(df), ncols=80, unit=" records") as pbar:
+            for i, cdf in enumerate(self.chunker(df, chunksize)):
+                replace = "replace" if i == 0 else "append"
+                cdf.to_sql(
+                    name=table_name,
+                    con=conn,
+                    if_exists="append",
+                    index=False,
+                )
+                pbar.update(chunksize)
+                tqdm._instances.clear()
+
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
 
@@ -243,10 +265,12 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
-        ab_data = pd.read_csv(
+        tp = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
             # lets spell out the exact column types for clarity
             na_filter=False,
+            iterator=True,
+            chunksize=1000,
             sep="|",
             dtype={
                 "UPRN": "int",
@@ -275,6 +299,7 @@ class Command(BaseCommand):
                 "ADMINISTRATIVE_AREA": "str",
             },
         )
+        ab_data = pd.concat(tp, ignore_index=True)
 
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
@@ -329,21 +354,22 @@ class Command(BaseCommand):
             " Exporting data to the Postgresql database "
             "... this will take a while"
         )
-        ab_data.to_sql(
-            str(os.getenv("UPRN_DB_TABLE")),
-            engine,
-            if_exists="replace",
-            index=False,
-            chunksize=10000,
-            method="multi",
-        )
+        # ab_data.to_sql(
+        #     str(os.getenv("UPRN_DB_TABLE")),
+        #     engine,
+        #     if_exists="replace",
+        #     index=False,
+        #     chunksize=10000,
+        #     method="multi",
+        # )
+        self.insert_with_progress(ab_data, engine)
 
     def handle(self, *args, **options):
         """Actual function called by the command."""
         cursor.hide()
 
-        self.phase_one()
-        self.phase_two()
+        # self.phase_one()
+        # self.phase_two()
         self.phase_three()
 
         cursor.show()
