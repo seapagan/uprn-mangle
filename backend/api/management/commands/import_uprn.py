@@ -19,6 +19,7 @@ from api.management.support.constants import (
 from cursor import cursor
 from django.core.management.base import BaseCommand
 from sqlalchemy import create_engine
+from tqdm import tqdm
 
 
 class Command(BaseCommand):
@@ -26,7 +27,7 @@ class Command(BaseCommand):
 
     help = "Import raw data from CSV files into the database"
 
-    def show_header(self, text_list, width=50):
+    def show_header(self, text_list, width=80):
         """Show a section Header with an arbitrary number of lines.
 
         Args:
@@ -42,6 +43,7 @@ class Command(BaseCommand):
                 )
             )
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
+        self.stdout.write("\n")
 
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
@@ -49,7 +51,7 @@ class Command(BaseCommand):
         Take the raw CSV files and mangle them into a format that is easier to
         work with, seperate files for each record type.
         """
-        self.show_header(["Phase1", "Mangle the Raw Files"])
+        self.show_header(["Phase 1", "Mangle the Raw Files"])
 
         # loop through the header csv files and make a list of the codes and
         # filenames. We are generating this dynamically in case it changes in
@@ -77,16 +79,9 @@ class Command(BaseCommand):
         # get list of all *csv to process
         input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 
-        # how many files to deal with?
-        num_files = len(input_files)
-
         # loop over all the files if empty
-        for index, filename in enumerate(input_files, start=1):
-            # print out a counter for the files we are working on...
-            self.stdout.write(
-                f" Dealing with file {index} of {num_files}".ljust(50, " "),
-                ending="\r",
-            )
+        for filename in tqdm(input_files, ncols=80, unit=" files"):
+
             with open(filename) as fp:
                 # get the next line
                 line = fp.readline()
@@ -105,11 +100,10 @@ class Command(BaseCommand):
                             # so is lacking a LF. Add one.
                             f.write("\n")
                     line = fp.readline()
-        self.stdout.write(" Done." + " " * 50 + "\n")
 
     def phase_two(self):
         """Run phase 2 : Format as we need and export to CSV for next stage."""
-        self.show_header(["Phase2", "Consolidate data"])
+        self.show_header(["Phase 2", "Consolidate data into one CSV."])
 
         # first we need to get a list of the sorted files.
         mangled_files = sorted(glob(os.path.join(MANGLED_DIR, "*.csv")))
@@ -245,7 +239,7 @@ class Command(BaseCommand):
     def phase_three(self):
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
-            ["Phase3", "Load to database", "This may take a LONG time!!"]
+            ["Phase 3", "Load to database", "This may take a LONG time!!"]
         )
 
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
@@ -349,7 +343,7 @@ class Command(BaseCommand):
         cursor.hide()
 
         self.phase_one()
-        # self.phase_two()
-        # self.phase_three()
+        self.phase_two()
+        self.phase_three()
 
         cursor.show()
