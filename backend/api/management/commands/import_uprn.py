@@ -143,7 +143,10 @@ class Command(BaseCommand):
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write(" Reading in the required Records...")
+        self.stdout.write(" Reading in the required Fields...")
+
+        # initialise the progress bar
+        progress = tqdm(total=4, ncols=80, leave=False)
 
         # get record 15 (STREETDESCRIPTOR)
         raw_record_15 = pd.read_csv(
@@ -157,6 +160,7 @@ class Command(BaseCommand):
             ],
             dtype={"USRN": "str"},
         )
+        progress.update()
 
         # get record 21 (BPLU)
         raw_record_21 = pd.read_csv(
@@ -174,6 +178,7 @@ class Command(BaseCommand):
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
         )
         raw_record_21.set_index(["UPRN"], inplace=True)
+        progress.update()
 
         # get record 28 (DeliveryPointAddress)
         raw_record_28 = pd.read_csv(
@@ -190,12 +195,15 @@ class Command(BaseCommand):
             dtype={"BUILDING_NUMBER": "str"},
         )
         raw_record_28.set_index(["UPRN"], inplace=True)
+        progress.update()
 
         # get record 32 (CLASSIFICATION)
         raw_record_32 = pd.read_csv(
             os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
+        progress.update()
+
         raw_record_32.set_index(["UPRN"], inplace=True)
         # record 32 has duplicate information for many UPRN, this will cause
         # the concat to fail. We are only interested in the ones that have the
@@ -204,13 +212,36 @@ class Command(BaseCommand):
             raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
         ]
 
+        progress.close()
         # now bring in the cross reference file to link UPRN to USRN
         self.stdout.write(" Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
-        cross_ref = pd.read_csv(
+
+        # set a chunk size for reading the csv file
+        chunk_size = 1000
+
+        # work out number of rows in CVS, then calc # of chunks for the progress
+        # bar
+        number_of_rows = sum(1 for row in open(cross_ref_file, "r"))
+        number_of_chunks = math.ceil(number_of_rows / chunk_size)
+
+        tp = pd.read_csv(
             cross_ref_file,
+            iterator=True,
+            chunksize=chunk_size,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
+        )
+
+        cross_ref = pd.concat(
+            tqdm(
+                tp,
+                ncols=80,
+                total=number_of_chunks,
+                unit=" chunks",
+                leave=False,
+            ),
+            ignore_index=True,
         )
 
         # lets rename these 2 headers to the better names
