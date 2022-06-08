@@ -62,8 +62,8 @@
       "error",
       {
         "groups": [
-          // ["^react$", "^next"],
-          ["^react+(|-dom|-router-dom)", "^next"],
+          ["^react$", "^next"],
+          ["^react-dom", "^react-router-dom"],
           ["^[a-z]"],
           // Packages starting with `@`
           ["^@"],

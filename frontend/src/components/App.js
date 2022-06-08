@@ -1,6 +1,9 @@
-import "../css/app.css";
+import React from "react";
+
 import Header from "./Header";
 import Search from "./Search";
+
+import "../css/app.css";
 
 function App() {
   return (
