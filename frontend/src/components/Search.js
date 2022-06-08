@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 
-import "../css/search.css";
 import Loading from "./Loading";
 import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
+
+import "../css/search.css";
 
 const Search = () => {
   const [searchString, setSearchString] = useState("");

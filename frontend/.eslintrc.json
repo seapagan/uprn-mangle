@@ -62,6 +62,7 @@
       "error",
       {
         "groups": [
+          ["react-app-polyfill"],
           ["^react$", "^next"],
           ["^react-dom", "^react-router-dom"],
           ["^[a-z]"],
