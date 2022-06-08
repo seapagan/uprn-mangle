@@ -1,6 +1,7 @@
 # UPRN Search Tool <!-- omit in toc -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
 <!-- TOC start -->
