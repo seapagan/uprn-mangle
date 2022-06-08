@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-import "../css/searchresults.css";
 import Pager from "./Pager";
 import ResultHeader from "./ResultHeader";
 import ResultItem from "./ResultItem";
+
+import "../css/searchresults.css";
 
 const SearchResults = ({ searchString }) => {
   // in here we will do the actual search, using the 'searchString' variable

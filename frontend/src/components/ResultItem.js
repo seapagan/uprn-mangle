@@ -1,10 +1,10 @@
 import React from "react";
-
 import { FaMap } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 
-import "../css/resultitem.css";
 import MapLink from "./MapLink";
+
+import "../css/resultitem.css";
 
 const ResultItem = ({ result }) => {
   const GoogleURL = `https://www.google.com/maps/dir/?api=1&destination=${result.latitude},${result.longitude}`;
