@@ -1,19 +1,20 @@
 {
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
   "autoDocstring.startOnNewLine": true,
+  "beautify.language": {
+    "html": ["htm", "html", "django-html"]
+  },
+  "cSpell.ignoreWords": ["myblog"],
+  "cSpell.language": "en-GB",
   "editor.formatOnPaste": false,
   "emmet.includeLanguages": {
     "django-html": "html"
   },
   "emmet.triggerExpansionOnTab": true,
-  "eslint.codeActionsOnSave.mode": "problems",
-  "eslint.format.enable": true,
-  "eslint.packageManager": "yarn",
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
   "files.associations": {
     "**/*.html": "html",
     "**/requirements{/**,*}.{txt,in}": "pip-requirements",
@@ -28,10 +29,7 @@
   "git.enableCommitSigning": true,
   "html.format.indentHandlebars": true,
   "html.format.templating": true,
-  "prettier.arrowParens": "avoid",
-  "prettier.jsxBracketSameLine": true,
-  "prettier.tabWidth": 2,
-  "python.analysis.extraPaths": ["backend"],
+  "python.analysis.extraPaths": [],
   "python.analysis.stubPath": "/home/seapagan/stubs",
   "python.formatting.blackArgs": ["--line-length=80"],
   "python.formatting.provider": "black",
@@ -43,16 +41,35 @@
     "--load-plugins",
     "pylint_django",
     "--django-settings-module",
-    "uprn.settings"
+    "myblog.settings"
   ],
   "python.linting.pylintEnabled": true,
   "python.linting.pylintUseMinimalCheckers": false,
-  "python.pythonPath": "/home/seapagan/.pyenv/versions/3.9.9/envs/uprn/bin/python",
+  "python.pythonPath": "/home/seapagan/.pyenv/versions/uprn/bin/python",
   "python.sortImports.args": ["--profile", "black", "--src=${workspaceFolder}"],
   "python.testing.nosetestsEnabled": false,
   "python.testing.promptToConfigure": false,
   "python.testing.pytestEnabled": false,
   "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "*_test.py"],
   "python.testing.unittestEnabled": false,
-  "testExplorer.addToEditorContextMenu": true
+  "testExplorer.addToEditorContextMenu": true,
+  "cSpell.words": ["attrib", "Hashicorp", "Heroku"],
+  "explorer.experimental.fileNesting.enabled": true,
+  "explorer.experimental.fileNesting.expand": false,
+  "explorer.experimental.fileNesting.patterns": {
+    "requirements.txt": ".coveragerc, .env.example, tox.ini, .python-version, pytest.ini, .gitignore"
+  },
+  "grammarly.overrides": [
+    {
+      "files": ["**/README.md"],
+      "config": {
+        "audience": "general",
+        "dialect": "british",
+        "domain": "technical",
+        "emotions": [],
+        "goals": ["inform"]
+      }
+    }
+  ],
+  "cSpell.enableFiletypes": ["!css", "!django-html"]
 }
