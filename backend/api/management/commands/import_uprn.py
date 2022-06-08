@@ -7,6 +7,12 @@ from shutil import copyfile
 
 import dask.dataframe as dd
 import pandas as pd
+from cursor import cursor
+from dask.diagnostics import ProgressBar
+from django.core.management.base import BaseCommand
+from sqlalchemy import create_engine
+from tqdm import tqdm
+from tqdm.dask import TqdmCallback
 
 # load constants from external file so we can share it
 from api.management.support.constants import (
@@ -18,12 +24,6 @@ from api.management.support.constants import (
     OUTPUT_NAME,
     RAW_DIR,
 )
-from cursor import cursor
-from dask.diagnostics import ProgressBar
-from django.core.management.base import BaseCommand
-from sqlalchemy import create_engine
-from tqdm import tqdm
-from tqdm.dask import TqdmCallback
 
 ProgressBar().register()
 
@@ -37,8 +37,8 @@ class Command(BaseCommand):
         """Show a section Header with an arbitrary number of lines.
 
         Args:
-            text_list (list): A list of Strings to be show, one per line
-            width (int, optional): Width to make the box. Defaults to 50.
+            text_list (list): A list of Strings to be shown, one per line
+            width (int, optional): Width to make the box. Defaults to 80.
         """
         divider = "-" * (width - 2)
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\n/" + divider + "\\"))
@@ -76,6 +76,10 @@ class Command(BaseCommand):
                 pbar.update(chunksize)
                 tqdm._instances.clear()
 
+    def get_record_from_filename(self, filename):
+        """return string of the record number from the filename."""
+        return filename.split("Record_")[1].split("_")[0]
+
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
 
@@ -83,6 +87,9 @@ class Command(BaseCommand):
         work with, seperate files for each record type.
         """
         self.show_header(["Phase 1", "Mangle the Raw Files"])
+
+        # we are only interested in the below list of codes
+        wanted_codes = [15, 21, 28, 32]
 
         # loop through the header csv files and make a list of the codes and
         # filenames. We are generating this dynamically in case it changes in
@@ -97,38 +104,34 @@ class Command(BaseCommand):
             # drop the path
             header_filename = os.path.basename(filepath)
             # get the record number
-            record = header_filename.split("Record_")[1].split("_")[0]
-            filename = header_filename[:-11] + ".csv"
-            # add it to the dictionary with the record as a key
-            code_list[record] = filename
+            record = self.get_record_from_filename(header_filename)
+            if int(record) in wanted_codes:
+                filename = header_filename[:-11] + ".csv"
+                # add it to the dictionary with the record as a key
+                code_list[record] = filename
 
-            # create an empty file with the contents of the header file
-            # we basically just copy the file over and rename
-            destpath = os.path.join(MANGLED_DIR, filename)
-            copyfile(filepath, destpath)
+                # create an empty file with the contents of the header file
+                # we basically just copy the file over and rename
+                destpath = os.path.join(MANGLED_DIR, filename)
+                copyfile(filepath, destpath)
 
         # get list of all *csv to process
         input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 
-        # loop over all the files if empty
+        # loop over the input CSV files, adding each line to the correct file
         for filename in tqdm(input_files, ncols=80, unit=" files", leave=False):
             with open(filename) as fp:
-                # get the next line
                 line = fp.readline()
                 while line:
-                    # get the record type
                     record = line.split(",")[0]
-                    # get the correct output file for this record type
-                    output_filename = os.path.join(
-                        MANGLED_DIR, code_list[record]
-                    )
-                    # append this line to the output file
-                    with open(output_filename, "a") as f:
-                        f.write(line)
-                        if record == "99":
-                            # record type 99 is always at the end of the file,
-                            # so is lacking a LF. Add one.
-                            f.write("\n")
+                    if int(record) in wanted_codes:
+                        output_filename = os.path.join(
+                            MANGLED_DIR, code_list[record]
+                        )
+                        with open(output_filename, "a") as f:
+                            f.write(line)
+                            # if record == "99":
+                            #     f.write("\n")
                     line = fp.readline()
 
     def phase_two(self):
@@ -404,8 +407,8 @@ class Command(BaseCommand):
         """Actual function called by the command."""
         cursor.hide()
 
-        # self.phase_one()
-        self.phase_two()
+        self.phase_one()
+        # self.phase_two()
         # self.phase_three()
 
         self.stdout.write("\n Finished!")
