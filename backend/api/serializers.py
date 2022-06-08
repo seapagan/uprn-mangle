@@ -1,5 +1,6 @@
-from .models import Addressbase
 from rest_framework import serializers
+
+from .models import Addressbase
 
 
 class AddressbaseSerializer(serializers.ModelSerializer):
