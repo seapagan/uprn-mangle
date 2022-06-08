@@ -1,5 +1,5 @@
 {
-  "cSpell.enableFiletypes": ["!json"],
+  "cSpell.enableFiletypes": ["!javascript", "!json", "!markdown"],
   "cSpell.words": ["fontawesome", "fortawesome", "reduxjs"],
   "css.customData": ["./.vscode/custom.css-data.json"],
   "editor.codeActionsOnSave": {
