@@ -91,54 +91,65 @@ class Command(BaseCommand):
         # we are only interested in the below list of codes
         wanted_codes = [15, 21, 28, 32]
 
-        # loop through the header csv files and make a list of the codes and
-        # filenames. We are generating this dynamically in case it changes in
-        # the future.
-        header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
-        # delete the current *.csv here first
-        [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
+        existing_files = [str(x) for x in list(Path(MANGLED_DIR).glob("*.csv"))]
+        if existing_files:
+            cursor.show()
+            choice = input(
+                "There are already files from this stage existing, "
+                "do you want to overwrite? (y/n) : "
+            ).lower()[0]
+            cursor.hide()
 
-        # set up the dictionary and create the skeleton files
-        code_list = {}
-        for filepath in header_files:
-            # drop the path
-            header_filename = os.path.basename(filepath)
-            # get the record number
-            record = self.get_record_from_filename(header_filename)
-            if int(record) in wanted_codes:
-                filename = header_filename[:-11] + ".csv"
-                # add it to the dictionary with the record as a key
-                code_list[record] = filename
+        if choice == "y":
+            self.stdout.write()
+            # loop through the header csv files and make a list of the codes and
+            # filenames. We are generating this dynamically in case it changes
+            # in the future.
+            header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
+            # delete the current *.csv here first
+            [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
 
-                # create an empty file with the contents of the header file
-                # we basically just copy the file over and rename
-                destpath = os.path.join(MANGLED_DIR, filename)
-                copyfile(filepath, destpath)
+            # set up the dictionary and create the skeleton files
+            code_list = {}
+            for filepath in header_files:
+                # drop the path
+                header_filename = os.path.basename(filepath)
+                # get the record number
+                record = self.get_record_from_filename(header_filename)
+                if int(record) in wanted_codes:
+                    filename = header_filename[:-11] + ".csv"
+                    # add it to the dictionary with the record as a key
+                    code_list[record] = filename
 
-        # get list of all *csv to process
-        input_files = glob(os.path.join(RAW_DIR, "*.csv"))
+                    # create an empty file with the contents of the header file
+                    # we basically just copy the file over and rename
+                    destpath = os.path.join(MANGLED_DIR, filename)
+                    copyfile(filepath, destpath)
 
-        # loop over the input CSV files, adding each line to the correct file
-        for filename in tqdm(
-            input_files,
-            ncols=80,
-            unit=" files",
-            leave=False,
-            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
-        ):
-            with open(filename) as fp:
-                line = fp.readline()
-                while line:
-                    record = line.split(",")[0]
-                    if int(record) in wanted_codes:
-                        output_filename = os.path.join(
-                            MANGLED_DIR, code_list[record]
-                        )
-                        with open(output_filename, "a") as f:
-                            f.write(line)
-                            # if record == "99":
-                            #     f.write("\n")
+            # get list of all *csv to process
+            input_files = glob(os.path.join(RAW_DIR, "*.csv"))
+
+            # loop over the raw CSV files, adding each line to the correct file
+            for filename in tqdm(
+                input_files,
+                ncols=80,
+                unit=" files",
+                leave=False,
+                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
+            ):
+                with open(filename) as fp:
                     line = fp.readline()
+                    while line:
+                        record = line.split(",")[0]
+                        if int(record) in wanted_codes:
+                            output_filename = os.path.join(
+                                MANGLED_DIR, code_list[record]
+                            )
+                            with open(output_filename, "a") as f:
+                                f.write(line)
+                                # if record == "99":
+                                #     f.write("\n")
+                        line = fp.readline()
 
     def phase_two(self):
         """Run phase 2 : Format as we need and export to CSV for next stage."""
