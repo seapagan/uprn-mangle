@@ -95,6 +95,13 @@ We also need several other data files that are provided for free by OS on their
      download the latest from OS [here][headers]. Download this file and replace
      all the existing CVS files in the `backend/data/header-files/` folder with
      those  in the zip file
+  3. Finally, run the following command to process the raw data and add it to
+     the database: `python manage.py import_uprn`
+
+Part 3 above can take a good long time and memory. I recommend you close any
+applications you are not using and even reboot your system before starting. If
+you are developing remotely using VSCode Remote SSH or similar, close VSCode and
+run from a plain terminal.
 
 ## Setup and run the Backend
 
