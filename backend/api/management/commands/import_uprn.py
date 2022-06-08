@@ -5,6 +5,7 @@ from glob import glob
 from pathlib import Path
 from shutil import copyfile
 
+import dask.dataframe as dd
 import pandas as pd
 
 # load constants from external file so we can share it
@@ -18,9 +19,13 @@ from api.management.support.constants import (
     RAW_DIR,
 )
 from cursor import cursor
+from dask.diagnostics import ProgressBar
 from django.core.management.base import BaseCommand
 from sqlalchemy import create_engine
 from tqdm import tqdm
+from tqdm.dask import TqdmCallback
+
+ProgressBar().register()
 
 
 class Command(BaseCommand):
@@ -145,11 +150,8 @@ class Command(BaseCommand):
 
         self.stdout.write(" Reading in the required Fields...")
 
-        # initialise the progress bar
-        progress = tqdm(total=4, ncols=80, leave=False)
-
         # get record 15 (STREETDESCRIPTOR)
-        raw_record_15 = pd.read_csv(
+        raw_record_15 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["15"]),
             usecols=[
                 "USRN",
@@ -160,10 +162,9 @@ class Command(BaseCommand):
             ],
             dtype={"USRN": "str"},
         )
-        progress.update()
 
         # get record 21 (BPLU)
-        raw_record_21 = pd.read_csv(
+        raw_record_21 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["21"]),
             usecols=[
                 "UPRN",
@@ -177,11 +178,10 @@ class Command(BaseCommand):
             ],
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
         )
-        raw_record_21.set_index(["UPRN"], inplace=True)
-        progress.update()
+        raw_record_21 = raw_record_21.set_index(["UPRN"])
 
         # get record 28 (DeliveryPointAddress)
-        raw_record_28 = pd.read_csv(
+        raw_record_28 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["28"]),
             usecols=[
                 "UPRN",
@@ -192,19 +192,17 @@ class Command(BaseCommand):
                 "POST_TOWN",
                 "POSTCODE",
             ],
-            dtype={"BUILDING_NUMBER": "str"},
+            dtype={"BUILDING_NUMBER": "str", "THOROUGHFARE": "str"},
         )
-        raw_record_28.set_index(["UPRN"], inplace=True)
-        progress.update()
+        raw_record_28 = raw_record_28.set_index(["UPRN"])
 
         # get record 32 (CLASSIFICATION)
-        raw_record_32 = pd.read_csv(
+        raw_record_32 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
-        progress.update()
 
-        raw_record_32.set_index(["UPRN"], inplace=True)
+        raw_record_32 = raw_record_32.set_index(["UPRN"])
         # record 32 has duplicate information for many UPRN, this will cause
         # the concat to fail. We are only interested in the ones that have the
         # scheme named : "AddressBase Premium Classification Scheme"
@@ -212,56 +210,44 @@ class Command(BaseCommand):
             raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
         ]
 
-        progress.close()
         # now bring in the cross reference file to link UPRN to USRN
         self.stdout.write(" Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
 
-        # set a chunk size for reading the csv file
-        chunk_size = 1000
-
-        # work out number of rows in CVS, then calc # of chunks for the progress
-        # bar
-        number_of_rows = sum(1 for row in open(cross_ref_file, "r"))
-        number_of_chunks = math.ceil(number_of_rows / chunk_size)
-
-        tp = pd.read_csv(
+        cross_ref = dd.read_csv(
             cross_ref_file,
-            iterator=True,
-            chunksize=chunk_size,
+            # iterator=True,
+            # chunksize=chunk_size,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
-        )
-
-        cross_ref = pd.concat(
-            tqdm(
-                tp,
-                ncols=80,
-                total=number_of_chunks,
-                unit=" chunks",
-                leave=False,
-            ),
-            ignore_index=True,
-        )
+        ).compute()
 
         # lets rename these 2 headers to the better names
-        cross_ref.rename(
-            columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"},
-            inplace=True,
+        self.stdout.write(" Start Rename")
+        # cross_ref = cross_ref.rename(
+        #     columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
+        # )
+        cross_ref.columns = cross_ref.columns.to_series().replace(
+            {"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
         )
+        self.stdout.write(" End Rename")
+        cross_ref.head()
 
+        exit()
         self.stdout.write(" Merging in the STREETDATA")
-        # concat the STREETDESCRIPTOR to the cross ref file in this step
-        merged_usrn = pd.merge(
-            cross_ref,
-            raw_record_15,
-            how="left",
-            left_on="USRN",
-            right_on="USRN",
-        )
+
+        with TqdmCallback(desc="compute"):
+            # concat the STREETDESCRIPTOR to the cross ref file in this step
+            merged_usrn = dd.merge(
+                cross_ref,
+                raw_record_15,
+                how="left",
+                left_on="USRN",
+                right_on="USRN",
+            ).compute()
 
         self.stdout.write(" Concating data ...")
-        chunk1 = pd.concat(
+        chunk1 = dd.concat(
             [
                 raw_record_28,
                 raw_record_21,
@@ -276,7 +262,7 @@ class Command(BaseCommand):
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
         self.stdout.write(" Merging in the Street data ...")
-        final_output = pd.merge(
+        final_output = dd.merge(
             chunk1,
             merged_usrn,
             how="left",
@@ -285,7 +271,7 @@ class Command(BaseCommand):
         )
 
         # set the index back onto the UPRN
-        final_output.set_index(["UPRN"], inplace=True)
+        final_output = final_output.set_index(["UPRN"])
 
         # finally, save the formatted data to a new CSV file.
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
