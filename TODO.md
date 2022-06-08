@@ -16,8 +16,8 @@
   asking (default).
 - Add the tsvector data and index once imported. When we use the Django ORM we
   can get this done automatically for each record.
-- ~~Put the constants, especially DB info into a .env file and use this instead
-  of hard coding.~~
+- ~~Put the constants, especially DB info into a .env file and use this instead of
+  hard coding.~~
 - Write the README File.
 - Add extra Django commands to recreate the tsvector, indexes etc.
 - Add authentication to the API (probably token based).

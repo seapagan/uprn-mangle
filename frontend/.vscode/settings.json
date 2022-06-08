@@ -1,0 +1,42 @@
+{
+  "cSpell.enableFiletypes": ["!javascript", "!json", "!markdown"],
+  "cSpell.words": ["fontawesome", "fortawesome", "reduxjs"],
+  "css.customData": ["./.vscode/custom.css-data.json"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.linkedEditing": true,
+  "editor.rulers": [80, 120],
+  "editor.snippetSuggestions": "top",
+  "editor.tabSize": 2,
+  "emmet.showAbbreviationSuggestions": true,
+  "emmet.showExpandedAbbreviation": "always",
+  "emmet.showSuggestionsAsSnippets": true,
+  "emmet.triggerExpansionOnTab": true,
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.format.enable": true,
+  "eslint.packageManager": "yarn",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "explorer.compactFolders": false,
+  "files.associations": {
+    "*.js": "javascriptreact"
+  },
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "git.enableCommitSigning": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.jsxBracketSameLine": true,
+  "prettier.packageManager": "yarn",
+  "prettier.tabWidth": 2,
+  "editor.folding": true
+}

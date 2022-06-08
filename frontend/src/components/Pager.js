@@ -18,6 +18,7 @@ const Pager = ({
 
   const getPathname = url => {
     const fullPath = new URL(url);
+
     return fullPath.pathname + fullPath.search;
   };
 
@@ -28,6 +29,7 @@ const Pager = ({
   const getCurrentPage = () => {
     const fullURL = new URL("http://localhost" + searchURL);
     const searchParams = fullURL.searchParams;
+
     return parseInt(searchParams.get("page")) || 1;
   };
 
@@ -44,11 +46,13 @@ const Pager = ({
         startValue = totalPages - howMany + 1;
       }
     }
+
     return Array.from({ length: howMany }, (x, index) => index + startValue);
   };
 
   // no pager needed for a single page of results...
   if (totalPages < 2) return null;
+
   // otherwise return the pager...
   return (
     <div className="pager-container">
