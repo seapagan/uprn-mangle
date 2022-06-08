@@ -1,17 +1,17 @@
-# UPRN Search Tool
+# UPRN Search Tool <!-- omit in toc -->
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
 <!-- TOC start -->
-- [UPRN Search Tool](#uprn-search-tool)
-  - [Update 8th June 2022](#update-8th-june-2022)
-  - [Installation](#installation)
-  - [Database Setup](#database-setup)
-  - [UPRN Data](#uprn-data)
-  - [Setup and run the Backend](#setup-and-run-the-backend)
-  - [Setup and run the Frontend](#setup-and-run-the-frontend)
-  - [Contributing to this project](#contributing-to-this-project)
-  - [License](#license)
+- [Update 8th June 2022](#update-8th-june-2022)
+- [Installation](#installation)
+- [Database Setup](#database-setup)
+- [UPRN Data](#uprn-data)
+- [Setup and run the Backend](#setup-and-run-the-backend)
+- [Setup and run the Frontend](#setup-and-run-the-frontend)
+- [Contributing to this project](#contributing-to-this-project)
+- [License](#license)
 <!-- TOC end -->
 
 This is a (work in progress) tool to take the Ordnance Survey '[Address Base
@@ -52,34 +52,38 @@ your local machine and switch to this new directory.
 
 You will also need a PostgreSQL database set up, with the `abuser` user and
 `addressbase` database, with the correct settings input to the `.env` file. You
-can copy the [.env.example](backend/.env.example) file and add your database
-connection settings.
+can copy then rename the [.env.example](backend/.env.example) file and add your
+database connection settings.
 
 ```ini
 # set up Database Users. We will be using Postgresql and this should already
 # exist with the correct user and password
-UPRN_DB_USER=
-UPRN_DB_PASSWORD=
+UPRN_DB_USER='mickey'
+UPRN_DB_PASSWORD='mouse'
 # actual database name for the UPRN data...
-UPRN_DB_NAME=
-UPRN_DB_HOST=
-UPRN_DB_PORT=
+UPRN_DB_NAME='addressbase_db'
+UPRN_DB_HOST='localhost'
+UPRN_DB_PORT='5432'
 # name of the table in the database that contains the UPRN data...
-UPRN_DB_TABLE=
+UPRN_DB_TABLE='addressbase'
 ```
 
 ## UPRN Data
 
-`To be updated`
+`To be added.`
 
 ## Setup and run the Backend
 
    1. In a terminal, change to the __backend__ directory and run
       `pip install -r requirements.txt`. This will install all the required
       dependencies.
-   2. In the same terminal and still in the __backend__ directory, run
+   2. Generate a new secret key, and add it to the `.env` file above. Go to
+      <https://djecrety.ir/> to generate a good one.
+   3. In the same terminal and still in the __backend__ directory, run
       `python manage.py migrate`
-   3. Finally run `python manage.py runserver`
+   4. Finally run `python manage.py runserver`
+
+The backend API will now be available at `http://localhost:8000/api/v1/`
 
 ## Setup and run the Frontend
 
@@ -89,9 +93,11 @@ UPRN_DB_TABLE=
       needed React.JS dependencies.
    2. Once complete, run `yarn start` to run the frontend.
 
-Both the above scripts must be kept running at all times. This is good enough
-for develpment but obviously use standard practices to run and harden the system
-for any production use.
+The Frontend can now be accessed at `http://localhost:3000`
+
+Running the Backend/Frontend directly is good enough for development but
+obviously use standard practices to run and harden the system for any production
+use.
 
 ## Contributing to this project
 
