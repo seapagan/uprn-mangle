@@ -71,5 +71,5 @@
       }
     }
   ],
-  "cSpell.enableFiletypes": ["!css", "!django-html"]
+  "cSpell.enableFiletypes": ["!css", "!django-html", "!python"]
 }
