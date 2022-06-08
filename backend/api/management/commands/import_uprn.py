@@ -119,7 +119,13 @@ class Command(BaseCommand):
         input_files = glob(os.path.join(RAW_DIR, "*.csv"))
 
         # loop over the input CSV files, adding each line to the correct file
-        for filename in tqdm(input_files, ncols=80, unit=" files", leave=False):
+        for filename in tqdm(
+            input_files,
+            ncols=80,
+            unit=" files",
+            leave=False,
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
+        ):
             with open(filename) as fp:
                 line = fp.readline()
                 while line:
