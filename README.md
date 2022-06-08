@@ -1,6 +1,8 @@
 # UPRN Search Tool <!-- omit in toc -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CodeQL](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml)
+[![Dependency Review](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml)
 
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
