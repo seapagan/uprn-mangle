@@ -6,15 +6,15 @@
 *.code-workspace
 
 # dont want to put the csv files into repo, copyrighted files
-backend/data/*/*.csv
+data/*/*.csv
 # but keep these header files for now.
-!backend/data/header-files/*.csv
+!data/header-files/*.csv
 # ignore the below dir .keep files used to store full data during tests...
-backend/data/raw-csv-full/.keep
-backend/data/raw-csv-small/.keep
+data/raw-csv-full/.keep
+data/raw-csv-small/.keep
 
 # ignore this PDF file, it comes with the cross-ref CSV
-backend/data/cross-ref-csv/BLPU_UPRN_Street_USRN_11_description.pdf
+data/cross-ref-csv/BLPU_UPRN_Street_USRN_11_description.pdf
 
 # Local History for Visual Studio Code
 .history/
