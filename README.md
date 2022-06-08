@@ -86,14 +86,14 @@ this project - to merge/prune/tidy them into a usable format for development.
 We also need several other data files that are provided for free by OS on their
 [OpenData][opendata] pages :
 
-  1. We need the 'BLPU UPRN Street USRN 11 data from the `OS Open Linked
+  1. We need the '**BLPU UPRN Street USRN 11**' data from the `OS Open Linked
      Identifiers` dataset. Download this, unzip and place the CSV file in the
      `backend/data/cross-ref-csv/` folder.
-  2. We need the header files for the ABP data; this allows us to parse the data
-     automatically. The project already contains the latest header files as of
-     June 2022, but if any changes cause the scripts to fail, you can download
-     the latest from OS [here][headers]. Download this file and replace all
-     the existing CVS files in the `backend/data/header-files/` folder with
+  2. We need the **header files** for the ABP data; this allows us to parse the
+     data automatically. The project already contains the latest header files as
+     of June 2022, but if any changes cause the scripts to fail, you can
+     download the latest from OS [here][headers]. Download this file and replace
+     all the existing CVS files in the `backend/data/header-files/` folder with
      those  in the zip file
 
 ## Setup and run the Backend
