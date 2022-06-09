@@ -25,7 +25,8 @@ from api.management.support.constants import (
     RAW_DIR,
 )
 
-ProgressBar().register()
+pbar = ProgressBar(minimum=0)
+pbar.register()
 
 
 class Command(BaseCommand):
@@ -77,7 +78,7 @@ class Command(BaseCommand):
                 tqdm._instances.clear()
 
     def get_record_from_filename(self, filename):
-        """return string of the record number from the filename."""
+        """Return the record number from the filename as a string."""
         return filename.split("Record_")[1].split("_")[0]
 
     def phase_one(self):
@@ -168,9 +169,10 @@ class Command(BaseCommand):
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write(" Reading in the required Fields...")
+        # self.stdout.write(" Reading in the required Fields...\n")
 
         # get record 15 (STREETDESCRIPTOR)
+        self.stdout.write("Reading Code 15: STREETDESCRIPTOR")
         raw_record_15 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["15"]),
             usecols=[
@@ -181,9 +183,10 @@ class Command(BaseCommand):
                 "ADMINISTRATIVE_AREA",
             ],
             dtype={"USRN": "str"},
-        )
+        ).compute()
 
         # get record 21 (BPLU)
+        self.stdout.write("Reading Code 21: BPLU")
         raw_record_21 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["21"]),
             usecols=[
@@ -197,10 +200,11 @@ class Command(BaseCommand):
                 "COUNTRY",
             ],
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
-        )
+        ).compute()
         raw_record_21 = raw_record_21.set_index(["UPRN"])
 
-        # get record 28 (DeliveryPointAddress)
+        # get record 28 (DELIVERYPOINTADDRESS)
+        self.stdout.write("Reading Code 28: DELIVERYPOINTADDRESS")
         raw_record_28 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["28"]),
             usecols=[
@@ -213,14 +217,15 @@ class Command(BaseCommand):
                 "POSTCODE",
             ],
             dtype={"BUILDING_NUMBER": "str", "THOROUGHFARE": "str"},
-        )
+        ).compute()
         raw_record_28 = raw_record_28.set_index(["UPRN"])
 
         # get record 32 (CLASSIFICATION)
+        self.stdout.write("Reading Code 32: CLASSIFICATION")
         raw_record_32 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
-        )
+        ).compute()
 
         raw_record_32 = raw_record_32.set_index(["UPRN"])
         # record 32 has duplicate information for many UPRN, this will cause
@@ -242,29 +247,24 @@ class Command(BaseCommand):
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
         ).compute()
 
-        # lets rename these 2 headers to the better names
-        self.stdout.write(" Start Rename")
-        # cross_ref = cross_ref.rename(
-        #     columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
-        # )
-        cross_ref.columns = cross_ref.columns.to_series().replace(
-            {"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
-        )
-        self.stdout.write(" End Rename")
-        cross_ref.head()
+        # lets rename these 2 headers to be better names
+        cross_ref.columns = ["URPN", "USRN"]
+        # print(cross_ref.head())
 
-        exit()
         self.stdout.write(" Merging in the STREETDATA")
 
-        with TqdmCallback(desc="compute"):
-            # concat the STREETDESCRIPTOR to the cross ref file in this step
-            merged_usrn = dd.merge(
-                cross_ref,
-                raw_record_15,
-                how="left",
-                left_on="USRN",
-                right_on="USRN",
-            ).compute()
+        # with TqdmCallback(desc="compute"):
+        # concat the STREETDESCRIPTOR to the cross ref file in this step
+        merged_usrn = dd.merge(
+            cross_ref,
+            raw_record_15,
+            how="left",
+            left_on="USRN",
+            right_on="USRN",
+        )
+
+        # print(merged_usrn.head())
+        print(cross_ref.head())
 
         self.stdout.write(" Concating data ...")
         chunk1 = dd.concat(
@@ -424,8 +424,8 @@ class Command(BaseCommand):
         """Actual function called by the command."""
         cursor.hide()
 
-        self.phase_one()
-        # self.phase_two()
+        # self.phase_one()
+        self.phase_two()
         # self.phase_three()
 
         self.stdout.write("\n Finished!")
