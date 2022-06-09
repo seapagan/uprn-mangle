@@ -18,7 +18,7 @@ class SearchViewSet(viewsets.ModelViewSet):
         # get the requested sort order, default to uprn if not specified.
         sort_order = self.request.query_params.get("order", "uprn")
 
-        print(sort_order)
+        # print(sort_order)
 
         # queryset = Addressbase.objects.all().order_by("uprn")[:20]
 
