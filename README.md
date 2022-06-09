@@ -7,7 +7,7 @@
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
 <!-- TOC start -->
-- [Update 8th June 2022](#update-8th-june-2022)
+- [Update 9th June 2022](#update-9th-june-2022)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [UPRN Data](#uprn-data)
@@ -21,16 +21,17 @@ This project is a (work in progress) tool to take the Ordnance Survey '[Address
 Base Premium][abp]' data and mangle it into a more usable form.
 
 The data is then loaded into a database and provided as an API (Using Django).
-Finally, a Frontend web app (written in React JS) will allow searching this data
-by address and return the UPRN and links for Google maps and OpenStreetMap.
+Finally, a Frontend web app (written in React JS) allows searching this data by
+address and returns the UPRN and address data with links for Google maps and
+OpenStreetMap.
 
 - Backend and mangle scripts in [Django][django] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 8th June 2022
+## Update 9th June 2022
 
-The Backend and Frontend are going through a rewrite and tidy right now but are
-still usable.
+The Backend and Frontend are going through a rewrite and tidy but are
+still usable (on the `main` branch anyway!).
 
 I have updated to use the latest Django 4 and React 18 while improving the
 configuration of development tooling such as Formatters and Linters for both
@@ -40,7 +41,14 @@ I am working to optimize the management command to mangle and import the CSV
 files as it is massively memory-hungry - using the entire Scotland dataset as an
 example, it will crash on less than 12GB (Physical + Swap) usable memory. This
 memory use is a priority to fix, likely at the expense of further increasing the
-time to process the files.
+time to process the files. However, if you work on smaller datasets, you will
+not see the same problem!
+
+Currently, work is going on in the `progress-bars` development branch, and I've
+made a start to optimize - stages 1 and 3 are a lot faster than the `main`
+branch and have progress bars for the slower bits. Stage 2 is still under work
+due to being more complicated to add progress bars to Pandas Merge and Concat
+functions.
 
 ## Installation
 
@@ -52,10 +60,13 @@ download the repository to your local machine and switch to this new directory.
 
 ## Database Setup
 
-You will also need a PostgreSQL database set up, with the `abuser` user and
-`addressbase` database, with the correct settings input to the `.env` file. You
-can copy then rename the [.env.example](backend/.env.example) file and add your
-database connection settings.
+You will also need a PostgreSQL database set up, with a user, password, and
+dedicated database, with the correct settings input to the `.env` file. The user
+should have full access to the specified database; It is good practice to create
+a specific Postgresql user that only has access to this database.
+
+You can copy then rename the [.env.example](backend/.env.example) file to `.env`
+and add your database connection settings.
 
 ```ini
 # set up Database Users. We will be using Postgresql and this should already
@@ -77,11 +88,12 @@ The data used for this project comes from the `AddressBase Premium` ( noted as
 you can apply for a **Data Exploration License** [here][osdel]. The DEL allows
 you to test and use the data in a limited way.
 
-I will assume you have a copy of ABP in **CSV** format for this App. Copy all
-the individual CSV files into the `backend/data/raw-csv/` folder.
+I assume you have a copy of ABP in **CSV** format for this App. Copy all the
+individual CSV files into the `backend/data/raw-csv/` folder.
 
-The data as provided is a bit of a mess; that was the original inspiration for
-this project - to merge/prune/tidy them into a usable format for development.
+The data provided by Ordnance Survey is a bit of a mess; that was the original
+inspiration for this project - to merge/prune/tidy them into a usable format for
+development.
 
 We also need several other data files that are provided for free by OS on their
 [OpenData][opendata] pages :
@@ -99,9 +111,9 @@ We also need several other data files that are provided for free by OS on their
      the database: `python manage.py import_uprn`
 
 Part 3 above can take a good long time and memory. I recommend you close any
-applications you are not using and even reboot your system before starting. If
-you are developing remotely using VSCode Remote SSH or similar, close VSCode and
-run from a plain terminal.
+applications you are not using and reboot your system before starting. If you
+are developing remotely using VSCode Remote SSH or similar, close VSCode and run
+from a plain terminal.
 
 ## Setup and run the Backend
 
@@ -125,14 +137,13 @@ The Back-end API will now be available at `http://localhost:8000/api/v1/`
 
 You can now access the Front-end at `http://localhost:3000`
 
-Running the Backend/Frontend from your terminal is good enough for development
-but do use standard practices to run and harden the system for any
-production use.
+Running the Backend/Frontend from your terminal is good enough for development,
+but use standard practices to run and harden the system for any production use.
 
 ## Contributing to this project
 
 While this is currently just a personal project and at a very early stage,
-contributions - especially Bug Reports are very welcome.
+contributions, especially Bug Reports,  are very welcome.
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
