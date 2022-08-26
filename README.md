@@ -7,7 +7,7 @@
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
 <!-- TOC start -->
-- [Update 8th June 2022](#update-8th-june-2022)
+- [Update 26th August 2022](#update-26th-august-2022)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [UPRN Data](#uprn-data)
@@ -27,10 +27,10 @@ by address and return the UPRN and links for Google maps and OpenStreetMap.
 - Backend and mangle scripts in [Django][django] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 8th June 2022
+## Update 26th August 2022
 
-The Backend and Frontend are going through a rewrite and tidy right now but are
-still usable.
+The Backend and Frontend are going through a rewrite and tidy right now but the
+`main` branch is untouched at the moment so is still usable (but slooooow).
 
 I have updated to use the latest Django 4 and React 18 while improving the
 configuration of development tooling such as Formatters and Linters for both
@@ -52,10 +52,13 @@ download the repository to your local machine and switch to this new directory.
 
 ## Database Setup
 
-You will also need a PostgreSQL database set up, with the `abuser` user and
-`addressbase` database, with the correct settings input to the `.env` file. You
-can copy then rename the [.env.example](backend/.env.example) file and add your
-database connection settings.
+You will also need a PostgreSQL database set up, with a user, password, and
+dedicated database, with the correct settings input to the `.env` file. The user
+should have full access to the specified database; It is good practice to create
+a specific Postgresql user that only has access to this database.
+
+You can copy then rename the [.env.example](backend/.env.example) file to `.env`
+and add your database connection settings.
 
 ```ini
 # set up Database Users. We will be using Postgresql and this should already
@@ -80,8 +83,9 @@ you to test and use the data in a limited way.
 I will assume you have a copy of ABP in **CSV** format for this App. Copy all
 the individual CSV files into the `backend/data/raw-csv/` folder.
 
-The data as provided is a bit of a mess; that was the original inspiration for
-this project - to merge/prune/tidy them into a usable format for development.
+The data provided by Ordnance Survey is a bit of a mess; that was the original
+inspiration for this project - to merge/prune/tidy them into a usable format for
+development.
 
 We also need several other data files that are provided for free by OS on their
 [OpenData][opendata] pages :
@@ -95,6 +99,13 @@ We also need several other data files that are provided for free by OS on their
      download the latest from OS [here][headers]. Download this file and replace
      all the existing CVS files in the `backend/data/header-files/` folder with
      those  in the zip file
+  3. Finally, run the following command to process the raw data and add it to
+     the database: `python manage.py import_uprn`
+
+Part 3 above can take a good long time and memory. I recommend you close any
+applications you are not using and reboot your system before starting. If you
+are developing remotely using VSCode Remote SSH or similar, close VSCode and run
+from a plain terminal.
 
 ## Setup and run the Backend
 
@@ -118,14 +129,13 @@ The Back-end API will now be available at `http://localhost:8000/api/v1/`
 
 You can now access the Front-end at `http://localhost:3000`
 
-Running the Backend/Frontend from your terminal is good enough for development
-but do use standard practices to run and harden the system for any
-production use.
+Running the Backend/Frontend from your terminal is good enough for development,
+but use standard practices to run and harden the system for any production use.
 
 ## Contributing to this project
 
 While this is currently just a personal project and at a very early stage,
-contributions - especially Bug Reports are very welcome.
+contributions, especially Bug Reports, are very welcome.
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)

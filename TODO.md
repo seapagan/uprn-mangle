@@ -2,6 +2,8 @@
 
 ## Backend
 
+- Move from `Pandas` to `Dask` `DataFrames`, to help reading the very large
+  datafiles using multi-cpus
 - Drop any demolished buildings in the combine stage? It may be useful to have
   these though, and we can always flag them as demolished in the web app.
 - Fix the missing cursor on script abort.
