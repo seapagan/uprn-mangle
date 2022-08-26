@@ -5,17 +5,11 @@ from pathlib import Path
 from shutil import copyfile
 
 import pandas as pd
-
 # load constants from external file so we can share it
-from api.management.support.constants import (
-    CROSSREF_DIR,
-    CROSSREF_NAME,
-    HEADER_DIR,
-    MANGLED_DIR,
-    OUTPUT_DIR,
-    OUTPUT_NAME,
-    RAW_DIR,
-)
+from api.management.support.constants import (CROSSREF_DIR, CROSSREF_NAME,
+                                              HEADER_DIR, MANGLED_DIR,
+                                              OUTPUT_DIR, OUTPUT_NAME, RAW_DIR,
+                                              WANTED_CODES)
 from cursor import cursor
 from django.core.management.base import BaseCommand
 from sqlalchemy import create_engine
@@ -26,11 +20,11 @@ class Command(BaseCommand):
 
     help = "Import raw data from CSV files into the database"
 
-    def show_header(self, text_list, width=50):
+    def show_header(self, text_list, width=80):
         """Show a section Header with an arbitrary number of lines.
 
         Args:
-            text_list (list): A list of Strings to be show, one per line
+            text_list (list): A list of Strings to be shown, one per line
             width (int, optional): Width to make the box. Defaults to 50.
         """
         divider = "-" * (width - 2)
@@ -43,13 +37,16 @@ class Command(BaseCommand):
             )
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
 
+# ---------------------------------------------------------------------------- #
+#                                    Phase 1                                   #
+# ---------------------------------------------------------------------------- #
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
 
         Take the raw CSV files and mangle them into a format that is easier to
         work with, seperate files for each record type.
         """
-        self.show_header(["Phase1", "Mangle the Raw Files"])
+        self.show_header(["Phase 1", "Extract the required codes from the Raw Files"])
 
         # loop through the header csv files and make a list of the codes and
         # filenames. We are generating this dynamically in case it changes in
@@ -64,49 +61,38 @@ class Command(BaseCommand):
             # drop the path
             header_filename = os.path.basename(filepath)
             # get the record number
-            record = header_filename.split("Record_")[1].split("_")[0]
-            filename = header_filename[:-11] + ".csv"
-            # add it to the dictionary with the record as a key
-            code_list[record] = filename
+            record_type = header_filename.split("Record_")[1].split("_")[0]
+            if int(record_type) in WANTED_CODES:
+                filename = header_filename[:-11] + ".csv"
+                # add it to the dictionary with the record as a key
+                code_list[record_type] = filename
 
-            # create an empty file with the contents of the header file
-            # we basically just copy the file over and rename
-            destpath = os.path.join(MANGLED_DIR, filename)
-            copyfile(filepath, destpath)
+                destpath = os.path.join(MANGLED_DIR, filename)
+                copyfile(filepath, destpath)
 
-        # get list of all *csv to process
         input_files = glob(os.path.join(RAW_DIR, "*.csv"))
-
-        # how many files to deal with?
         num_files = len(input_files)
 
-        # loop over all the files if empty
         for index, filename in enumerate(input_files, start=1):
-            # print out a counter for the files we are working on...
             self.stdout.write(
-                f" Dealing with file {index} of {num_files}".ljust(50, " "),
+                f" -> Dealing with file {index} of {num_files}".ljust(80, " "),
                 ending="\r",
             )
             with open(filename) as fp:
-                # get the next line
                 line = fp.readline()
                 while line:
-                    # get the record type
-                    record = line.split(",")[0]
-                    # get the correct output file for this record type
-                    output_filename = os.path.join(
-                        MANGLED_DIR, code_list[record]
-                    )
-                    # append this line to the output file
-                    with open(output_filename, "a") as f:
-                        f.write(line)
-                        if record == "99":
-                            # record type 99 is always at the end of the file,
-                            # so is lacking a LF. Add one.
-                            f.write("\n")
+                    record_type = line.split(",")[0]
+                    if int(record_type) in WANTED_CODES:
+                        output_filename = os.path.join(
+                            MANGLED_DIR, code_list[record_type]
+                        )
+                        with open(output_filename, "a") as f:
+                            f.write(line)
                     line = fp.readline()
-        self.stdout.write(" Done." + " " * 50 + "\n")
 
+# ---------------------------------------------------------------------------- #
+#                                    phase 2                                   #
+# ---------------------------------------------------------------------------- #
     def phase_two(self):
         """Run phase 2 : Format as we need and export to CSV for next stage."""
         self.show_header(["Phase2", "Consolidate data"])
@@ -242,6 +228,9 @@ class Command(BaseCommand):
         self.stdout.write(f"\n Saving to {output_file}")
         final_output.to_csv(output_file, index_label="UPRN", sep="|")
 
+# ---------------------------------------------------------------------------- #
+#                                    Phase 3                                   #
+# ---------------------------------------------------------------------------- #
     def phase_three(self):
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
@@ -267,7 +256,7 @@ class Command(BaseCommand):
                 # values
                 "BLPU_STATE": "str",
                 "X_COORDINATE": "double",
-                "X_COORDINATE": "double",
+                "Y_COORDINATE": "double",
                 "LATITUDE": "double",
                 "LONGITUDE": "double",
                 "COUNTRY": "str",
