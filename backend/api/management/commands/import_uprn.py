@@ -4,6 +4,7 @@ from glob import glob
 from pathlib import Path
 from shutil import copyfile
 
+import dask.dataframe as dd
 import pandas as pd
 # load constants from external file so we can share it
 from api.management.support.constants import (CROSSREF_DIR, CROSSREF_NAME,
@@ -110,10 +111,10 @@ class Command(BaseCommand):
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write("Reading in the required Records...")
+        self.stdout.write(" -> Reading in the required Records")
 
         # get record 15 (STREETDESCRIPTOR)
-        raw_record_15 = pd.read_csv(
+        raw_record_15 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["15"]),
             usecols=[
                 "USRN",
@@ -126,7 +127,7 @@ class Command(BaseCommand):
         )
 
         # get record 21 (BPLU)
-        raw_record_21 = pd.read_csv(
+        raw_record_21 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["21"]),
             usecols=[
                 "UPRN",
@@ -140,10 +141,9 @@ class Command(BaseCommand):
             ],
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
         )
-        raw_record_21.set_index(["UPRN"], inplace=True)
 
         # get record 28 (DeliveryPointAddress)
-        raw_record_28 = pd.read_csv(
+        raw_record_28 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["28"]),
             usecols=[
                 "UPRN",
@@ -154,41 +154,36 @@ class Command(BaseCommand):
                 "POST_TOWN",
                 "POSTCODE",
             ],
-            dtype={"BUILDING_NUMBER": "str"},
+            dtype={"BUILDING_NUMBER": "str",'THOROUGHFARE': 'str'},
         )
-        raw_record_28.set_index(["UPRN"], inplace=True)
 
         # get record 32 (CLASSIFICATION)
-        raw_record_32 = pd.read_csv(
+        raw_record_32 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
-        raw_record_32.set_index(["UPRN"], inplace=True)
-        # record 32 has duplicate information for many UPRN, this will cause
-        # the concat to fail. We are only interested in the ones that have the
-        # scheme named : "AddressBase Premium Classification Scheme"
+
         filtered_record_32 = raw_record_32[
             raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
         ]
 
         # now bring in the cross reference file to link UPRN to USRN
-        self.stdout.write(" Reading the UPRN <-> USRN reference file")
+        self.stdout.write(" -> Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
-        cross_ref = pd.read_csv(
+        cross_ref = dd.read_csv(
             cross_ref_file,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
         )
 
         # lets rename these 2 headers to the better names
-        cross_ref.rename(
+        cross_ref = cross_ref.rename(
             columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"},
-            inplace=True,
         )
 
-        self.stdout.write(" Merging in the STREETDATA")
+        self.stdout.write(" -> Merging in the STREETDATA")
         # concat the STREETDESCRIPTOR to the cross ref file in this step
-        merged_usrn = pd.merge(
+        merged_usrn = dd.merge(
             cross_ref,
             raw_record_15,
             how="left",
@@ -196,23 +191,23 @@ class Command(BaseCommand):
             right_on="USRN",
         )
 
-        self.stdout.write(" Concating data ...")
-        chunk1 = pd.concat(
+        self.stdout.write(" -> Concating data")
+        chunk1 = dd.concat(
             [
                 raw_record_28,
                 raw_record_21,
                 filtered_record_32.drop(columns=["CLASS_SCHEME"]),
             ],
-            axis=1,
         )
 
         # we dont want it indexed for the next stage, and need to clearly
         # specifiy the UPRN datatype
-        chunk1.reset_index(inplace=True)
+        # chunk1.reset_index(inplace=True)
+        # chunk1 = chunk1.reset_index()
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
-        self.stdout.write(" Merging in the Street data ...")
-        final_output = pd.merge(
+        self.stdout.write(" -> Merging all data to one file")
+        final_output = dd.merge(
             chunk1,
             merged_usrn,
             how="left",
@@ -220,13 +215,11 @@ class Command(BaseCommand):
             right_on="UPRN",
         )
 
-        # set the index back onto the UPRN
-        final_output.set_index(["UPRN"], inplace=True)
-
         # finally, save the formatted data to a new CSV file.
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
         self.stdout.write(f"\n Saving to {output_file}")
-        final_output.to_csv(output_file, index_label="UPRN", sep="|")
+        # final_output.to_csv(output_file, sep="|", single_file=True, kwargs={"index": False})
+        final_output.to_csv(output_file, index_label="IGNORE",sep="|", single_file=True)
 
 # ---------------------------------------------------------------------------- #
 #                                    Phase 3                                   #
@@ -240,7 +233,7 @@ class Command(BaseCommand):
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
         ab_data = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
-            # lets spell out the exact column types for clarity
+            # let's spell out the exact column types for clarity
             na_filter=False,
             sep="|",
             dtype={
@@ -270,7 +263,7 @@ class Command(BaseCommand):
                 "ADMINISTRATIVE_AREA": "str",
             },
         )
-
+        exit(0)
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
         ab_data.insert(1, "FULL_ADDRESS", "")
@@ -337,8 +330,8 @@ class Command(BaseCommand):
         """Actual function called by the command."""
         cursor.hide()
 
-        self.phase_one()
+        # self.phase_one()
         # self.phase_two()
-        # self.phase_three()
+        self.phase_three()
 
         cursor.show()
