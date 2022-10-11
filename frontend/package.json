@@ -44,7 +44,7 @@
   "devDependencies": {
     "eslint": "^8.24.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-simple-import-sort": "^8.0.0",
     "sass": "^1.55.0"
   }
