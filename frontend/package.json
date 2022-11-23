@@ -42,7 +42,7 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^8.24.0",
+    "eslint": "^8.28.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-simple-import-sort": "^8.0.0",
