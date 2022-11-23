@@ -6,14 +6,21 @@ from shutil import copyfile
 
 import dask.dataframe as dd
 import pandas as pd
-# load constants from external file so we can share it
-from api.management.support.constants import (CROSSREF_DIR, CROSSREF_NAME,
-                                              HEADER_DIR, MANGLED_DIR,
-                                              OUTPUT_DIR, OUTPUT_NAME, RAW_DIR,
-                                              WANTED_CODES)
 from cursor import cursor
 from django.core.management.base import BaseCommand
 from sqlalchemy import create_engine
+
+# load constants from external file so we can share it
+from api.management.support.constants import (
+    CROSSREF_DIR,
+    CROSSREF_NAME,
+    HEADER_DIR,
+    MANGLED_DIR,
+    OUTPUT_DIR,
+    OUTPUT_NAME,
+    RAW_DIR,
+    WANTED_CODES,
+)
 
 
 class Command(BaseCommand):
@@ -38,16 +45,18 @@ class Command(BaseCommand):
             )
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
 
-# ---------------------------------------------------------------------------- #
-#                                    Phase 1                                   #
-# ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
+    #                                  Phase 1                                 #
+    # ------------------------------------------------------------------------ #
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
 
         Take the raw CSV files and mangle them into a format that is easier to
         work with, seperate files for each record type.
         """
-        self.show_header(["Phase 1", "Extract the required codes from the Raw Files"])
+        self.show_header(
+            ["Phase 1", "Extract the required codes from the Raw Files"]
+        )
 
         # loop through the header csv files and make a list of the codes and
         # filenames. We are generating this dynamically in case it changes in
@@ -91,9 +100,9 @@ class Command(BaseCommand):
                             f.write(line)
                     line = fp.readline()
 
-# ---------------------------------------------------------------------------- #
-#                                    phase 2                                   #
-# ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
+    #                                  Phase 2                                 #
+    # ------------------------------------------------------------------------ #
     def phase_two(self):
         """Run phase 2 : Format as we need and export to CSV for next stage."""
         self.show_header(["Phase2", "Consolidate data"])
@@ -154,7 +163,11 @@ class Command(BaseCommand):
                 "POST_TOWN",
                 "POSTCODE",
             ],
-            dtype={"BUILDING_NUMBER": "str",'THOROUGHFARE': 'str'},
+            dtype={
+                "BUILDING_NUMBER": "str",
+                "THOROUGHFARE": "str",
+                "SUB_BUILDING_NAME": "str",
+            },
         )
 
         # get record 32 (CLASSIFICATION)
@@ -219,11 +232,13 @@ class Command(BaseCommand):
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
         self.stdout.write(f"\n Saving to {output_file}")
         # final_output.to_csv(output_file, sep="|", single_file=True, kwargs={"index": False})
-        final_output.to_csv(output_file, index_label="IGNORE",sep="|", single_file=True)
+        final_output.to_csv(
+            output_file, index_label="IGNORE", sep="|", single_file=True
+        )
 
-# ---------------------------------------------------------------------------- #
-#                                    Phase 3                                   #
-# ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
+    #                                  Phase 3                                 #
+    # ------------------------------------------------------------------------ #
     def phase_three(self):
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
@@ -237,30 +252,30 @@ class Command(BaseCommand):
             na_filter=False,
             sep="|",
             dtype={
-                "UPRN": "int",
-                "SUB_BUILDING_NAME": "str",
-                "BUILDING_NAME": "str",
-                "BUILDING_NUMBER": "str",
-                "THOROUGHFARE": "str",
-                "POST_TOWN": "str",
-                "POSTCODE": "str",
-                "LOGICAL_STATUS": "int",
-                # needs to be a string as annoyingly the data includes null
-                # values
-                "BLPU_STATE": "str",
-                "X_COORDINATE": "double",
-                "Y_COORDINATE": "double",
-                "LATITUDE": "double",
-                "LONGITUDE": "double",
-                "COUNTRY": "str",
-                "CLASSIFICATION_CODE": "str",
-                # also contains Null values for demolished buildings so must
-                # be a string
-                "USRN": "str",
-                "STREET_DESCRIPTION": "str",
-                "LOCALITY": "str",
-                "TOWN_NAME": "str",
-                "ADMINISTRATIVE_AREA": "str",
+                #     "UPRN": "int",
+                #     "SUB_BUILDING_NAME": "str",
+                #     "BUILDING_NAME": "str",
+                #     "BUILDING_NUMBER": "str",
+                #     "THOROUGHFARE": "str",
+                #     "POST_TOWN": "str",
+                # "POSTCODE": "str",
+                "LOGICAL_STATUS": "str",
+                #     # needs to be a string as annoyingly the data includes null
+                #     # values
+                # "BLPU_STATE": "str",
+                # "X_COORDINATE": "double",
+                # "Y_COORDINATE": "double",
+                # "LATITUDE": "double",
+                # "LONGITUDE": "double",
+                #     "COUNTRY": "str",
+                #     "CLASSIFICATION_CODE": "str",
+                #     # also contains Null values for demolished buildings so must
+                #     # be a string
+                #     "USRN": "str",
+                #     "STREET_DESCRIPTION": "str",
+                #     "LOCALITY": "str",
+                #     "TOWN_NAME": "str",
+                #     "ADMINISTRATIVE_AREA": "str",
             },
         )
         exit(0)
