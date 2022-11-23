@@ -1,10 +1,18 @@
 """Django command to format and import UPRN data to our database."""
+import math
 import os
 from glob import glob
 from pathlib import Path
 from shutil import copyfile
 
+import dask.dataframe as dd
 import pandas as pd
+from cursor import cursor
+from dask.diagnostics import ProgressBar
+from django.core.management.base import BaseCommand
+from sqlalchemy import create_engine
+from tqdm import tqdm
+from tqdm.dask import TqdmCallback
 
 # load constants from external file so we can share it
 from api.management.support.constants import (
@@ -16,9 +24,9 @@ from api.management.support.constants import (
     OUTPUT_NAME,
     RAW_DIR,
 )
-from cursor import cursor
-from django.core.management.base import BaseCommand
-from sqlalchemy import create_engine
+
+pbar = ProgressBar(minimum=0)
+pbar.register()
 
 
 class Command(BaseCommand):
@@ -26,12 +34,12 @@ class Command(BaseCommand):
 
     help = "Import raw data from CSV files into the database"
 
-    def show_header(self, text_list, width=50):
+    def show_header(self, text_list, width=80):
         """Show a section Header with an arbitrary number of lines.
 
         Args:
-            text_list (list): A list of Strings to be show, one per line
-            width (int, optional): Width to make the box. Defaults to 50.
+            text_list (list): A list of Strings to be shown, one per line
+            width (int, optional): Width to make the box. Defaults to 80.
         """
         divider = "-" * (width - 2)
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\n/" + divider + "\\"))
@@ -42,6 +50,36 @@ class Command(BaseCommand):
                 )
             )
         self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
+        self.stdout.write("\n")
+
+    def chunker(self, seq, size):
+        """Return chunks of the dataframe."""
+        # fmt: off
+        return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+        # fmt: on
+
+    def insert_with_progress(self, df, engine):
+        """Insert the data to SQL, with a progress bar."""
+        table_name = str(os.getenv("UPRN_DB_TABLE"))
+        conn = engine.connect()
+        conn.execute(f"TRUNCATE TABLE {table_name}")
+        chunksize = int(len(df) / 100)
+        with tqdm(
+            total=len(df), ncols=80, unit=" records", leave=False
+        ) as pbar:
+            for i, cdf in enumerate(self.chunker(df, chunksize)):
+                cdf.to_sql(
+                    name=table_name,
+                    con=conn,
+                    if_exists="append",
+                    index=False,
+                )
+                pbar.update(chunksize)
+                tqdm._instances.clear()
+
+    def get_record_from_filename(self, filename):
+        """Return the record number from the filename as a string."""
+        return filename.split("Record_")[1].split("_")[0]
 
     def phase_one(self):
         """Run phase 1 : Read in the raw CSV and mangle.
@@ -49,67 +87,74 @@ class Command(BaseCommand):
         Take the raw CSV files and mangle them into a format that is easier to
         work with, seperate files for each record type.
         """
-        self.show_header(["Phase1", "Mangle the Raw Files"])
+        self.show_header(["Phase 1", "Mangle the Raw Files"])
 
-        # loop through the header csv files and make a list of the codes and
-        # filenames. We are generating this dynamically in case it changes in
-        # the future.
-        header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
-        # delete the current *.csv here first
-        [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
+        # we are only interested in the below list of codes
+        wanted_codes = [15, 21, 28, 32]
 
-        # set up the dictionary and create the skeleton files
-        code_list = {}
-        for filepath in header_files:
-            # drop the path
-            header_filename = os.path.basename(filepath)
-            # get the record number
-            record = header_filename.split("Record_")[1].split("_")[0]
-            filename = header_filename[:-11] + ".csv"
-            # add it to the dictionary with the record as a key
-            code_list[record] = filename
+        existing_files = [str(x) for x in list(Path(MANGLED_DIR).glob("*.csv"))]
+        if existing_files:
+            cursor.show()
+            choice = input(
+                "There are already files from this stage existing, "
+                "do you want to overwrite? (y/n) : "
+            ).lower()[0]
+            cursor.hide()
 
-            # create an empty file with the contents of the header file
-            # we basically just copy the file over and rename
-            destpath = os.path.join(MANGLED_DIR, filename)
-            copyfile(filepath, destpath)
+        if choice == "y":
+            self.stdout.write()
+            # loop through the header csv files and make a list of the codes and
+            # filenames. We are generating this dynamically in case it changes
+            # in the future.
+            header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
+            # delete the current *.csv here first
+            [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
 
-        # get list of all *csv to process
-        input_files = glob(os.path.join(RAW_DIR, "*.csv"))
+            # set up the dictionary and create the skeleton files
+            code_list = {}
+            for filepath in header_files:
+                # drop the path
+                header_filename = os.path.basename(filepath)
+                # get the record number
+                record = self.get_record_from_filename(header_filename)
+                if int(record) in wanted_codes:
+                    filename = header_filename[:-11] + ".csv"
+                    # add it to the dictionary with the record as a key
+                    code_list[record] = filename
 
-        # how many files to deal with?
-        num_files = len(input_files)
+                    # create an empty file with the contents of the header file
+                    # we basically just copy the file over and rename
+                    destpath = os.path.join(MANGLED_DIR, filename)
+                    copyfile(filepath, destpath)
 
-        # loop over all the files if empty
-        for index, filename in enumerate(input_files, start=1):
-            # print out a counter for the files we are working on...
-            self.stdout.write(
-                f" Dealing with file {index} of {num_files}".ljust(50, " "),
-                ending="\r",
-            )
-            with open(filename) as fp:
-                # get the next line
-                line = fp.readline()
-                while line:
-                    # get the record type
-                    record = line.split(",")[0]
-                    # get the correct output file for this record type
-                    output_filename = os.path.join(
-                        MANGLED_DIR, code_list[record]
-                    )
-                    # append this line to the output file
-                    with open(output_filename, "a") as f:
-                        f.write(line)
-                        if record == "99":
-                            # record type 99 is always at the end of the file,
-                            # so is lacking a LF. Add one.
-                            f.write("\n")
+            # get list of all *csv to process
+            input_files = glob(os.path.join(RAW_DIR, "*.csv"))
+
+            # loop over the raw CSV files, adding each line to the correct file
+            for filename in tqdm(
+                input_files,
+                ncols=80,
+                unit=" files",
+                leave=False,
+                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
+            ):
+                with open(filename) as fp:
                     line = fp.readline()
-        self.stdout.write(" Done." + " " * 50 + "\n")
+                    while line:
+                        record = line.split(",")[0]
+                        if int(record) in wanted_codes:
+                            output_filename = os.path.join(
+                                MANGLED_DIR, code_list[record]
+                            )
+                            with open(output_filename, "a") as f:
+                                f.write(line)
+                                # if record == "99":
+                                #     f.write("\n")
+                        line = fp.readline()
 
     def phase_two(self):
         """Run phase 2 : Format as we need and export to CSV for next stage."""
-        self.show_header(["Phase2", "Consolidate data"])
+        self.show_header(["Phase 2", "Consolidate data into one CSV."])
 
         # first we need to get a list of the sorted files.
         mangled_files = sorted(glob(os.path.join(MANGLED_DIR, "*.csv")))
@@ -124,10 +169,11 @@ class Command(BaseCommand):
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write("Reading in the required Records...")
+        # self.stdout.write(" Reading in the required Fields...\n")
 
         # get record 15 (STREETDESCRIPTOR)
-        raw_record_15 = pd.read_csv(
+        self.stdout.write("Reading Code 15: STREETDESCRIPTOR")
+        raw_record_15 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["15"]),
             usecols=[
                 "USRN",
@@ -137,10 +183,11 @@ class Command(BaseCommand):
                 "ADMINISTRATIVE_AREA",
             ],
             dtype={"USRN": "str"},
-        )
+        ).compute()
 
         # get record 21 (BPLU)
-        raw_record_21 = pd.read_csv(
+        self.stdout.write("Reading Code 21: BPLU")
+        raw_record_21 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["21"]),
             usecols=[
                 "UPRN",
@@ -153,11 +200,12 @@ class Command(BaseCommand):
                 "COUNTRY",
             ],
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
-        )
-        raw_record_21.set_index(["UPRN"], inplace=True)
+        ).compute()
+        raw_record_21 = raw_record_21.set_index(["UPRN"])
 
-        # get record 28 (DeliveryPointAddress)
-        raw_record_28 = pd.read_csv(
+        # get record 28 (DELIVERYPOINTADDRESS)
+        self.stdout.write("Reading Code 28: DELIVERYPOINTADDRESS")
+        raw_record_28 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["28"]),
             usecols=[
                 "UPRN",
@@ -168,16 +216,18 @@ class Command(BaseCommand):
                 "POST_TOWN",
                 "POSTCODE",
             ],
-            dtype={"BUILDING_NUMBER": "str"},
-        )
-        raw_record_28.set_index(["UPRN"], inplace=True)
+            dtype={"BUILDING_NUMBER": "str", "THOROUGHFARE": "str"},
+        ).compute()
+        raw_record_28 = raw_record_28.set_index(["UPRN"])
 
         # get record 32 (CLASSIFICATION)
-        raw_record_32 = pd.read_csv(
+        self.stdout.write("Reading Code 32: CLASSIFICATION")
+        raw_record_32 = dd.read_csv(
             os.path.join(MANGLED_DIR, code_list["32"]),
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
-        )
-        raw_record_32.set_index(["UPRN"], inplace=True)
+        ).compute()
+
+        raw_record_32 = raw_record_32.set_index(["UPRN"])
         # record 32 has duplicate information for many UPRN, this will cause
         # the concat to fail. We are only interested in the ones that have the
         # scheme named : "AddressBase Premium Classification Scheme"
@@ -188,21 +238,24 @@ class Command(BaseCommand):
         # now bring in the cross reference file to link UPRN to USRN
         self.stdout.write(" Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
-        cross_ref = pd.read_csv(
+
+        cross_ref = dd.read_csv(
             cross_ref_file,
+            # iterator=True,
+            # chunksize=chunk_size,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
-        )
+        ).compute()
 
-        # lets rename these 2 headers to the better names
-        cross_ref.rename(
-            columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"},
-            inplace=True,
-        )
+        # lets rename these 2 headers to be better names
+        cross_ref.columns = ["URPN", "USRN"]
+        # print(cross_ref.head())
 
         self.stdout.write(" Merging in the STREETDATA")
+
+        # with TqdmCallback(desc="compute"):
         # concat the STREETDESCRIPTOR to the cross ref file in this step
-        merged_usrn = pd.merge(
+        merged_usrn = dd.merge(
             cross_ref,
             raw_record_15,
             how="left",
@@ -210,8 +263,11 @@ class Command(BaseCommand):
             right_on="USRN",
         )
 
+        # print(merged_usrn.head())
+        print(cross_ref.head())
+
         self.stdout.write(" Concating data ...")
-        chunk1 = pd.concat(
+        chunk1 = dd.concat(
             [
                 raw_record_28,
                 raw_record_21,
@@ -226,7 +282,7 @@ class Command(BaseCommand):
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
         self.stdout.write(" Merging in the Street data ...")
-        final_output = pd.merge(
+        final_output = dd.merge(
             chunk1,
             merged_usrn,
             how="left",
@@ -235,7 +291,7 @@ class Command(BaseCommand):
         )
 
         # set the index back onto the UPRN
-        final_output.set_index(["UPRN"], inplace=True)
+        final_output = final_output.set_index(["UPRN"])
 
         # finally, save the formatted data to a new CSV file.
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
@@ -245,14 +301,31 @@ class Command(BaseCommand):
     def phase_three(self):
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
-            ["Phase3", "Load to database", "This may take a LONG time!!"]
+            [
+                "Phase 3",
+                "Load to database",
+                "This may take a while depending on the amount of data.",
+            ]
         )
 
         self.stdout.write(" Importing the Formatted AddressBase CSV file...")
-        ab_data = pd.read_csv(
+
+        # set a chunk size for reading the csv file
+        chunk_size = 1000
+
+        # work out number of rows in CVS, then calc # of chunks for the progress
+        # bar
+        number_of_rows = sum(
+            1 for row in open(os.path.join(OUTPUT_DIR, OUTPUT_NAME), "r")
+        )
+        number_of_chunks = math.ceil(number_of_rows / chunk_size)
+
+        tp = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
             # lets spell out the exact column types for clarity
             na_filter=False,
+            iterator=True,
+            chunksize=chunk_size,
             sep="|",
             dtype={
                 "UPRN": "int",
@@ -282,6 +355,18 @@ class Command(BaseCommand):
             },
         )
 
+        # actually read each chunk and concat them into one dataframe
+        ab_data = pd.concat(
+            tqdm(
+                tp,
+                ncols=80,
+                total=number_of_chunks,
+                unit=" chunks",
+                leave=False,
+            ),
+            ignore_index=True,
+        )
+
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
         ab_data.insert(1, "FULL_ADDRESS", "")
@@ -290,6 +375,7 @@ class Command(BaseCommand):
         # doing this in 2 runs so we can sort out formatting in the first due
         # to any missing data.
         self.stdout.write(" Combining Address Fields...")
+        tqdm.pandas(desc="First Pass", ncols=80, leave=False, unit=" records")
         ab_data["FULL_ADDRESS"] = (
             ab_data["SUB_BUILDING_NAME"]
             .str.cat(
@@ -304,8 +390,10 @@ class Command(BaseCommand):
             )
             .str.strip()  # trim extra space
             .str.title()  # convert to Title Case
-        )
+        ).progress_apply(lambda x: x)
+
         # add the rest...
+        tqdm.pandas(desc="Second Pass", ncols=80, leave=False, unit=" records")
         ab_data["FULL_ADDRESS"] = (
             ab_data["FULL_ADDRESS"]
             .str.cat(ab_data["POST_TOWN"].str.title(), sep=", ")
@@ -313,7 +401,7 @@ class Command(BaseCommand):
                 ab_data["POSTCODE"], sep=", "
             )  # no Title mod for the Postcode
             .str.cat(ab_data["ADMINISTRATIVE_AREA"].str.title(), sep=", ")
-        )
+        ).progress_apply(lambda x: x)
 
         # create a postgresql engine with SQLAlchemy that is linked to our
         # database
@@ -327,29 +415,20 @@ class Command(BaseCommand):
         engine = create_engine(db_url)
 
         # now use the Pandas to_sql function to write to the database...
-        # this will take a long time (Scotland is 5.7 Million rows for example
-        # and this takes 25 minutes on my decent PC). There are quicker ways to
-        # dothis which I will look at later once the scripts are proven and
-        # trusted.
-        self.stdout.write(
-            " Exporting data to the Postgresql database "
-            "... this will take a while"
-        )
-        ab_data.to_sql(
-            str(os.getenv("UPRN_DB_TABLE")),
-            engine,
-            if_exists="replace",
-            index=False,
-            chunksize=10000,
-            method="multi",
-        )
+        # using the chunking function allows us to display a progress bar and
+        # actually seriously speeds up the process.
+        self.stdout.write(" Loading data to the Postgresql database... ")
+        self.insert_with_progress(ab_data, engine)
 
     def handle(self, *args, **options):
         """Actual function called by the command."""
         cursor.hide()
 
-        self.phase_one()
-        # self.phase_two()
+        # self.phase_one()
+        self.phase_two()
         # self.phase_three()
+
+        self.stdout.write("\n Finished!")
+        self.stdout.write(" You may now run the API Server.\n\n")
 
         cursor.show()
