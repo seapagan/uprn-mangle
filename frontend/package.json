@@ -46,6 +46,6 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-simple-import-sort": "^8.0.0",
-    "sass": "^1.56.1"
+    "sass": "^1.57.1"
   }
 }
