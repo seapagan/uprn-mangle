@@ -15,6 +15,9 @@ HEADER_DIR = os.path.join(data_path, "header-files")
 CROSSREF_DIR = os.path.join(data_path, "cross-ref-csv")
 OUTPUT_DIR = os.path.join(data_path, "output-csv")
 
+# these are the only code types we are interested in.
+WANTED_CODES = [15, 21, 28, 32]
+
 # this name should never change
 CROSSREF_NAME = "BLPU_UPRN_Street_USRN_11.csv"
 
