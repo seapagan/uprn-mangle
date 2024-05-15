@@ -4,7 +4,6 @@ import os
 import re
 from glob import glob
 from itertools import tee
-from pathlib import Path
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
@@ -26,13 +25,15 @@ from uprn_mangle.backend.constants import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from io import TextIOWrapper
+    from pathlib import Path
 
 
 class MangleUPRN:
     """Overall class to handle the UPRN data mangle and import."""
 
-    def extract_record_type(self, filename: Path) -> int:
+    def extract_record_type(self, filename: str) -> int:
         """Return just the record type from the filename.
 
         Used with the header files.
@@ -82,8 +83,11 @@ class MangleUPRN:
 
         rprint(f"\n -> Found {len(header_files)} header files")
         rprint("\n -> Deleting any existing mangled files...")
+
         # Delete the current *.csv files in the mangled directory
-        [f.unlink() for f in MANGLED_DIR.glob("*.csv") if f.is_file()]
+        for f in MANGLED_DIR.glob("*.csv"):
+            if f.is_file():
+                f.unlink()
 
         # Set up the dictionary and create the skeleton files
         code_list: dict[int, str] = {}
@@ -91,11 +95,11 @@ class MangleUPRN:
         try:
             for filepath in header_files:
                 # Drop the path
-                header_filename = filepath.name
+                header_filename: str = filepath.name
                 # Get the record number
-                record_type = self.extract_record_type(header_filename)
-                if int(record_type) in WANTED_CODES:
-                    filename = header_filename[:-11] + ".csv"
+                record_type: int = self.extract_record_type(header_filename)
+                if record_type in WANTED_CODES:
+                    filename: str = header_filename[:-11] + ".csv"
                     # Add it to the dictionary with the record as a key
                     code_list[record_type] = filename
 
@@ -105,14 +109,15 @@ class MangleUPRN:
                     # Open the output file in append mode and store the handle
                     output_file_handles[record_type] = destpath.open(mode="a")
 
-            input_files = RAW_DIR.glob("*.csv")
+            input_files: Iterable[Path] = RAW_DIR.glob("*.csv")
 
             input_files, input_files_count = tee(input_files)
+
             num_files = sum(1 for _ in input_files_count)
 
             rprint(f" -> Found {num_files} raw files")
 
-            for index, filename in enumerate(input_files, start=1):
+            for index, input_filename in enumerate(input_files, start=1):
                 rprint(
                     f" -> Dealing with file {index} of {num_files}".ljust(
                         80, " "
@@ -120,10 +125,10 @@ class MangleUPRN:
                     end="\r",
                 )
 
-                with filename.open() as fp:
+                with input_filename.open() as fp:
                     for line in fp:
-                        record_type = line.split(",")[0]
-                        if int(record_type) in WANTED_CODES:
+                        record_type = int(line.split(",")[0])
+                        if record_type in WANTED_CODES:
                             # Write line to the appropriate output file handle
                             output_file_handles[int(record_type)].write(line)
 
@@ -154,7 +159,7 @@ class MangleUPRN:
             # add it to the dictionary with the record as a key
             code_list[record] = filename
 
-        self.stdout.write(" -> Reading in the required Records")
+        rprint(" -> Reading in the required Records")
 
         # get record 15 (STREETDESCRIPTOR)
         raw_record_15 = dd.read_csv(
@@ -215,7 +220,7 @@ class MangleUPRN:
         ]
 
         # now bring in the cross reference file to link UPRN to USRN
-        self.stdout.write(" -> Reading the UPRN <-> USRN reference file")
+        rprint(" -> Reading the UPRN <-> USRN reference file")
         cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
         cross_ref = dd.read_csv(
             cross_ref_file,
@@ -228,7 +233,7 @@ class MangleUPRN:
             columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"},
         )
 
-        self.stdout.write(" -> Merging in the STREETDATA")
+        rprint(" -> Merging in the STREETDATA")
         # concat the STREETDESCRIPTOR to the cross ref file in this step
         merged_usrn = dd.merge(
             cross_ref,
@@ -238,7 +243,7 @@ class MangleUPRN:
             right_on="USRN",
         )
 
-        self.stdout.write(" -> Concating data")
+        rprint(" -> Concating data")
         chunk1 = dd.concat(
             [
                 raw_record_28,
@@ -253,7 +258,7 @@ class MangleUPRN:
         # chunk1 = chunk1.reset_index()
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
-        self.stdout.write(" -> Merging all data to one file")
+        rprint(" -> Merging all data to one file")
         final_output = dd.merge(
             chunk1,
             merged_usrn,
@@ -264,7 +269,7 @@ class MangleUPRN:
 
         # finally, save the formatted data to a new CSV file.
         output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-        self.stdout.write(f"\n Saving to {output_file}")
+        rprint(f"\n Saving to {output_file}")
         # final_output.to_csv(output_file, sep="|", single_file=True, kwargs={"index": False})
         final_output.to_csv(
             output_file, index_label="IGNORE", sep="|", single_file=True
@@ -273,13 +278,13 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
     # ------------------------------------------------------------------------ #
-    def phase_three(self):
+    def phase_three(self) -> None:
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
-        self.stdout.write(" Importing the Formatted AddressBase CSV file...")
+        rprint(" Importing the Formatted AddressBase CSV file...")
         ab_data = pd.read_csv(
             os.path.join(OUTPUT_DIR, OUTPUT_NAME),
             # let's spell out the exact column types for clarity
@@ -319,7 +324,7 @@ class MangleUPRN:
         # now create a clean combined address from the relevant fields
         # doing this in 2 runs so we can sort out formatting in the first due
         # to any missing data.
-        self.stdout.write(" Combining Address Fields...")
+        rprint(" Combining Address Fields...")
         ab_data["FULL_ADDRESS"] = (
             ab_data["SUB_BUILDING_NAME"]
             .str.cat(
@@ -361,7 +366,7 @@ class MangleUPRN:
         # and this takes 25 minutes on my decent PC). There are quicker ways to
         # dothis which I will look at later once the scripts are proven and
         # trusted.
-        self.stdout.write(
+        rprint(
             " Exporting data to the Postgresql database "
             "... this will take a while"
         )

@@ -30,7 +30,11 @@ repos:
       - id: mypy
         name: "run mypy"
         additional_dependencies:
-          - "types-requests"
+          - "pandas-stubs"
+          - "dask"
+          - "rich"
+          - sqlalchemy
+        args: [--strict]
 
   - repo: https://github.com/python-poetry/poetry
     rev: "1.8.3"

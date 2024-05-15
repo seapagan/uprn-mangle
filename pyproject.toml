@@ -78,6 +78,8 @@ mkdocs-minify-plugin = ">=0.8.0"
 mkdocstrings = ">=0.24.1"
 pymdown-extensions = "^10.7"
 pygments = "^2.17.2"
+# typing stubs
+pandas-stubs = "^2.2.2.240514"
 
 [tool.poe.tasks]
 # setup PoeThePoet tasks
@@ -159,6 +161,9 @@ known-first-party = []
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
+
+[tool.mypy]
+python_version = "3.10"
 
 [[tool.mypy.overrides]]
 disable_error_code = ["method-assign", "no-untyped-def", "attr-defined"]
