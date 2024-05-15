@@ -28,6 +28,7 @@ from = "."
 python = ">=3.10,<4.0"
 uvicorn = { extras = ["standard"], version = "^0.29.0" }
 fastapi = "^0.111.0"
+rich = "^13.7.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -35,7 +36,7 @@ build-backend = "poetry.core.masonry.api"
 
 # Configure dev dependencies
 [tool.poetry.group.dev.dependencies]
-dask = { extras = ["complete"], version = "^2024.5.0" }
+dask = { extras = ["dataframe"], version = "^2024.5.0" }
 pandas = "^2.2.2"
 psycopg2 = "^2.9.9"
 python-dotenv = "^1.0.1"

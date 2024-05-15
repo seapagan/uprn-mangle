@@ -1,14 +1,16 @@
-"""Django command to format and import UPRN data to our database."""
+"""Script to format and import UPRN data to a database."""
 
 import os
+import re
 from glob import glob
+from itertools import tee
 from pathlib import Path
 from shutil import copyfile
+from typing import TYPE_CHECKING
 
 import dask.dataframe as dd
 import pandas as pd
-from cursor import cursor
-from django.core.management.base import BaseCommand
+from rich import print as rprint
 from sqlalchemy import create_engine
 
 # load constants from external file so we can share it
@@ -23,13 +25,26 @@ from uprn_mangle.backend.constants import (
     WANTED_CODES,
 )
 
+if TYPE_CHECKING:
+    from io import TextIOWrapper
 
-class Command(BaseCommand):
-    """Base command class for import_uprn."""
 
-    help = "Import raw data from CSV files into the database"
+class MangleUPRN:
+    """Overall class to handle the UPRN data mangle and import."""
 
-    def show_header(self, text_list, width=80):
+    def extract_record_type(self, filename: Path) -> int:
+        """Return just the record type from the filename.
+
+        Used with the header files.
+        """
+        match = re.search(r"Record_(\d+)_", filename)
+        if match:
+            return int(match.group(1))
+
+        msg = f"Filename {filename} does not match the expected format"
+        raise ValueError(msg)
+
+    def show_header(self, text_list: list[str], width: int = 80) -> None:
         """Show a section Header with an arbitrary number of lines.
 
         Args:
@@ -37,74 +52,92 @@ class Command(BaseCommand):
             width (int, optional): Width to make the box. Defaults to 50.
         """
         divider = "-" * (width - 2)
-        self.stdout.write(self.style.HTTP_NOT_MODIFIED("\n/" + divider + "\\"))
+        rprint("\n[green]/" + divider + "\\")
         for line in text_list:
-            self.stdout.write(
-                self.style.HTTP_NOT_MODIFIED(
-                    "|" + line.center((width - 2), " ") + "|"
-                )
-            )
-        self.stdout.write(self.style.HTTP_NOT_MODIFIED("\\" + divider + "/"))
+            rprint("[green]|" + line.center((width - 2), " ") + "|")
+        rprint("[green]\\" + divider + "/")
+
+    def run(self) -> None:
+        """Run the mangle and import process."""
+        self.phase_one()
+        # self.phase_two()
+        # self.phase_three()
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 1                                 #
     # ------------------------------------------------------------------------ #
-    def phase_one(self):
+    def phase_one(self) -> None:
         """Run phase 1 : Read in the raw CSV and mangle.
 
         Take the raw CSV files and mangle them into a format that is easier to
-        work with, seperate files for each record type.
+        work with, separate files for each record type.
         """
         self.show_header(
             ["Phase 1", "Extract the required codes from the Raw Files"]
         )
 
-        # loop through the header csv files and make a list of the codes and
-        # filenames. We are generating this dynamically in case it changes in
-        # the future.
-        header_files = sorted(glob(os.path.join(HEADER_DIR, "*.csv")))
-        # delete the current *.csv here first
-        [f.unlink() for f in Path(MANGLED_DIR).glob("*.csv") if f.is_file()]
+        # Loop through the header CSV files and make a list of the codes and
+        # filenames.
+        header_files: list[Path] = sorted(HEADER_DIR.glob("*.csv"))
 
-        # set up the dictionary and create the skeleton files
-        code_list = {}
-        for filepath in header_files:
-            # drop the path
-            header_filename = os.path.basename(filepath)
-            # get the record number
-            record_type = header_filename.split("Record_")[1].split("_")[0]
-            if int(record_type) in WANTED_CODES:
-                filename = header_filename[:-11] + ".csv"
-                # add it to the dictionary with the record as a key
-                code_list[record_type] = filename
+        rprint(f"\n -> Found {len(header_files)} header files")
+        rprint("\n -> Deleting any existing mangled files...")
+        # Delete the current *.csv files in the mangled directory
+        [f.unlink() for f in MANGLED_DIR.glob("*.csv") if f.is_file()]
 
-                destpath = os.path.join(MANGLED_DIR, filename)
-                copyfile(filepath, destpath)
+        # Set up the dictionary and create the skeleton files
+        code_list: dict[int, str] = {}
+        output_file_handles: dict[int, TextIOWrapper] = {}
+        try:
+            for filepath in header_files:
+                # Drop the path
+                header_filename = filepath.name
+                # Get the record number
+                record_type = self.extract_record_type(header_filename)
+                if int(record_type) in WANTED_CODES:
+                    filename = header_filename[:-11] + ".csv"
+                    # Add it to the dictionary with the record as a key
+                    code_list[record_type] = filename
 
-        input_files = glob(os.path.join(RAW_DIR, "*.csv"))
-        num_files = len(input_files)
+                    destpath = MANGLED_DIR / filename
+                    copyfile(filepath, destpath)
 
-        for index, filename in enumerate(input_files, start=1):
-            self.stdout.write(
-                f" -> Dealing with file {index} of {num_files}".ljust(80, " "),
-                ending="\r",
-            )
-            with open(filename) as fp:
-                line = fp.readline()
-                while line:
-                    record_type = line.split(",")[0]
-                    if int(record_type) in WANTED_CODES:
-                        output_filename = os.path.join(
-                            MANGLED_DIR, code_list[record_type]
-                        )
-                        with open(output_filename, "a") as f:
-                            f.write(line)
-                    line = fp.readline()
+                    # Open the output file in append mode and store the handle
+                    output_file_handles[record_type] = destpath.open(mode="a")
+
+            input_files = RAW_DIR.glob("*.csv")
+
+            input_files, input_files_count = tee(input_files)
+            num_files = sum(1 for _ in input_files_count)
+
+            rprint(f" -> Found {num_files} raw files")
+
+            for index, filename in enumerate(input_files, start=1):
+                rprint(
+                    f" -> Dealing with file {index} of {num_files}".ljust(
+                        80, " "
+                    ),
+                    end="\r",
+                )
+
+                with filename.open() as fp:
+                    for line in fp:
+                        record_type = line.split(",")[0]
+                        if int(record_type) in WANTED_CODES:
+                            # Write line to the appropriate output file handle
+                            output_file_handles[int(record_type)].write(line)
+
+        finally:
+            # Ensure all file handles are properly closed
+            for file_handle in output_file_handles.values():
+                file_handle.close()
+
+        rprint("\n -> Phase 1 completed")
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 2                                 #
     # ------------------------------------------------------------------------ #
-    def phase_two(self):
+    def phase_two(self) -> None:
         """Run phase 2 : Format as we need and export to CSV for next stage."""
         self.show_header(["Phase2", "Consolidate data"])
 
@@ -279,7 +312,6 @@ class Command(BaseCommand):
                 #     "ADMINISTRATIVE_AREA": "str",
             },
         )
-        exit(0)
         # at this point we want to create an extra field in the DataFrame, with
         # the address data concated for easier display.
         ab_data.insert(1, "FULL_ADDRESS", "")
@@ -342,12 +374,7 @@ class Command(BaseCommand):
             method="multi",
         )
 
-    def handle(self, *args, **options):
-        """Actual function called by the command."""
-        cursor.hide()
 
-        # self.phase_one()
-        # self.phase_two()
-        self.phase_three()
-
-        cursor.show()
+if __name__ == "__main__":
+    mangle = MangleUPRN()
+    mangle.run()

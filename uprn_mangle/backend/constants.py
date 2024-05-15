@@ -4,7 +4,7 @@ from pathlib import Path
 
 # get our running path, then create the data_path from this.
 our_path = Path(__file__).resolve().parent
-data_path = our_path.parents[1] / "data"
+data_path = our_path.parent / "data"
 
 # set some constants for the other paths.
 RAW_DIR = data_path / "raw-csv"
