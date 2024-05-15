@@ -1,4 +1,5 @@
 """Set some support constants etc we need for the import."""
+
 # get script path
 import os
 from inspect import getsourcefile

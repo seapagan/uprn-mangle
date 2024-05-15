@@ -1,4 +1,5 @@
 """Django command to format and import UPRN data to our database."""
+
 import os
 from glob import glob
 from pathlib import Path
@@ -11,7 +12,7 @@ from django.core.management.base import BaseCommand
 from sqlalchemy import create_engine
 
 # load constants from external file so we can share it
-from api.management.support.constants import (
+from uprn_mangle.backend.constants import (
     CROSSREF_DIR,
     CROSSREF_NAME,
     HEADER_DIR,

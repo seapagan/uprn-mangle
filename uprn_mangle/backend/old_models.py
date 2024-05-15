@@ -27,9 +27,7 @@ class Addressbase(models.Model):
     logical_status = models.BigIntegerField(
         db_column="LOGICAL_STATUS", blank=True, null=True
     )
-    blpu_state = models.TextField(
-        db_column="BLPU_STATE", blank=True, null=True
-    )
+    blpu_state = models.TextField(db_column="BLPU_STATE", blank=True, null=True)
     x_coordinate = models.FloatField(
         db_column="X_COORDINATE", blank=True, null=True
     )
