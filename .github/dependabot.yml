@@ -6,16 +6,16 @@
 version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/frontend" # Location of package manifests
+    directory: "/uprn-mangle/frontend" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
   - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/backend" # Location of package manifests
+    directory: "/uprn-mangle/backend" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
