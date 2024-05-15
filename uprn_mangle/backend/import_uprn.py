@@ -2,13 +2,14 @@
 
 import os
 import re
-from glob import glob
 from itertools import tee
+from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import dask.dataframe as dd
 import pandas as pd
+from dask.diagnostics import ProgressBar
 from rich import print as rprint
 from sqlalchemy import create_engine
 
@@ -27,7 +28,6 @@ from uprn_mangle.backend.constants import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from io import TextIOWrapper
-    from pathlib import Path
 
 
 class MangleUPRN:
@@ -60,8 +60,8 @@ class MangleUPRN:
 
     def run(self) -> None:
         """Run the mangle and import process."""
-        self.phase_one()
-        # self.phase_two()
+        # self.phase_one()
+        self.phase_two()
         # self.phase_three()
 
     # ------------------------------------------------------------------------ #
@@ -147,13 +147,13 @@ class MangleUPRN:
         self.show_header(["Phase2", "Consolidate data"])
 
         # first we need to get a list of the sorted files.
-        mangled_files = sorted(glob(os.path.join(MANGLED_DIR, "*.csv")))
+        mangled_files: list[Path] = sorted(MANGLED_DIR.glob("*.csv"))
 
         # get a list of the codes linked to their actual files
         code_list = {}
         for filepath in mangled_files:
             # drop the path
-            filename = os.path.basename(filepath)
+            filename = Path(filepath).name
             # get the record number
             record = filename.split("Record_")[1].split("_")[0]
             # add it to the dictionary with the record as a key
@@ -161,9 +161,21 @@ class MangleUPRN:
 
         rprint(" -> Reading in the required Records")
 
+        def compute_with_progress(ddf: dd.DataFrame) -> dd.DataFrame:
+            with ProgressBar():
+                return ddf.compute()
+
+        def to_csv_with_progress(
+            ddf: pd.DataFrame,
+            filename: Path,
+            **kwargs: Any,  # noqa: ANN401
+        ) -> None:
+            with ProgressBar():
+                ddf.to_csv(filename, **kwargs)
+
         # get record 15 (STREETDESCRIPTOR)
         raw_record_15 = dd.read_csv(
-            os.path.join(MANGLED_DIR, code_list["15"]),
+            MANGLED_DIR / code_list["15"],
             usecols=[
                 "USRN",
                 "STREET_DESCRIPTION",
@@ -173,10 +185,11 @@ class MangleUPRN:
             ],
             dtype={"USRN": "str"},
         )
+        raw_record_15 = compute_with_progress(raw_record_15)
 
         # get record 21 (BPLU)
         raw_record_21 = dd.read_csv(
-            os.path.join(MANGLED_DIR, code_list["21"]),
+            MANGLED_DIR / code_list["21"],
             usecols=[
                 "UPRN",
                 "LOGICAL_STATUS",
@@ -189,10 +202,11 @@ class MangleUPRN:
             ],
             dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
         )
+        raw_record_21 = compute_with_progress(raw_record_21)
 
         # get record 28 (DeliveryPointAddress)
         raw_record_28 = dd.read_csv(
-            os.path.join(MANGLED_DIR, code_list["28"]),
+            MANGLED_DIR / code_list["28"],
             usecols=[
                 "UPRN",
                 "SUB_BUILDING_NAME",
@@ -207,13 +221,14 @@ class MangleUPRN:
                 "THOROUGHFARE": "str",
                 "SUB_BUILDING_NAME": "str",
             },
-        )
+        ).compute()
 
         # get record 32 (CLASSIFICATION)
         raw_record_32 = dd.read_csv(
-            os.path.join(MANGLED_DIR, code_list["32"]),
+            MANGLED_DIR / code_list["32"],
             usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
+        raw_record_32 = compute_with_progress(raw_record_32)
 
         filtered_record_32 = raw_record_32[
             raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
@@ -221,12 +236,13 @@ class MangleUPRN:
 
         # now bring in the cross reference file to link UPRN to USRN
         rprint(" -> Reading the UPRN <-> USRN reference file")
-        cross_ref_file = os.path.join(CROSSREF_DIR, CROSSREF_NAME)
+        cross_ref_file = CROSSREF_DIR / CROSSREF_NAME
         cross_ref = dd.read_csv(
             cross_ref_file,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
         )
+        cross_ref = compute_with_progress(cross_ref)
 
         # lets rename these 2 headers to the better names
         cross_ref = cross_ref.rename(
@@ -242,6 +258,7 @@ class MangleUPRN:
             left_on="USRN",
             right_on="USRN",
         )
+        merged_usrn = compute_with_progress(merged_usrn)
 
         rprint(" -> Concating data")
         chunk1 = dd.concat(
@@ -251,28 +268,30 @@ class MangleUPRN:
                 filtered_record_32.drop(columns=["CLASS_SCHEME"]),
             ],
         )
+        chunk1 = compute_with_progress(chunk1)
 
         # we dont want it indexed for the next stage, and need to clearly
-        # specifiy the UPRN datatype
-        # chunk1.reset_index(inplace=True)
-        # chunk1 = chunk1.reset_index()
+        # specify the UPRN datatype
         merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
 
-        rprint(" -> Merging all data to one file")
-        final_output = dd.merge(
+        rprint(" -> Merging all data to one dataframe")
+        final_output: pd.DataFrame = dd.merge(
             chunk1,
             merged_usrn,
             how="left",
             left_on="UPRN",
             right_on="UPRN",
         )
+        final_output = compute_with_progress(final_output)
 
         # finally, save the formatted data to a new CSV file.
-        output_file = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
+        output_file = OUTPUT_DIR / OUTPUT_NAME
         rprint(f"\n Saving to {output_file}")
-        # final_output.to_csv(output_file, sep="|", single_file=True, kwargs={"index": False})
-        final_output.to_csv(
-            output_file, index_label="IGNORE", sep="|", single_file=True
+        to_csv_with_progress(
+            final_output,
+            output_file,
+            index_label="IGNORE",
+            sep="|",
         )
 
     # ------------------------------------------------------------------------ #
@@ -286,35 +305,35 @@ class MangleUPRN:
 
         rprint(" Importing the Formatted AddressBase CSV file...")
         ab_data = pd.read_csv(
-            os.path.join(OUTPUT_DIR, OUTPUT_NAME),
+            OUTPUT_DIR / OUTPUT_NAME,
             # let's spell out the exact column types for clarity
             na_filter=False,
             sep="|",
             dtype={
-                #     "UPRN": "int",
-                #     "SUB_BUILDING_NAME": "str",
-                #     "BUILDING_NAME": "str",
-                #     "BUILDING_NUMBER": "str",
-                #     "THOROUGHFARE": "str",
-                #     "POST_TOWN": "str",
-                # "POSTCODE": "str",
+                "UPRN": "int",
+                "SUB_BUILDING_NAME": "str",
+                "BUILDING_NAME": "str",
+                "BUILDING_NUMBER": "str",
+                "THOROUGHFARE": "str",
+                "POST_TOWN": "str",
+                "POSTCODE": "str",
                 "LOGICAL_STATUS": "str",
-                #     # needs to be a string as annoyingly the data includes null
-                #     # values
-                # "BLPU_STATE": "str",
-                # "X_COORDINATE": "double",
-                # "Y_COORDINATE": "double",
-                # "LATITUDE": "double",
-                # "LONGITUDE": "double",
-                #     "COUNTRY": "str",
-                #     "CLASSIFICATION_CODE": "str",
-                #     # also contains Null values for demolished buildings so must
-                #     # be a string
-                #     "USRN": "str",
-                #     "STREET_DESCRIPTION": "str",
-                #     "LOCALITY": "str",
-                #     "TOWN_NAME": "str",
-                #     "ADMINISTRATIVE_AREA": "str",
+                # needs to be a string as annoyingly the data includes null
+                # values
+                "BLPU_STATE": "str",
+                "X_COORDINATE": "double",
+                "Y_COORDINATE": "double",
+                "LATITUDE": "double",
+                "LONGITUDE": "double",
+                "COUNTRY": "str",
+                "CLASSIFICATION_CODE": "str",
+                # also contains Null values for demolished buildings so must
+                # be a string
+                "USRN": "str",
+                "STREET_DESCRIPTION": "str",
+                "LOCALITY": "str",
+                "TOWN_NAME": "str",
+                "ADMINISTRATIVE_AREA": "str",
             },
         )
         # at this point we want to create an extra field in the DataFrame, with
