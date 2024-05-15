@@ -4,10 +4,7 @@
 [![CodeQL](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml)
 [![Dependency Review](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml)
 
-THIS README IS IN THE PROCESS OF BEING UPDATED.
-
-<!-- TOC start -->
-- [Update 26th August 2022](#update-26th-august-2022)
+- [Update 15th May 2024](#update-15th-may-2024)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [UPRN Data](#uprn-data)
@@ -15,7 +12,6 @@ THIS README IS IN THE PROCESS OF BEING UPDATED.
 - [Setup and run the Frontend](#setup-and-run-the-frontend)
 - [Contributing to this project](#contributing-to-this-project)
 - [License](#license)
-<!-- TOC end -->
 
 This project is a (work in progress) tool to take the Ordnance Survey '[Address
 Base Premium][abp]' data and mangle it into a more usable form.
@@ -27,14 +23,14 @@ by address and return the UPRN and links for Google maps and OpenStreetMap.
 - Backend and mangle scripts in [Django][django] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 26th August 2022
+## Update 15th May 2024
 
-The Backend and Frontend are going through a rewrite and tidy right now but the
-`main` branch is untouched at the moment so is still usable (but slooooow).
+THIS README IS IN THE PROCESS OF BEING UPDATED as the Project is being
+refactored (again!) to use `Poetry` for Python dependencies, and replace
+`Django` by `FastAPI` for the Backend. The Frontend will remain in `React`.
 
-I have updated to use the latest Django 4 and React 18 while improving the
-configuration of development tooling such as Formatters and Linters for both
-Python and React.
+The Installation instructions below will shorly be updated to reflect these
+changes.
 
 I am working to optimize the management command to mangle and import the CSV
 files as it is massively memory-hungry - using the entire Scotland dataset as an
