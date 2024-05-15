@@ -2,6 +2,10 @@
 
 ## Backend
 
+- Move from `Pandas` to `Dask` `DataFrames`, to help reading the very large
+  datafiles using multi-cpus. BREAKING: Check out
+  [xorbits](https://github.com/xorbitsai/xorbits) instead which looks a better
+  solution.
 - **Re-write the Backend API to use FastAPI instead of Django**.
 - Look at the utility of changing the generation script to use Typer instead of
   a plain Python script.
