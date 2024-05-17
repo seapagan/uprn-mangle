@@ -357,16 +357,16 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
     # ------------------------------------------------------------------------ #
-    def generate_full_address(self, row: pd.Series) -> str:
+    def generate_full_address(self, address: AddressCreate) -> str:
         """Generate full address by concatenating specific fields."""
         fields = [
-            row["SUB_BUILDING_NAME"].strip(),
-            row["BUILDING_NAME"].strip(),
-            row["BUILDING_NUMBER"].strip(),
-            row["THOROUGHFARE"].strip(),
-            row["POST_TOWN"].strip(),
-            row["POSTCODE"].strip(),
-            row["ADMINISTRATIVE_AREA"].strip(),
+            address.SUB_BUILDING_NAME.strip(),
+            address.BUILDING_NAME.strip(),
+            address.BUILDING_NUMBER.strip(),
+            address.THOROUGHFARE.strip(),
+            address.POST_TOWN.strip(),
+            address.POSTCODE.strip(),
+            address.ADMINISTRATIVE_AREA.strip(),
         ]
         return ", ".join([field for field in fields if field])
 
@@ -376,8 +376,7 @@ class MangleUPRN:
         """Create a new address entry in the database."""
         db_address = Address(
             UPRN=address.UPRN,
-            # FULL_ADDRESS=self.generate_full_address(address),
-            FULL_ADDRESS="poop!",
+            FULL_ADDRESS=self.generate_full_address(address),
             SUB_BUILDING_NAME=address.SUB_BUILDING_NAME,
             BUILDING_NAME=address.BUILDING_NAME,
             BUILDING_NUMBER=address.BUILDING_NUMBER,
