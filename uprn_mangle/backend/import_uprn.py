@@ -11,14 +11,13 @@ from typing import TYPE_CHECKING, Any
 import dask.dataframe as dd
 import pandas as pd
 from dask.diagnostics.progress import ProgressBar
-from pydantic import BaseModel
 from rich import print as rprint
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn
 from simple_toml_settings.exceptions import SettingsNotFoundError
-from sqlalchemy import BigInteger, Column, Engine, Float, String, create_engine
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from uprn_mangle.backend.config import Settings
 
@@ -33,64 +32,11 @@ from uprn_mangle.backend.constants import (
     RAW_DIR,
     WANTED_CODES,
 )
+from uprn_mangle.backend.models import Address, AddressCreate, Base
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from io import TextIOWrapper
-
-Base = declarative_base()
-
-
-class Address(Base):
-    """SQLAlchemy model for the address table."""
-
-    __tablename__ = "addressbase"
-    UPRN = Column(BigInteger, primary_key=True, index=True)
-    FULL_ADDRESS = Column(String, nullable=False)
-    SUB_BUILDING_NAME = Column(String)
-    BUILDING_NAME = Column(String)
-    BUILDING_NUMBER = Column(String)
-    THOROUGHFARE = Column(String)
-    POST_TOWN = Column(String)
-    POSTCODE = Column(String)
-    ADMINISTRATIVE_AREA = Column(String)
-    LOGICAL_STATUS = Column(String)
-    BLPU_STATE = Column(String)
-    X_COORDINATE = Column(Float)
-    Y_COORDINATE = Column(Float)
-    LATITUDE = Column(Float)
-    LONGITUDE = Column(Float)
-    COUNTRY = Column(String)
-    CLASSIFICATION_CODE = Column(String)
-    USRN = Column(String)
-    STREET_DESCRIPTION = Column(String)
-    LOCALITY = Column(String)
-    TOWN_NAME = Column(String)
-
-
-class AddressCreate(BaseModel):
-    """Pydantic model for the address table."""
-
-    UPRN: int
-    SUB_BUILDING_NAME: str = ""
-    BUILDING_NAME: str = ""
-    BUILDING_NUMBER: str = ""
-    THOROUGHFARE: str = ""
-    POST_TOWN: str = ""
-    POSTCODE: str = ""
-    ADMINISTRATIVE_AREA: str = ""
-    LOGICAL_STATUS: str = ""
-    BLPU_STATE: str = ""
-    X_COORDINATE: float = 0.0
-    Y_COORDINATE: float = 0.0
-    LATITUDE: float = 0.0
-    LONGITUDE: float = 0.0
-    COUNTRY: str = ""
-    CLASSIFICATION_CODE: str = ""
-    USRN: str = ""
-    STREET_DESCRIPTION: str = ""
-    LOCALITY: str = ""
-    TOWN_NAME: str = ""
 
 
 class MangleUPRN:
@@ -109,6 +55,14 @@ class MangleUPRN:
                 "file and try again.\n"
             )
             sys.exit(1)
+        else:
+            self.database_url = (
+                f"postgresql://{self.settings.get('db_user')}:"
+                f"{self.settings.db_password}@"
+                f"{self.settings.db_host}:"
+                f"{self.settings.db_port}/"
+                f"{self.settings.db_name}"
+            )
 
     def extract_record_type(self, filename: str) -> int:
         """Return just the record type from the filename.
@@ -421,15 +375,7 @@ class MangleUPRN:
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
-        DATABASE_URL = (
-            f"postgresql://{self.settings.get('db_user')}:"
-            f"{self.settings.db_password}@"
-            f"{self.settings.db_host}:"
-            f"{self.settings.db_port}/"
-            f"{self.settings.db_name}"
-        )
-
-        engine = create_engine(DATABASE_URL, echo=False)
+        engine = create_engine(self.database_url, echo=False)
         session_local = sessionmaker(
             autocommit=False, autoflush=False, bind=engine
         )
