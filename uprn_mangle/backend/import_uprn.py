@@ -1,12 +1,11 @@
 """Script to format and import UPRN data to a database."""
 
 # mypy: disable_error_code="attr-defined"
-import re
 import sys
 from itertools import tee
 from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import dask.dataframe as dd
 import pandas as pd
@@ -15,9 +14,8 @@ from rich import print as rprint
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn
 from simple_toml_settings.exceptions import SettingsNotFoundError
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from uprn_mangle.backend.config import Settings
 
@@ -32,7 +30,14 @@ from uprn_mangle.backend.constants import (
     RAW_DIR,
     WANTED_CODES,
 )
-from uprn_mangle.backend.models import Address, AddressCreate, Base
+from uprn_mangle.backend.helpers import (
+    drop_table,
+    extract_record_type,
+    process_chunk,
+    show_header,
+    to_parquet_with_progress,
+)
+from uprn_mangle.backend.models import Base
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -64,35 +69,10 @@ class MangleUPRN:
                 f"{self.settings.db_name}"
             )
 
-    def extract_record_type(self, filename: str) -> int:
-        """Return just the record type from the filename.
-
-        Used with the header files.
-        """
-        match = re.search(r"Record_(\d+)_", filename)
-        if match:
-            return int(match.group(1))
-
-        msg = f"Filename {filename} does not match the expected format"
-        raise ValueError(msg)
-
-    def show_header(self, text_list: list[str], width: int = 80) -> None:
-        """Show a section Header with an arbitrary number of lines.
-
-        Args:
-            text_list (list): A list of Strings to be shown, one per line
-            width (int, optional): Width to make the box. Defaults to 50.
-        """
-        divider = "-" * (width - 2)
-        rprint("\n[green]/" + divider + "\\")
-        for line in text_list:
-            rprint("[green]|" + line.center((width - 2), " ") + "|")
-        rprint("[green]\\" + divider + "/")
-
     def run(self) -> None:
         """Run the mangle and import process."""
-        # self.phase_one()
-        # self.phase_two()
+        self.phase_one()
+        self.phase_two()
         self.phase_three()
 
     # ------------------------------------------------------------------------ #
@@ -104,7 +84,7 @@ class MangleUPRN:
         Take the raw CSV files and mangle them into a format that is easier to
         work with, separate files for each record type.
         """
-        self.show_header(
+        show_header(
             ["Phase 1", "Extract the required codes from the Raw Files"]
         )
 
@@ -128,7 +108,7 @@ class MangleUPRN:
                 # Drop the path
                 header_filename: str = filepath.name
                 # Get the record number
-                record_type: int = self.extract_record_type(header_filename)
+                record_type: int = extract_record_type(header_filename)
                 if record_type in WANTED_CODES:
                     filename: str = header_filename[:-11] + ".csv"
                     # Add it to the dictionary with the record as a key
@@ -175,7 +155,7 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     def phase_two(self) -> None:
         """Run phase 2 : Format as we need and export to CSV for next stage."""
-        self.show_header(["Phase2", "Consolidate data"])
+        show_header(["Phase2", "Consolidate data"])
 
         # first we need to get a list of the sorted files.
         mangled_files = sorted(MANGLED_DIR.glob("*.csv"))
@@ -188,12 +168,6 @@ class MangleUPRN:
             code_list[record] = filename
 
         rprint(" -> Reading in the required Records")
-
-        def to_parquet_with_progress(
-            ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
-        ) -> None:
-            with ProgressBar():
-                ddf.to_parquet(filename, **kwargs)
 
         def read_csv_to_parquet(
             record_num: str, usecols: list[str], dtype: dict[str, str]
@@ -311,67 +285,10 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
     # ------------------------------------------------------------------------ #
-    def generate_full_address(self, address: AddressCreate) -> str:
-        """Generate full address by concatenating specific fields."""
-        fields = [
-            address.SUB_BUILDING_NAME.strip(),
-            address.BUILDING_NAME.strip(),
-            address.BUILDING_NUMBER.strip(),
-            address.THOROUGHFARE.strip(),
-            address.POST_TOWN.strip(),
-            address.POSTCODE.strip(),
-            address.ADMINISTRATIVE_AREA.strip(),
-        ]
-        return ", ".join([field for field in fields if field])
-
-    def create_address(
-        self, session: Session, address: AddressCreate
-    ) -> Address:
-        """Create a new address entry in the database."""
-        db_address = Address(
-            UPRN=address.UPRN,
-            FULL_ADDRESS=self.generate_full_address(address),
-            SUB_BUILDING_NAME=address.SUB_BUILDING_NAME,
-            BUILDING_NAME=address.BUILDING_NAME,
-            BUILDING_NUMBER=address.BUILDING_NUMBER,
-            THOROUGHFARE=address.THOROUGHFARE,
-            POST_TOWN=address.POST_TOWN,
-            POSTCODE=address.POSTCODE,
-            ADMINISTRATIVE_AREA=address.ADMINISTRATIVE_AREA,
-            LOGICAL_STATUS=address.LOGICAL_STATUS,
-            BLPU_STATE=address.BLPU_STATE,
-            X_COORDINATE=address.X_COORDINATE,
-            Y_COORDINATE=address.Y_COORDINATE,
-            LATITUDE=address.LATITUDE,
-            LONGITUDE=address.LONGITUDE,
-            COUNTRY=address.COUNTRY,
-            CLASSIFICATION_CODE=address.CLASSIFICATION_CODE,
-            USRN=address.USRN,
-            STREET_DESCRIPTION=address.STREET_DESCRIPTION,
-            LOCALITY=address.LOCALITY,
-            TOWN_NAME=address.TOWN_NAME,
-        )
-        try:
-            session.add(db_address)
-            session.commit()
-            session.refresh(db_address)
-        except IntegrityError:
-            session.rollback()
-        return db_address
-
-    def process_chunk(self, session: Session, chunk: pd.DataFrame) -> None:
-        """Process a chunk of the data."""
-        for _, row in chunk.iterrows():
-            address = AddressCreate(**row)
-            self.create_address(session, address)
-
-    def drop_table(self, engine: Engine) -> None:
-        """Drop the addressbase table if it exists."""
-        Base.metadata.drop_all(engine, tables=[Address.__table__])
 
     def phase_three(self) -> None:
         """Read in the prepared CSV file and then store it in our DB."""
-        self.show_header(
+        show_header(
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
@@ -382,7 +299,7 @@ class MangleUPRN:
 
         # drop the existing table if it exists.
         # this allows updated UPRN's to be imported.
-        self.drop_table(engine)
+        drop_table(engine)
 
         with engine.begin() as conn:
             Base.metadata.create_all(conn)
@@ -442,7 +359,7 @@ class MangleUPRN:
                     chunksize=chunk_size,
                     converters=converters,
                 ):
-                    self.process_chunk(session, chunk)
+                    process_chunk(session, chunk)
                     progress.update(task, advance=1)
 
 
