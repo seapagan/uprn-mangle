@@ -13,11 +13,12 @@ import pandas as pd
 from dask.diagnostics.progress import ProgressBar
 from pydantic import BaseModel
 from rich import print as rprint
+from rich.console import Console
+from rich.progress import Progress, SpinnerColumn
 from simple_toml_settings.exceptions import SettingsNotFoundError
 from sqlalchemy import BigInteger, Column, Engine, Float, String, create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
-from tqdm import tqdm
 
 from uprn_mangle.backend.config import Settings
 
@@ -442,7 +443,7 @@ class MangleUPRN:
             Base.metadata.create_all(conn)
 
         with session_local() as session:
-            chunk_size = 10000
+            chunk_size = 2000
             converters = {
                 "X_COORDINATE": lambda x: float(x) if x else 0.0,
                 "Y_COORDINATE": lambda x: float(x) if x else 0.0,
@@ -460,8 +461,18 @@ class MangleUPRN:
             estimated_total_rows = total_size / avg_row_size
             num_chunks = int((estimated_total_rows // chunk_size) + 1)
 
-            for chunk in tqdm(
-                pd.read_csv(
+            console = Console(width=80, color_system="truecolor")
+
+            with Progress(
+                SpinnerColumn(),
+                *Progress.get_default_columns(),
+                expand=True,
+                console=console,
+            ) as progress:
+                task = progress.add_task(
+                    "Loading to Database", total=num_chunks
+                )
+                for chunk in pd.read_csv(
                     OUTPUT_DIR / OUTPUT_NAME,
                     sep="|",
                     dtype={
@@ -485,12 +496,9 @@ class MangleUPRN:
                     na_filter=False,
                     chunksize=chunk_size,
                     converters=converters,
-                ),
-                total=num_chunks,
-                desc="Loading to Database",
-                ncols=80,
-            ):
-                self.process_chunk(session, chunk)
+                ):
+                    self.process_chunk(session, chunk)
+                    progress.update(task, advance=1)
 
 
 if __name__ == "__main__":
