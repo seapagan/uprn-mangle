@@ -30,6 +30,7 @@ uvicorn = { extras = ["standard"], version = "^0.29.0" }
 fastapi = "^0.111.0"
 rich = "^13.7.1"
 
+simple-toml-settings = "^0.6.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -1,7 +1,9 @@
 """Script to format and import UPRN data to a database."""
 
+# mypy: disable_error_code="attr-defined"
 import os
 import re
+import sys
 from itertools import tee
 from pathlib import Path
 from shutil import copyfile
@@ -9,9 +11,12 @@ from typing import TYPE_CHECKING, Any
 
 import dask.dataframe as dd
 import pandas as pd
-from dask.diagnostics import ProgressBar
+from dask.diagnostics.progress import ProgressBar
 from rich import print as rprint
+from simple_toml_settings.exceptions import SettingsNotFoundError
 from sqlalchemy import create_engine
+
+from uprn_mangle.backend.config import Settings
 
 # load constants from external file so we can share it
 from uprn_mangle.backend.constants import (
@@ -32,6 +37,20 @@ if TYPE_CHECKING:
 
 class MangleUPRN:
     """Overall class to handle the UPRN data mangle and import."""
+
+    def __init__(self) -> None:
+        """Initialise the class."""
+        # Load the settings
+        try:
+            self.settings = Settings.get_instance(
+                "uprn_mangle", auto_create=False, local_file=True
+            )
+        except SettingsNotFoundError:
+            rprint(
+                "\n[red] -> Settings file not found, please create a settings "
+                "file and try again.\n"
+            )
+            sys.exit(1)
 
     def extract_record_type(self, filename: str) -> int:
         """Return just the record type from the filename.
