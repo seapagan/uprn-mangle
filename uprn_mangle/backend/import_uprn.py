@@ -178,14 +178,14 @@ class MangleUPRN:
         rprint(" -> Reading in the required Records")
 
         def to_parquet_with_progress(
-            ddf, filename: Path, **kwargs: dict[str, Any]
+            ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
         ) -> None:
             with ProgressBar():
                 ddf.to_parquet(filename, **kwargs)
 
         def read_csv_to_parquet(
             record_num: str, usecols: list[str], dtype: dict[str, str]
-        ):
+        ) -> dd.DataFrame:
             csv_path = MANGLED_DIR / code_list[record_num]
             parquet_path = csv_path.with_suffix(".parquet")
             if not parquet_path.exists():
@@ -283,11 +283,9 @@ class MangleUPRN:
 
         chunk1["UPRN"] = chunk1["UPRN"].astype(str)
 
-        final_output = dd.merge(
+        final_output: dd.DataFrame = dd.merge(
             chunk1, merged_usrn, how="left", left_on="UPRN", right_on="UPRN"
         )
-
-        final_output = final_output.repartition(partition_size="100MB")
 
         rprint(f"\n Saving to {OUTPUT_DIR / OUTPUT_NAME}")
         with ProgressBar():
