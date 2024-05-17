@@ -166,50 +166,48 @@ class MangleUPRN:
         self.show_header(["Phase2", "Consolidate data"])
 
         # first we need to get a list of the sorted files.
-        mangled_files: list[Path] = sorted(MANGLED_DIR.glob("*.csv"))
+        mangled_files = sorted(MANGLED_DIR.glob("*.csv"))
 
         # get a list of the codes linked to their actual files
-        code_list = {}
+        code_list: dict[str, str] = {}
         for filepath in mangled_files:
-            # drop the path
             filename = Path(filepath).name
-            # get the record number
             record = filename.split("Record_")[1].split("_")[0]
-            # add it to the dictionary with the record as a key
             code_list[record] = filename
 
         rprint(" -> Reading in the required Records")
 
-        def compute_with_progress(ddf: dd.DataFrame) -> dd.DataFrame:
-            with ProgressBar():
-                return ddf.compute()
-
-        def to_csv_with_progress(
-            ddf: pd.DataFrame,
-            filename: Path,
-            **kwargs: Any,  # noqa: ANN401
+        def to_parquet_with_progress(
+            ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
         ) -> None:
             with ProgressBar():
-                ddf.to_csv(filename, **kwargs)
+                ddf.to_parquet(filename, **kwargs)
 
-        # get record 15 (STREETDESCRIPTOR)
-        raw_record_15 = dd.read_csv(
-            MANGLED_DIR / code_list["15"],
-            usecols=[
+        def read_csv_to_parquet(
+            record_num: str, usecols: list[str], dtype: dict[str, str]
+        ) -> dd.DataFrame:
+            csv_path = MANGLED_DIR / code_list[record_num]
+            parquet_path = csv_path.with_suffix(".parquet")
+            if not parquet_path.exists():
+                ddf = dd.read_csv(csv_path, usecols=usecols, dtype=dtype)
+                to_parquet_with_progress(ddf, parquet_path)
+            return dd.read_parquet(parquet_path)
+
+        # Get and convert records to Parquet format
+        raw_record_15 = read_csv_to_parquet(
+            "15",
+            [
                 "USRN",
                 "STREET_DESCRIPTION",
                 "LOCALITY",
                 "TOWN_NAME",
                 "ADMINISTRATIVE_AREA",
             ],
-            dtype={"USRN": "str"},
+            {"USRN": "str"},
         )
-        raw_record_15 = compute_with_progress(raw_record_15)
-
-        # get record 21 (BPLU)
-        raw_record_21 = dd.read_csv(
-            MANGLED_DIR / code_list["21"],
-            usecols=[
+        raw_record_21 = read_csv_to_parquet(
+            "21",
+            [
                 "UPRN",
                 "LOGICAL_STATUS",
                 "BLPU_STATE",
@@ -219,14 +217,11 @@ class MangleUPRN:
                 "LONGITUDE",
                 "COUNTRY",
             ],
-            dtype={"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
+            {"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
         )
-        raw_record_21 = compute_with_progress(raw_record_21)
-
-        # get record 28 (DeliveryPointAddress)
-        raw_record_28 = dd.read_csv(
-            MANGLED_DIR / code_list["28"],
-            usecols=[
+        raw_record_28 = read_csv_to_parquet(
+            "28",
+            [
                 "UPRN",
                 "SUB_BUILDING_NAME",
                 "BUILDING_NAME",
@@ -235,25 +230,20 @@ class MangleUPRN:
                 "POST_TOWN",
                 "POSTCODE",
             ],
-            dtype={
+            {
                 "BUILDING_NUMBER": "str",
                 "THOROUGHFARE": "str",
                 "SUB_BUILDING_NAME": "str",
             },
-        ).compute()
-
-        # get record 32 (CLASSIFICATION)
-        raw_record_32 = dd.read_csv(
-            MANGLED_DIR / code_list["32"],
-            usecols=["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"],
         )
-        raw_record_32 = compute_with_progress(raw_record_32)
+        raw_record_32 = read_csv_to_parquet(
+            "32", ["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"], None
+        )
 
         filtered_record_32 = raw_record_32[
             raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
         ]
 
-        # now bring in the cross reference file to link UPRN to USRN
         rprint(" -> Reading the UPRN <-> USRN reference file")
         cross_ref_file = CROSSREF_DIR / CROSSREF_NAME
         cross_ref = dd.read_csv(
@@ -261,15 +251,11 @@ class MangleUPRN:
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
         )
-        cross_ref = compute_with_progress(cross_ref)
-
-        # lets rename these 2 headers to the better names
         cross_ref = cross_ref.rename(
-            columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"},
+            columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
         )
 
         rprint(" -> Merging in the STREETDATA")
-        # concat the STREETDESCRIPTOR to the cross ref file in this step
         merged_usrn = dd.merge(
             cross_ref,
             raw_record_15,
@@ -277,41 +263,38 @@ class MangleUPRN:
             left_on="USRN",
             right_on="USRN",
         )
-        merged_usrn = compute_with_progress(merged_usrn)
+        to_parquet_with_progress(
+            merged_usrn, MANGLED_DIR / "merged_usrn.parquet"
+        )
+        merged_usrn = dd.read_parquet(MANGLED_DIR / "merged_usrn.parquet")
 
-        rprint(" -> Concating data")
+        rprint(" -> Concatenating data")
         chunk1 = dd.concat(
             [
                 raw_record_28,
                 raw_record_21,
                 filtered_record_32.drop(columns=["CLASS_SCHEME"]),
-            ],
+            ]
         )
-        chunk1 = compute_with_progress(chunk1)
-
-        # we dont want it indexed for the next stage, and need to clearly
-        # specify the UPRN datatype
-        merged_usrn.UPRN = merged_usrn.UPRN.astype(int)
+        to_parquet_with_progress(chunk1, MANGLED_DIR / "chunk1.parquet")
+        chunk1 = dd.read_parquet(MANGLED_DIR / "chunk1.parquet")
 
         rprint(" -> Merging all data to one dataframe")
-        final_output: pd.DataFrame = dd.merge(
-            chunk1,
-            merged_usrn,
-            how="left",
-            left_on="UPRN",
-            right_on="UPRN",
-        )
-        final_output = compute_with_progress(final_output)
 
-        # finally, save the formatted data to a new CSV file.
-        output_file = OUTPUT_DIR / OUTPUT_NAME
-        rprint(f"\n Saving to {output_file}")
-        to_csv_with_progress(
-            final_output,
-            output_file,
-            index_label="IGNORE",
-            sep="|",
+        chunk1["UPRN"] = chunk1["UPRN"].astype(str)
+
+        final_output: dd.DataFrame = dd.merge(
+            chunk1, merged_usrn, how="left", left_on="UPRN", right_on="UPRN"
         )
+
+        rprint(f"\n Saving to {OUTPUT_DIR / OUTPUT_NAME}")
+        with ProgressBar():
+            final_output.to_csv(
+                OUTPUT_DIR / OUTPUT_NAME,
+                index_label="IGNORE",
+                sep="|",
+                single_file=True,
+            )
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #

@@ -244,3 +244,4 @@ data/raw-csv-full/.keep
 data/raw-csv-small/.keep
 .python-version
 config.toml
+*.parquet
