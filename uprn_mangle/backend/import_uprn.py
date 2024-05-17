@@ -1,7 +1,6 @@
 """Script to format and import UPRN data to a database."""
 
 # mypy: disable_error_code="attr-defined"
-import os
 import re
 import sys
 from itertools import tee
@@ -12,9 +11,14 @@ from typing import TYPE_CHECKING, Any
 import dask.dataframe as dd
 import pandas as pd
 from dask.diagnostics.progress import ProgressBar
+from pydantic import BaseModel
 from rich import print as rprint
+from rich.console import Console
+from rich.progress import Progress, SpinnerColumn
 from simple_toml_settings.exceptions import SettingsNotFoundError
-from sqlalchemy import create_engine
+from sqlalchemy import BigInteger, Column, Engine, Float, String, create_engine
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from uprn_mangle.backend.config import Settings
 
@@ -33,6 +37,60 @@ from uprn_mangle.backend.constants import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from io import TextIOWrapper
+
+Base = declarative_base()
+
+
+class Address(Base):
+    """SQLAlchemy model for the address table."""
+
+    __tablename__ = "addressbase"
+    UPRN = Column(BigInteger, primary_key=True, index=True)
+    FULL_ADDRESS = Column(String, nullable=False)
+    SUB_BUILDING_NAME = Column(String)
+    BUILDING_NAME = Column(String)
+    BUILDING_NUMBER = Column(String)
+    THOROUGHFARE = Column(String)
+    POST_TOWN = Column(String)
+    POSTCODE = Column(String)
+    ADMINISTRATIVE_AREA = Column(String)
+    LOGICAL_STATUS = Column(String)
+    BLPU_STATE = Column(String)
+    X_COORDINATE = Column(Float)
+    Y_COORDINATE = Column(Float)
+    LATITUDE = Column(Float)
+    LONGITUDE = Column(Float)
+    COUNTRY = Column(String)
+    CLASSIFICATION_CODE = Column(String)
+    USRN = Column(String)
+    STREET_DESCRIPTION = Column(String)
+    LOCALITY = Column(String)
+    TOWN_NAME = Column(String)
+
+
+class AddressCreate(BaseModel):
+    """Pydantic model for the address table."""
+
+    UPRN: int
+    SUB_BUILDING_NAME: str = ""
+    BUILDING_NAME: str = ""
+    BUILDING_NUMBER: str = ""
+    THOROUGHFARE: str = ""
+    POST_TOWN: str = ""
+    POSTCODE: str = ""
+    ADMINISTRATIVE_AREA: str = ""
+    LOGICAL_STATUS: str = ""
+    BLPU_STATE: str = ""
+    X_COORDINATE: float = 0.0
+    Y_COORDINATE: float = 0.0
+    LATITUDE: float = 0.0
+    LONGITUDE: float = 0.0
+    COUNTRY: str = ""
+    CLASSIFICATION_CODE: str = ""
+    USRN: str = ""
+    STREET_DESCRIPTION: str = ""
+    LOCALITY: str = ""
+    TOWN_NAME: str = ""
 
 
 class MangleUPRN:
@@ -80,8 +138,8 @@ class MangleUPRN:
     def run(self) -> None:
         """Run the mangle and import process."""
         # self.phase_one()
-        self.phase_two()
-        # self.phase_three()
+        # self.phase_two()
+        self.phase_three()
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 1                                 #
@@ -299,106 +357,147 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
     # ------------------------------------------------------------------------ #
+    def generate_full_address(self, address: AddressCreate) -> str:
+        """Generate full address by concatenating specific fields."""
+        fields = [
+            address.SUB_BUILDING_NAME.strip(),
+            address.BUILDING_NAME.strip(),
+            address.BUILDING_NUMBER.strip(),
+            address.THOROUGHFARE.strip(),
+            address.POST_TOWN.strip(),
+            address.POSTCODE.strip(),
+            address.ADMINISTRATIVE_AREA.strip(),
+        ]
+        return ", ".join([field for field in fields if field])
+
+    def create_address(
+        self, session: Session, address: AddressCreate
+    ) -> Address:
+        """Create a new address entry in the database."""
+        db_address = Address(
+            UPRN=address.UPRN,
+            FULL_ADDRESS=self.generate_full_address(address),
+            SUB_BUILDING_NAME=address.SUB_BUILDING_NAME,
+            BUILDING_NAME=address.BUILDING_NAME,
+            BUILDING_NUMBER=address.BUILDING_NUMBER,
+            THOROUGHFARE=address.THOROUGHFARE,
+            POST_TOWN=address.POST_TOWN,
+            POSTCODE=address.POSTCODE,
+            ADMINISTRATIVE_AREA=address.ADMINISTRATIVE_AREA,
+            LOGICAL_STATUS=address.LOGICAL_STATUS,
+            BLPU_STATE=address.BLPU_STATE,
+            X_COORDINATE=address.X_COORDINATE,
+            Y_COORDINATE=address.Y_COORDINATE,
+            LATITUDE=address.LATITUDE,
+            LONGITUDE=address.LONGITUDE,
+            COUNTRY=address.COUNTRY,
+            CLASSIFICATION_CODE=address.CLASSIFICATION_CODE,
+            USRN=address.USRN,
+            STREET_DESCRIPTION=address.STREET_DESCRIPTION,
+            LOCALITY=address.LOCALITY,
+            TOWN_NAME=address.TOWN_NAME,
+        )
+        try:
+            session.add(db_address)
+            session.commit()
+            session.refresh(db_address)
+        except IntegrityError:
+            session.rollback()
+        return db_address
+
+    def process_chunk(self, session: Session, chunk: pd.DataFrame) -> None:
+        """Process a chunk of the data."""
+        for _, row in chunk.iterrows():
+            address = AddressCreate(**row)
+            self.create_address(session, address)
+
+    def drop_table(self, engine: Engine) -> None:
+        """Drop the addressbase table if it exists."""
+        Base.metadata.drop_all(engine, tables=[Address.__table__])
+
     def phase_three(self) -> None:
         """Read in the prepared CSV file and then store it in our DB."""
         self.show_header(
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
-        rprint(" Importing the Formatted AddressBase CSV file...")
-        ab_data = pd.read_csv(
-            OUTPUT_DIR / OUTPUT_NAME,
-            # let's spell out the exact column types for clarity
-            na_filter=False,
-            sep="|",
-            dtype={
-                "UPRN": "int",
-                "SUB_BUILDING_NAME": "str",
-                "BUILDING_NAME": "str",
-                "BUILDING_NUMBER": "str",
-                "THOROUGHFARE": "str",
-                "POST_TOWN": "str",
-                "POSTCODE": "str",
-                "LOGICAL_STATUS": "str",
-                # needs to be a string as annoyingly the data includes null
-                # values
-                "BLPU_STATE": "str",
-                "X_COORDINATE": "double",
-                "Y_COORDINATE": "double",
-                "LATITUDE": "double",
-                "LONGITUDE": "double",
-                "COUNTRY": "str",
-                "CLASSIFICATION_CODE": "str",
-                # also contains Null values for demolished buildings so must
-                # be a string
-                "USRN": "str",
-                "STREET_DESCRIPTION": "str",
-                "LOCALITY": "str",
-                "TOWN_NAME": "str",
-                "ADMINISTRATIVE_AREA": "str",
-            },
-        )
-        # at this point we want to create an extra field in the DataFrame, with
-        # the address data concated for easier display.
-        ab_data.insert(1, "FULL_ADDRESS", "")
-
-        # now create a clean combined address from the relevant fields
-        # doing this in 2 runs so we can sort out formatting in the first due
-        # to any missing data.
-        rprint(" Combining Address Fields...")
-        ab_data["FULL_ADDRESS"] = (
-            ab_data["SUB_BUILDING_NAME"]
-            .str.cat(
-                ab_data[
-                    [
-                        "BUILDING_NAME",
-                        "BUILDING_NUMBER",
-                        "THOROUGHFARE",
-                    ]
-                ],
-                sep=" ",
-            )
-            .str.strip()  # trim extra space
-            .str.title()  # convert to Title Case
-        )
-        # add the rest...
-        ab_data["FULL_ADDRESS"] = (
-            ab_data["FULL_ADDRESS"]
-            .str.cat(ab_data["POST_TOWN"].str.title(), sep=", ")
-            .str.cat(
-                ab_data["POSTCODE"], sep=", "
-            )  # no Title mod for the Postcode
-            .str.cat(ab_data["ADMINISTRATIVE_AREA"].str.title(), sep=", ")
+        DATABASE_URL = (
+            f"postgresql://{self.settings.get('db_user')}:"
+            f"{self.settings.db_password}@"
+            f"{self.settings.db_host}:"
+            f"{self.settings.db_port}/"
+            f"{self.settings.db_name}"
         )
 
-        # create a postgresql engine with SQLAlchemy that is linked to our
-        # database
-        db_url = "postgresql://{}:{}@{}:{}/{}".format(
-            str(os.getenv("UPRN_DB_USER")),
-            str(os.getenv("UPRN_DB_PASSWORD")),
-            str(os.getenv("UPRN_DB_HOST")),
-            str(os.getenv("UPRN_DB_PORT")),
-            str(os.getenv("UPRN_DB_NAME")),
+        engine = create_engine(DATABASE_URL, echo=False)
+        session_local = sessionmaker(
+            autocommit=False, autoflush=False, bind=engine
         )
-        engine = create_engine(db_url)
 
-        # now use the Pandas to_sql function to write to the database...
-        # this will take a long time (Scotland is 5.7 Million rows for example
-        # and this takes 25 minutes on my decent PC). There are quicker ways to
-        # dothis which I will look at later once the scripts are proven and
-        # trusted.
-        rprint(
-            " Exporting data to the Postgresql database "
-            "... this will take a while"
-        )
-        ab_data.to_sql(
-            str(os.getenv("UPRN_DB_TABLE")),
-            engine,
-            if_exists="replace",
-            index=False,
-            chunksize=10000,
-            method="multi",
-        )
+        # drop the existing table if it exists.
+        # this allows updated UPRN's to be imported.
+        self.drop_table(engine)
+
+        with engine.begin() as conn:
+            Base.metadata.create_all(conn)
+
+        with session_local() as session:
+            chunk_size = 2000
+            converters = {
+                "X_COORDINATE": lambda x: float(x) if x else 0.0,
+                "Y_COORDINATE": lambda x: float(x) if x else 0.0,
+                "LATITUDE": lambda x: float(x) if x else 0.0,
+                "LONGITUDE": lambda x: float(x) if x else 0.0,
+            }
+
+            # Estimate the total number of rows
+            file_path = OUTPUT_DIR / OUTPUT_NAME
+            total_size = file_path.stat().st_size
+            sample_size = 1024 * 1024  # 1MB sample size
+            with file_path.open() as f:
+                sample = f.read(sample_size)
+            avg_row_size = len(sample) / sample.count("\n")
+            estimated_total_rows = total_size / avg_row_size
+            num_chunks = int((estimated_total_rows // chunk_size) + 1)
+
+            console = Console(width=80, color_system="truecolor")
+
+            with Progress(
+                SpinnerColumn(),
+                *Progress.get_default_columns(),
+                expand=True,
+                console=console,
+            ) as progress:
+                task = progress.add_task(
+                    "Loading to Database", total=num_chunks
+                )
+                for chunk in pd.read_csv(
+                    OUTPUT_DIR / OUTPUT_NAME,
+                    sep="|",
+                    dtype={
+                        "UPRN": "int",
+                        "SUB_BUILDING_NAME": "str",
+                        "BUILDING_NAME": "str",
+                        "BUILDING_NUMBER": "str",
+                        "THOROUGHFARE": "str",
+                        "POST_TOWN": "str",
+                        "POSTCODE": "str",
+                        "LOGICAL_STATUS": "str",
+                        "BLPU_STATE": "str",
+                        "COUNTRY": "str",
+                        "CLASSIFICATION_CODE": "str",
+                        "USRN": "str",
+                        "STREET_DESCRIPTION": "str",
+                        "LOCALITY": "str",
+                        "TOWN_NAME": "str",
+                        "ADMINISTRATIVE_AREA": "str",
+                    },
+                    na_filter=False,
+                    chunksize=chunk_size,
+                    converters=converters,
+                ):
+                    self.process_chunk(session, chunk)
+                    progress.update(task, advance=1)
 
 
 if __name__ == "__main__":
