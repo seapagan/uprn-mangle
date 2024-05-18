@@ -1,6 +1,7 @@
 """Script to format and import UPRN data to a database."""
 
 # mypy: disable_error_code="attr-defined"
+import gc
 import sys
 from itertools import tee
 from pathlib import Path
@@ -282,6 +283,17 @@ class MangleUPRN:
                 single_file=True,
             )
 
+        del (
+            raw_record_15,
+            raw_record_21,
+            raw_record_28,
+            raw_record_32,
+            filtered_record_32,
+        )
+
+        del cross_ref, merged_usrn, chunk1, final_output
+        gc.collect()
+
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
     # ------------------------------------------------------------------------ #
@@ -361,6 +373,9 @@ class MangleUPRN:
                 ):
                     process_chunk(session, chunk)
                     progress.update(task, advance=1)
+                    # Clear the chunk from memory
+                    del chunk
+                    gc.collect()
 
 
 if __name__ == "__main__":
