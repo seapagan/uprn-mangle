@@ -64,8 +64,11 @@ def generate_full_address(address: AddressCreate) -> str:
     return ", ".join([field for field in fields if field])
 
 
-def create_address(session: Session, address: AddressCreate) -> Address:
+def create_address(session: Session, address: AddressCreate) -> Address | None:
     """Create a new address entry in the database."""
+    if address.POSTCODE.strip() == "":
+        return None  # we don't want to store addresses without a postcode
+
     db_address = Address(
         UPRN=address.UPRN,
         FULL_ADDRESS=generate_full_address(address),
