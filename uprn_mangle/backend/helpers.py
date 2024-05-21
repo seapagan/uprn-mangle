@@ -11,6 +11,7 @@ from rich import print as rprint
 from sqlalchemy import Engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
 
 from uprn_mangle.backend.models import Address, AddressCreate, Base
 
@@ -69,9 +70,11 @@ def create_address(session: Session, address: AddressCreate) -> Address | None:
     if address.POSTCODE.strip() == "":
         return None  # we don't want to store addresses without a postcode
 
+    full_address = generate_full_address(address)
+
     db_address = Address(
         UPRN=address.UPRN,
-        FULL_ADDRESS=generate_full_address(address),
+        FULL_ADDRESS=full_address,
         SUB_BUILDING_NAME=address.SUB_BUILDING_NAME,
         BUILDING_NAME=address.BUILDING_NAME,
         BUILDING_NUMBER=address.BUILDING_NUMBER,
@@ -91,6 +94,7 @@ def create_address(session: Session, address: AddressCreate) -> Address | None:
         STREET_DESCRIPTION=address.STREET_DESCRIPTION,
         LOCALITY=address.LOCALITY,
         TOWN_NAME=address.TOWN_NAME,
+        TSV=func.to_tsvector(full_address),
     )
     try:
         session.add(db_address)
