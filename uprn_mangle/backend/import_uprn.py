@@ -268,7 +268,8 @@ class MangleUPRN:
 
         rprint(" -> Merging all data to one dataframe")
 
-        chunk1["UPRN"] = chunk1["UPRN"].astype(str)
+        chunk1["UPRN"] = chunk1["UPRN"].astype("int")
+        merged_usrn["UPRN"] = merged_usrn["UPRN"].astype("int")
 
         final_output: dd.DataFrame = dd.merge(
             chunk1, merged_usrn, how="left", left_on="UPRN", right_on="UPRN"
