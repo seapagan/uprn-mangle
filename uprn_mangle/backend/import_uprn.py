@@ -74,7 +74,7 @@ class MangleUPRN:
         """Run the mangle and import process."""
         self.phase_one()
         self.phase_two()
-        self.phase_three()
+        # self.phase_three()
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 1                                 #
@@ -274,6 +274,10 @@ class MangleUPRN:
         final_output: dd.DataFrame = dd.merge(
             chunk1, merged_usrn, how="left", left_on="UPRN", right_on="UPRN"
         )
+        to_parquet_with_progress(
+            final_output, MANGLED_DIR / "final_output.parquet"
+        )
+        final_output = dd.read_parquet(MANGLED_DIR / "final_output.parquet")
 
         rprint(f"\n Saving to {OUTPUT_DIR / OUTPUT_NAME}")
         with ProgressBar():
