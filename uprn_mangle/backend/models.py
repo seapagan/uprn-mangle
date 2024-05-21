@@ -1,7 +1,8 @@
 """Pydantic and SQLAlchemy models for the address table."""
 
 from pydantic import BaseModel
-from sqlalchemy import BigInteger, Column, Float, String
+from sqlalchemy import BigInteger, Column, Float, Index, String
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -32,6 +33,13 @@ class Address(Base):
     STREET_DESCRIPTION = Column(String)
     LOCALITY = Column(String)
     TOWN_NAME = Column(String)
+    TSV = Column(TSVECTOR)
+
+    __table_args__ = (
+        Index(
+            "ix_addressbase_tsv", "TSV", postgresql_using="gin"
+        ),  # Index for improving search performance
+    )
 
 
 class AddressCreate(BaseModel):
