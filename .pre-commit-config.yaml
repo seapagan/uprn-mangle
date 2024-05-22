@@ -34,6 +34,8 @@ repos:
           - "dask"
           - "rich"
           - sqlalchemy
+          - pydantic
+          - simple-toml-settings
         args: [--strict, --ignore-missing-imports]
 
   - repo: https://github.com/python-poetry/poetry
