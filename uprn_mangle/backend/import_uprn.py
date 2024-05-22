@@ -2,15 +2,18 @@
 
 # mypy: disable_error_code="attr-defined"
 import gc
+import logging
 import sys
 from itertools import tee
 from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+import dask
 import dask.dataframe as dd
 import pandas as pd
 from dask.diagnostics.progress import ProgressBar
+from dask.distributed import Client
 from rich import print as rprint
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn
@@ -20,6 +23,7 @@ from sqlalchemy.orm import sessionmaker
 
 from uprn_mangle.backend.config import Settings
 
+# Set up the Dask client with temporary storage on disk
 # load constants from external file so we can share it
 from uprn_mangle.backend.constants import (
     CROSSREF_DIR,
@@ -36,7 +40,6 @@ from uprn_mangle.backend.helpers import (
     extract_record_type,
     process_chunk,
     show_header,
-    to_parquet_with_progress,
 )
 from uprn_mangle.backend.models import Base
 
@@ -55,6 +58,7 @@ class MangleUPRN:
             self.settings = Settings.get_instance(
                 "uprn_mangle", auto_create=False, local_file=True
             )
+
         except SettingsNotFoundError:
             rprint(
                 "\n[red] -> Settings file not found, please create a settings "
@@ -74,7 +78,7 @@ class MangleUPRN:
         """Run the mangle and import process."""
         self.phase_one()
         self.phase_two()
-        # self.phase_three()
+        self.phase_three()
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 1                                 #
@@ -170,6 +174,13 @@ class MangleUPRN:
 
         rprint(" -> Reading in the required Records")
 
+        def to_parquet_with_progress(
+            ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
+        ) -> None:
+            """Convert a dask dataframe to parquet with a progress bar."""
+            with ProgressBar():
+                ddf.to_parquet(filename, **kwargs)
+
         def read_csv_to_parquet(
             record_num: str, usecols: list[str], dtype: dict[str, str]
         ) -> dd.DataFrame:
@@ -233,11 +244,17 @@ class MangleUPRN:
 
         rprint(" -> Reading the UPRN <-> USRN reference file")
         cross_ref_file = CROSSREF_DIR / CROSSREF_NAME
+
         cross_ref = dd.read_csv(
             cross_ref_file,
             usecols=["IDENTIFIER_1", "IDENTIFIER_2"],
             dtype={"IDENTIFIER_1": "str", "IDENTIFIER_2": "str"},
         )
+        to_parquet_with_progress(
+            cross_ref, cross_ref_file.with_suffix(".parquet")
+        )
+        cross_ref = dd.read_parquet(cross_ref_file.with_suffix(".parquet"))
+
         cross_ref = cross_ref.rename(
             columns={"IDENTIFIER_1": "UPRN", "IDENTIFIER_2": "USRN"}
         )
@@ -384,5 +401,24 @@ class MangleUPRN:
 
 
 if __name__ == "__main__":
+    client = Client(
+        memory_limit="4GB", local_directory="./uprn_mangle/backend/.dask_temp"
+    )
+
+    # Configure Dask to use disk for shuffling and manage memory limits
+    dask.config.set(
+        {
+            "temporary-directory": "./uprn_mangle/backend/.dask_temp",
+            "distributed.worker.memory.target": 0.5,
+            "distributed.worker.memory.spill": 0.6,
+            "distributed.worker.memory.pause": 0.7,
+            "distributed.worker.memory.terminate": 0.9,
+            "distributed.scheduler.allowed-failures": 20,
+            "distributed.logging": "error",
+        }
+    )
+
+    logging.getLogger("distributed").setLevel(logging.ERROR)
+
     mangle = MangleUPRN()
     mangle.run()

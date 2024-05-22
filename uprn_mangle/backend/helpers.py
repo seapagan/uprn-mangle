@@ -43,14 +43,6 @@ def show_header(text_list: list[str], width: int = 80) -> None:
     rprint("[green]\\" + divider + "/")
 
 
-def to_parquet_with_progress(
-    ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
-) -> None:
-    """Convert a dask dataframe to parquet with a progress bar."""
-    with ProgressBar():
-        ddf.to_parquet(filename, **kwargs)
-
-
 def generate_full_address(address: AddressCreate) -> str:
     """Generate full address by concatenating specific fields."""
     fields = [

@@ -245,3 +245,4 @@ data/raw-csv-small/.keep
 .python-version
 config.toml
 *.parquet
+uprn_mangle/backend/.dask_temp
