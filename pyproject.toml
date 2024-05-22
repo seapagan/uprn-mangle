@@ -29,22 +29,22 @@ python = ">=3.10,<4.0"
 uvicorn = { extras = ["standard"], version = "^0.29.0" }
 fastapi = "^0.111.0"
 rich = "^13.7.1"
-
 simple-toml-settings = "^0.6.1"
+dask = { extras = ["distributed", "dataframe"], version = "^2024.5.1" }
+pandas = "^2.2.2"
+psycopg2 = "^2.9.9"
+python-dotenv = "^1.0.1"
+sqlalchemy = "^2.0.30"
+tqdm = "^4.66.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 # Configure dev dependencies
 [tool.poetry.group.dev.dependencies]
-dask = { extras = ["dataframe"], version = "^2024.5.0" }
-pandas = "^2.2.2"
-psycopg2 = "^2.9.9"
-python-dotenv = "^1.0.1"
-sqlalchemy = "^2.0.30"
 cursor = "^1.3.5"
 ipython = "^8.24.0"
-tqdm = "^4.66.4"
 
 # linting, type-checking and security checks
 mypy = "^1.8.0"
@@ -82,6 +82,9 @@ pymdown-extensions = "^10.7"
 pygments = "^2.17.2"
 # typing stubs
 pandas-stubs = "^2.2.2.240514"
+
+# dev profiling
+memory-profiler = "^0.61.0"
 
 [tool.poe.tasks]
 # setup PoeThePoet tasks
