@@ -1,17 +1,18 @@
 """Script to format and import UPRN data to a database."""
 
-# mypy: disable_error_code="attr-defined"
+# mypy: disable_error_code="attr-defined,no-untyped-call"
 import gc
 import logging
 import sys
 from itertools import tee
 from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import dask
 import dask.dataframe as dd
 import pandas as pd
+from dask.dataframe import DataFrame
 from dask.diagnostics.progress import ProgressBar
 from dask.distributed import Client
 from rich import print as rprint
@@ -175,7 +176,7 @@ class MangleUPRN:
         rprint(" -> Reading in the required Records")
 
         def to_parquet_with_progress(
-            ddf: dd.DataFrame, filename: Path, **kwargs: dict[str, Any]
+            ddf: DataFrame, filename: Path, **kwargs: dict[str, Any]
         ) -> None:
             """Convert a dask dataframe to parquet with a progress bar."""
             with ProgressBar():
@@ -183,13 +184,13 @@ class MangleUPRN:
 
         def read_csv_to_parquet(
             record_num: str, usecols: list[str], dtype: dict[str, str]
-        ) -> dd.DataFrame:
+        ) -> DataFrame:
             csv_path = MANGLED_DIR / code_list[record_num]
             parquet_path = csv_path.with_suffix(".parquet")
             if not parquet_path.exists():
                 ddf = dd.read_csv(csv_path, usecols=usecols, dtype=dtype)
                 to_parquet_with_progress(ddf, parquet_path)
-            return dd.read_parquet(parquet_path)
+            return cast(DataFrame, dd.read_parquet(parquet_path))
 
         # Get and convert records to Parquet format
         raw_record_15 = read_csv_to_parquet(
@@ -235,7 +236,7 @@ class MangleUPRN:
             },
         )
         raw_record_32 = read_csv_to_parquet(
-            "32", ["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"], None
+            "32", ["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"], {}
         )
 
         filtered_record_32 = raw_record_32[
@@ -288,7 +289,7 @@ class MangleUPRN:
         chunk1["UPRN"] = chunk1["UPRN"].astype("int")
         merged_usrn["UPRN"] = merged_usrn["UPRN"].astype("int")
 
-        final_output: dd.DataFrame = dd.merge(
+        final_output: DataFrame = dd.merge(
             chunk1, merged_usrn, how="left", left_on="UPRN", right_on="UPRN"
         )
         to_parquet_with_progress(
