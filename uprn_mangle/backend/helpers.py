@@ -1,10 +1,11 @@
 """Helper functions used by the main Class."""
 
 import re
+from typing import cast
 
 import pandas as pd
 from rich import print as rprint
-from sqlalchemy import Engine
+from sqlalchemy import Engine, Table
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
@@ -102,4 +103,4 @@ def process_chunk(session: Session, chunk: pd.DataFrame) -> None:
 
 def drop_table(engine: Engine) -> None:
     """Drop the addressbase table if it exists."""
-    Base.metadata.drop_all(engine, tables=[Address.__table__])
+    Base.metadata.drop_all(engine, tables=[cast(Table, Address.__table__)])
