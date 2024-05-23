@@ -81,6 +81,8 @@ class MangleUPRN:
         self.phase_two()
         self.phase_three()
 
+        rprint("\n[green] -> All phases completed successfully\n")
+
     # ------------------------------------------------------------------------ #
     #                                  Phase 1                                 #
     # ------------------------------------------------------------------------ #
