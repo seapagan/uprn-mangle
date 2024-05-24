@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import TypeVar
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from fastapi_pagination.customization import (
     CustomizedPage,
     UseFieldsAliases,
@@ -35,12 +36,17 @@ async def root() -> dict[str, str]:
 
 @router.get("/search", response_model=Pagination[UPRNResponse])
 async def search(
-    q: str, session: AsyncSession = Depends(get_db)
-) -> Sequence[Address]:
+    q: str | None = None, session: AsyncSession = Depends(get_db)
+) -> JSONResponse | Sequence[Address]:
     """Search for an address in the UPRN database.
 
     Returns a list of addresses that match the search term.
     """
+    if not q or q.strip() == "":
+        return JSONResponse(
+            status_code=400, content={"message": "No search term provided."}
+        )
+
     query = select(Address).where(
         Address.TSV.op("@@")(func.plainto_tsquery("english", q))
     )
