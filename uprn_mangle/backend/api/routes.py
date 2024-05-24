@@ -1,8 +1,11 @@
 """Define the API routes for the application."""
 
 from collections.abc import Sequence
+from typing import Any
 
 from fastapi import APIRouter, Depends
+from fastapi_pagination.ext.sqlalchemy import paginate
+from fastapi_pagination.links import Page
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +22,7 @@ async def root() -> dict[str, str]:
     return {"message": "UPRN Database API Access functional."}
 
 
-@router.get("/search", response_model=Sequence[UPRNResponse])
+@router.get("/search", response_model=Page[UPRNResponse])
 async def search(
     q: str, session: AsyncSession = Depends(get_db)
 ) -> Sequence[Address]:
@@ -31,6 +34,4 @@ async def search(
         Address.TSV.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    results = await session.execute(query)
-
-    return results.scalars().all()
+    return await paginate(session, query)
