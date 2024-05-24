@@ -246,3 +246,4 @@ data/raw-csv-small/.keep
 config.toml
 *.parquet
 uprn_mangle/backend/.dask_temp
+.changelog_generator.toml
