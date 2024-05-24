@@ -36,6 +36,7 @@ repos:
           - sqlalchemy
           - pydantic
           - simple-toml-settings
+          - fastapi
         args: [--strict, --ignore-missing-imports]
 
   - repo: https://github.com/python-poetry/poetry
