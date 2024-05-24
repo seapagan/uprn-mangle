@@ -10,7 +10,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from uprn_mangle.backend.models import Address, AddressCreate, Base
+from uprn_mangle.backend.database.db import Base
+from uprn_mangle.backend.models import Address, AddressCreate
 
 
 def extract_record_type(filename: str) -> int:
