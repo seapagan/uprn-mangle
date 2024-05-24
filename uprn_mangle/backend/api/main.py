@@ -7,7 +7,8 @@ from typing import Any
 import uvicorn
 from fastapi import FastAPI
 
-from uprn_mangle.backend.database.db import init_models
+from uprn_mangle.backend.api.routes import router
+from uprn_mangle.backend.database import init_models
 
 
 @asynccontextmanager
@@ -18,13 +19,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, None]:  # noqa: ARG001
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-@app.get("/")
-async def root() -> dict[str, str]:
-    """Root endpoint to Check API functionality."""
-    return {"message": "UPRN Database API Access functional."}
-
+app.include_router(router, prefix="/api/v2")
 
 if __name__ == "__main__":
-    uvicorn.run("api:app", reload=True)
+    uvicorn.run("uprn_mangle.backend.api.main:app", reload=True)
