@@ -27,6 +27,7 @@ Everything in this section will be included in the next official release.
 
 **New Features**
 
+- Add the API functionality (using FastAPI) ([#255](https://github.com/seapagan/uprn-mangle/pull/255)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 3 - rewrite from scratch ([#249](https://github.com/seapagan/uprn-mangle/pull/249)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 2, use parquet files to reduce memory usage ([#247](https://github.com/seapagan/uprn-mangle/pull/247)) by [seapagan](https://github.com/seapagan)
 - Add settings file ([#246](https://github.com/seapagan/uprn-mangle/pull/246)) by [seapagan](https://github.com/seapagan)
@@ -37,6 +38,10 @@ Everything in this section will be included in the next official release.
 
 - Refactor the layout for database access and models ([#252](https://github.com/seapagan/uprn-mangle/pull/252)) by [seapagan](https://github.com/seapagan)
 - Refactor and tidy the overall code ([#250](https://github.com/seapagan/uprn-mangle/pull/250)) by [seapagan](https://github.com/seapagan)
+
+**Documentation**
+
+- Add the auto-generated CHANGELOG ([#253](https://github.com/seapagan/uprn-mangle/pull/253)) by [seapagan](https://github.com/seapagan)
 
 [`Full Changelog`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD) | [`Diff`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD.diff) | [`Patch`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD.patch)
 
