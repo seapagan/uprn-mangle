@@ -343,38 +343,40 @@ class MangleUPRN:
                 task = progress.add_task(
                     "Loading to Database", total=num_chunks
                 )
-                for i, chunk in enumerate(
-                    pd.read_csv(
-                        OUTPUT_DIR / OUTPUT_NAME,
-                        sep="|",
-                        dtype={
-                            "UPRN": "int",
-                            "SUB_BUILDING_NAME": "str",
-                            "BUILDING_NAME": "str",
-                            "BUILDING_NUMBER": "str",
-                            "THOROUGHFARE": "str",
-                            "POST_TOWN": "str",
-                            "POSTCODE": "str",
-                            "LOGICAL_STATUS": "str",
-                            "BLPU_STATE": "str",
-                            "COUNTRY": "str",
-                            "CLASSIFICATION_CODE": "str",
-                            "USRN": "str",
-                            "STREET_DESCRIPTION": "str",
-                            "LOCALITY": "str",
-                            "TOWN_NAME": "str",
-                            "ADMINISTRATIVE_AREA": "str",
-                        },
-                        na_filter=False,
-                        chunksize=chunk_size,
-                        converters=converters,
-                    )
+
+                columns_lower = None
+
+                for chunk in pd.read_csv(
+                    OUTPUT_DIR / OUTPUT_NAME,
+                    sep="|",
+                    dtype={
+                        "UPRN": "int",
+                        "SUB_BUILDING_NAME": "str",
+                        "BUILDING_NAME": "str",
+                        "BUILDING_NUMBER": "str",
+                        "THOROUGHFARE": "str",
+                        "POST_TOWN": "str",
+                        "POSTCODE": "str",
+                        "LOGICAL_STATUS": "str",
+                        "BLPU_STATE": "str",
+                        "COUNTRY": "str",
+                        "CLASSIFICATION_CODE": "str",
+                        "USRN": "str",
+                        "STREET_DESCRIPTION": "str",
+                        "LOCALITY": "str",
+                        "TOWN_NAME": "str",
+                        "ADMINISTRATIVE_AREA": "str",
+                    },
+                    na_filter=False,
+                    chunksize=chunk_size,
+                    converters=converters,
                 ):
-                    if i == 0:
+                    if columns_lower is None:
                         chunk.columns = chunk.columns.str.lower()
                         columns_lower = chunk.columns
                     else:
                         chunk.columns = columns_lower
+
                     process_chunk(session, chunk)
                     progress.update(task, advance=1)
                     # Clear the chunk from memory
