@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from uprn_mangle.backend.database import get_db
@@ -27,8 +27,10 @@ async def search(
 
     Returns a list of addresses that match the search term.
     """
-    results = await session.execute(
-        select(Address).where(Address.FULL_ADDRESS.ilike(f"%{q}%"))
+    query = select(Address).where(
+        Address.TSV.op("@@")(func.plainto_tsquery("english", q))
     )
+
+    results = await session.execute(query)
 
     return results.scalars().all()
