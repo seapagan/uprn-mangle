@@ -54,8 +54,8 @@ class MangleUPRN:
 
     def run(self) -> None:
         """Run the mangle and import process."""
-        # self.phase_one()
-        # self.phase_two()
+        self.phase_one()
+        self.phase_two()
         self.phase_three()
 
         rprint("\n[green] -> All phases completed successfully\n")
