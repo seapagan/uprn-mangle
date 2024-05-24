@@ -10,7 +10,7 @@ const SearchResults = ({ searchString }) => {
   // in here we will do the actual search, using the 'searchString' variable
   // passed into us.
 
-  const baseURL = "/api/v1/";
+  const baseURL = "/api/v2/";
 
   const [searchResults, setSearchResults] = useState({ results: [] });
   const [searchURL, setSearchURL] = useState("");
@@ -24,33 +24,34 @@ const SearchResults = ({ searchString }) => {
   useEffect(() => {
     if (searchURL) {
       fetch(searchURL)
-        .then(response => response.json())
-        .then(data => setSearchResults(data));
+        .then((response) => response.json())
+        .then((data) => setSearchResults(data));
     }
   }, [searchURL]);
 
   return (
     <div>
-      <Pager
+      {/* <Pager
         baseURL={baseURL}
         searchResults={searchResults}
         searchString={searchString}
         searchURL={searchURL}
         setSearchURL={setSearchURL}
-      />
+      /> */}
       <div className="search-results-container">
         <ResultHeader />
-        {searchResults.results.map((result, index) => (
+        {searchResults && console.log(searchResults)}
+        {searchResults.addresses.map((result, index) => (
           <ResultItem key={index} result={result} />
         ))}
       </div>
-      <Pager
+      {/* <Pager
         baseURL={baseURL}
         searchResults={searchResults}
         searchString={searchString}
         searchURL={searchURL}
         setSearchURL={setSearchURL}
-      />
+      /> */}
     </div>
   );
 };

@@ -256,3 +256,4 @@ uprn_mangle/backend/.dask_temp
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+uprn_mangle/frontend/.yarn/install-state.gz
