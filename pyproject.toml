@@ -37,6 +37,7 @@ python-dotenv = "^1.0.1"
 sqlalchemy = "^2.0.30"
 tqdm = "^4.66.4"
 
+asyncpg = "^0.29.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

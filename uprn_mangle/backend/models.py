@@ -42,6 +42,10 @@ class Address(Base):
         ),  # Index for improving search performance
     )
 
+    def __repr__(self) -> str:
+        """Return a string representation of the model."""
+        return f"Address({self.UPRN} @ {self.FULL_ADDRESS})"
+
 
 class AddressCreate(BaseModel):
     """Pydantic model for the address table."""
