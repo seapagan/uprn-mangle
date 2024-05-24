@@ -3,7 +3,6 @@
 # mypy: disable_error_code="attr-defined,no-untyped-call"
 import gc
 import logging
-import sys
 from itertools import tee
 from pathlib import Path
 from shutil import copyfile
@@ -18,14 +17,10 @@ from dask.distributed import Client
 from rich import print as rprint
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn
-from simple_toml_settings.exceptions import SettingsNotFoundError
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from uprn_mangle.backend.config import Settings
 
 # Set up the Dask client with temporary storage on disk
 # load constants from external file so we can share it
+from uprn_mangle.backend.config.settings import get_settings
 from uprn_mangle.backend.constants import (
     CROSSREF_DIR,
     CROSSREF_NAME,
@@ -36,6 +31,7 @@ from uprn_mangle.backend.constants import (
     RAW_DIR,
     WANTED_CODES,
 )
+from uprn_mangle.backend.database import session_local, sync_engine
 from uprn_mangle.backend.helpers import (
     drop_table,
     extract_record_type,
@@ -54,26 +50,7 @@ class MangleUPRN:
 
     def __init__(self) -> None:
         """Initialise the class."""
-        # Load the settings
-        try:
-            self.settings = Settings.get_instance(
-                "uprn_mangle", auto_create=False, local_file=True
-            )
-
-        except SettingsNotFoundError:
-            rprint(
-                "\n[red] -> Settings file not found, please create a settings "
-                "file and try again.\n"
-            )
-            sys.exit(1)
-        else:
-            self.database_url = (
-                f"postgresql://{self.settings.get('db_user')}:"
-                f"{self.settings.db_password}@"
-                f"{self.settings.db_host}:"
-                f"{self.settings.db_port}/"
-                f"{self.settings.db_name}"
-            )
+        self.settings = get_settings()
 
     def run(self) -> None:
         """Run the mangle and import process."""
@@ -329,16 +306,11 @@ class MangleUPRN:
             ["Phase3", "Load to database", "This may take a LONG time!!"]
         )
 
-        engine = create_engine(self.database_url, echo=False)
-        session_local = sessionmaker(
-            autocommit=False, autoflush=False, bind=engine
-        )
-
         # drop the existing table if it exists.
         # this allows updated UPRN's to be imported.
-        drop_table(engine)
+        drop_table(sync_engine)
 
-        with engine.begin() as conn:
+        with sync_engine.begin() as conn:
             Base.metadata.create_all(conn)
 
         with session_local() as session:
