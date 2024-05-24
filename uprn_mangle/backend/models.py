@@ -12,32 +12,32 @@ class Address(Base):
 
     __tablename__ = "addressbase"
 
-    UPRN: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
-    FULL_ADDRESS: Mapped[str] = mapped_column(String(255), nullable=False)
-    SUB_BUILDING_NAME: Mapped[str] = mapped_column(String(64))
-    BUILDING_NAME: Mapped[str] = mapped_column(String(64))
-    BUILDING_NUMBER: Mapped[str] = mapped_column(String(8))
-    THOROUGHFARE: Mapped[str] = mapped_column(String(64))
-    POST_TOWN: Mapped[str] = mapped_column(String(64))
-    POSTCODE: Mapped[str] = mapped_column(String(10))
-    ADMINISTRATIVE_AREA: Mapped[str] = mapped_column(String(64))
-    LOGICAL_STATUS: Mapped[str] = mapped_column(String(64))
-    BLPU_STATE: Mapped[str] = mapped_column(String(64))
-    X_COORDINATE: Mapped[float] = mapped_column(Float)
-    Y_COORDINATE: Mapped[float] = mapped_column(Float)
-    LATITUDE: Mapped[float] = mapped_column(Float)
-    LONGITUDE: Mapped[float] = mapped_column(Float)
-    COUNTRY: Mapped[str] = mapped_column(String(64))
-    CLASSIFICATION_CODE: Mapped[str] = mapped_column(String(64))
-    USRN: Mapped[str] = mapped_column(String(20))
-    STREET_DESCRIPTION: Mapped[str] = mapped_column(String(255))
-    LOCALITY: Mapped[str] = mapped_column(String(64))
-    TOWN_NAME: Mapped[str] = mapped_column(String(64))
-    TSV = Column(TSVECTOR)
+    uprn: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
+    full_address: Mapped[str] = mapped_column(String(255), nullable=False)
+    sub_building_name: Mapped[str] = mapped_column(String(64))
+    building_name: Mapped[str] = mapped_column(String(64))
+    building_number: Mapped[str] = mapped_column(String(8))
+    thoroughfare: Mapped[str] = mapped_column(String(64))
+    post_town: Mapped[str] = mapped_column(String(64))
+    postcode: Mapped[str] = mapped_column(String(10))
+    administrative_area: Mapped[str] = mapped_column(String(64))
+    logical_status: Mapped[str] = mapped_column(String(64))
+    blpu_state: Mapped[str] = mapped_column(String(64))
+    x_coordinate: Mapped[float] = mapped_column(Float)
+    y_coordinate: Mapped[float] = mapped_column(Float)
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
+    country: Mapped[str] = mapped_column(String(64))
+    classification_code: Mapped[str] = mapped_column(String(64))
+    usrn: Mapped[str] = mapped_column(String(20))
+    street_description: Mapped[str] = mapped_column(String(255))
+    locality: Mapped[str] = mapped_column(String(64))
+    town_name: Mapped[str] = mapped_column(String(64))
+    tsv = Column(TSVECTOR)
 
     __table_args__ = (
         Index(
-            "ix_addressbase_tsv", "TSV", postgresql_using="gin"
+            "ix_addressbase_tsv", "tsv", postgresql_using="gin"
         ),  # Index for improving search performance
     )
 

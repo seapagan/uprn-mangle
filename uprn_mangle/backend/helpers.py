@@ -45,47 +45,47 @@ def show_header(text_list: list[str], width: int = 80) -> None:
 def generate_full_address(address: AddressCreate) -> str:
     """Generate full address by concatenating specific fields."""
     fields = [
-        address.SUB_BUILDING_NAME.strip(),
-        address.BUILDING_NAME.strip(),
-        address.BUILDING_NUMBER.strip(),
-        address.THOROUGHFARE.strip(),
-        address.POST_TOWN.strip(),
-        address.POSTCODE.strip(),
-        address.ADMINISTRATIVE_AREA.strip(),
+        address.sub_building_name.strip(),
+        address.building_name.strip(),
+        address.building_number.strip(),
+        address.thoroughfare.strip(),
+        address.post_town.strip(),
+        address.postcode.strip(),
+        address.administrative_area.strip(),
     ]
     return ", ".join([field for field in fields if field])
 
 
 def create_address(session: Session, address: AddressCreate) -> Address | None:
     """Create a new address entry in the database."""
-    if address.POSTCODE.strip() == "":
+    if address.postcode.strip() == "":
         return None  # we don't want to store addresses without a postcode
 
     full_address = generate_full_address(address)
 
     db_address = Address(
-        UPRN=address.UPRN,
-        FULL_ADDRESS=full_address,
-        SUB_BUILDING_NAME=address.SUB_BUILDING_NAME,
-        BUILDING_NAME=address.BUILDING_NAME,
-        BUILDING_NUMBER=address.BUILDING_NUMBER,
-        THOROUGHFARE=address.THOROUGHFARE,
-        POST_TOWN=address.POST_TOWN,
-        POSTCODE=address.POSTCODE,
-        ADMINISTRATIVE_AREA=address.ADMINISTRATIVE_AREA,
-        LOGICAL_STATUS=address.LOGICAL_STATUS,
-        BLPU_STATE=address.BLPU_STATE,
-        X_COORDINATE=address.X_COORDINATE,
-        Y_COORDINATE=address.Y_COORDINATE,
-        LATITUDE=address.LATITUDE,
-        LONGITUDE=address.LONGITUDE,
-        COUNTRY=address.COUNTRY,
-        CLASSIFICATION_CODE=address.CLASSIFICATION_CODE,
-        USRN=address.USRN,
-        STREET_DESCRIPTION=address.STREET_DESCRIPTION,
-        LOCALITY=address.LOCALITY,
-        TOWN_NAME=address.TOWN_NAME,
-        TSV=func.to_tsvector(full_address),
+        uprn=address.uprn,
+        full_address=full_address,
+        sub_building_name=address.sub_building_name,
+        building_name=address.building_name,
+        building_number=address.building_number,
+        thoroughfare=address.thoroughfare,
+        post_town=address.post_town,
+        postcode=address.postcode,
+        administrative_area=address.administrative_area,
+        logical_status=address.logical_status,
+        blpu_state=address.blpu_state,
+        x_coordinate=address.x_coordinate,
+        y_coordinate=address.y_coordinate,
+        latitude=address.latitude,
+        longitude=address.longitude,
+        country=address.country,
+        classification_code=address.classification_code,
+        usrn=address.usrn,
+        street_description=address.street_description,
+        locality=address.locality,
+        town_name=address.town_name,
+        tsv=func.to_tsvector(full_address),
     )
     try:
         session.add(db_address)

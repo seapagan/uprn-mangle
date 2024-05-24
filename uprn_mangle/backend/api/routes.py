@@ -48,7 +48,7 @@ async def search(
         )
 
     query = select(Address).where(
-        Address.TSV.op("@@")(func.plainto_tsquery("english", q))
+        Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
     return await paginate(session, query)  # type: ignore[no-any-return]
