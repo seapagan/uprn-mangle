@@ -247,3 +247,12 @@ config.toml
 *.parquet
 uprn_mangle/backend/.dask_temp
 .changelog_generator.toml
+
+# yarn files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
