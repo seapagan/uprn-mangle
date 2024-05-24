@@ -343,6 +343,9 @@ class MangleUPRN:
                 task = progress.add_task(
                     "Loading to Database", total=num_chunks
                 )
+
+                columns_lower = None
+
                 for chunk in pd.read_csv(
                     OUTPUT_DIR / OUTPUT_NAME,
                     sep="|",
@@ -368,6 +371,12 @@ class MangleUPRN:
                     chunksize=chunk_size,
                     converters=converters,
                 ):
+                    if columns_lower is None:
+                        chunk.columns = chunk.columns.str.lower()
+                        columns_lower = chunk.columns
+                    else:
+                        chunk.columns = columns_lower
+
                     process_chunk(session, chunk)
                     progress.update(task, advance=1)
                     # Clear the chunk from memory
