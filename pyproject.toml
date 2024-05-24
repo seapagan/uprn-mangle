@@ -162,6 +162,14 @@ convention = "google"
   "ANN001", # annotations for fixtures are sometimes a pain for test files
 ]
 
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+  "fastapi.Depends",
+  "fastapi.params.Depends",
+  "fastapi.Query",
+  "fastapi.params.Query",
+]
+
 [tool.ruff.lint.isort]
 known-first-party = []
 

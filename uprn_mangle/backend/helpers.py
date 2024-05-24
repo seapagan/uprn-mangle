@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
 from uprn_mangle.backend.database.db import Base
-from uprn_mangle.backend.models import Address, AddressCreate
+from uprn_mangle.backend.models import Address
+from uprn_mangle.backend.schemas import AddressCreate
 
 
 def extract_record_type(filename: str) -> int:

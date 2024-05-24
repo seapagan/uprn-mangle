@@ -1,6 +1,6 @@
 """Define schemas used in this applicaition."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class AddressCreate(BaseModel):
@@ -31,13 +31,15 @@ class AddressCreate(BaseModel):
 class UPRNResponse(BaseModel):
     """Pydantic model used for returning UPRN data."""
 
-    uprn: int
-    full_address: str
-    postcode: str
-    x_coordinate: float
-    y_coordinate: float
-    latitude: float
-    longitude: float
-    country: str
-    classification_code: str
-    street_description: str
+    model_config = ConfigDict(from_attributes=True)
+
+    UPRN: int
+    FULL_ADDRESS: str
+    POSTCODE: str
+    X_COORDINATE: float
+    Y_COORDINATE: float
+    LATITUDE: float
+    LONGITUDE: float
+    COUNTRY: str
+    CLASSIFICATION_CODE: str
+    STREET_DESCRIPTION: str
