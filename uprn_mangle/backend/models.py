@@ -43,4 +43,4 @@ class Address(Base):
 
     def __repr__(self) -> str:
         """Return a string representation of the model."""
-        return f"Address({self.UPRN} @ {self.FULL_ADDRESS})"
+        return f"Address({self.uprn} @ {self.full_address})"
