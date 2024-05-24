@@ -31,6 +31,4 @@ async def search(
         select(Address).where(Address.FULL_ADDRESS.ilike(f"%{q}%"))
     )
 
-    # print(results.scalars().all())
-
     return results.scalars().all()
