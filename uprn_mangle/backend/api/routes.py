@@ -22,7 +22,7 @@ async def root() -> dict[str, str]:
 @router.get("/search", response_model=Sequence[UPRNResponse])
 async def search(
     q: str, session: AsyncSession = Depends(get_db)
-) -> Sequence[UPRNResponse]:
+) -> Sequence[Address]:
     """Search for an address in the UPRN database.
 
     Returns a list of addresses that match the search term.
