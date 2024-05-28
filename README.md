@@ -4,7 +4,10 @@
 [![CodeQL](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml)
 [![Dependency Review](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml)
 
-- [Update 15th May 2024](#update-15th-may-2024)
+THIS README IS IN THE PROCESS OF BEING UPDATED.
+
+<!-- TOC start -->
+- [Update 28th May 2024](#update-28th-may-2024)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [UPRN Data](#uprn-data)
@@ -23,20 +26,35 @@ by address and return the UPRN and links for Google maps and OpenStreetMap.
 - Backend and mangle scripts in [Django][django] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 15th May 2024
+## Update 28th May 2024
 
-THIS README IS IN THE PROCESS OF BEING UPDATED as the Project is being
-refactored (again!) to use `Poetry` for Python dependencies, and replace
-`Django` by `FastAPI` for the Backend. The Frontend will remain in `React`.
+The entire project is going through a major rewrite. The original project was
+started in 2022 and was a bit of a mess. I have learned a lot since then and
+can improve the codebase significantly.
 
-The Installation instructions below will shorly be updated to reflect these
-changes.
+All work is being done in a new branch `develop` and will be merged back to
+`main` when ready. Release `0.1.0` on GitHub is the last version of the original
+legacy project if anyone is interested.
 
-I am working to optimize the management command to mangle and import the CSV
-files as it is massively memory-hungry - using the entire Scotland dataset as an
-example, it will crash on less than 12GB (Physical + Swap) usable memory. This
-memory use is a priority to fix, likely at the expense of further increasing the
-time to process the files.
+For a start, the UPRN import process was VERY memory intensie and slow. It took
+over 12-15Gb of memory and several hours to import the full Scotland data. I
+have now reduced this to around 2Gb, though I still need to check the timing
+changes - it is still pretty slow but that is alot of data.
+
+Dependency management and virtual-environment control is now taken care of by
+`Poetry` which is a much better fit for the project. I have also added
+`pre-commit` hooks to ensure code quality and formatting. The latter two are now
+handled completely by `Ruff`, while `Mypy` is used for type checking.
+
+I have also replaced the original `Django` and `Django Rest Framework` with
+`FastAPI` and `SQLAlchemy 2`. This is a much better fit for the project.
+Database access is Async, and the pagination is blindingly fast.
+
+The Frontend still needs work. It will still be in `React` but I'll update to
+the latest version and move away from `CRA` to a faster `Vite`-based setup.
+
+Note that all the documentation below is for the original project and will be
+updated once the new version is ready to merge.
 
 ## Installation
 
@@ -145,7 +163,7 @@ This project is under the
 [MIT](https://choosealicense.com/licenses/mit/) license.
 
 ```pre
-Copyright (c) 2022 Grant Ramsay
+Copyright (c) 2022-2024 Grant Ramsay
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
