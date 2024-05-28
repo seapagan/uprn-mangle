@@ -88,6 +88,9 @@ pandas-stubs = "^2.2.2.240514"
 # dev profiling
 memory-profiler = "^0.61.0"
 
+# for dev analysis
+ipykernel = "^6.29.4"
+
 [tool.poe.tasks]
 # setup PoeThePoet tasks
 pre.cmd = "pre-commit run --all-files"
