@@ -257,3 +257,4 @@ uprn_mangle/backend/.dask_temp
 !.yarn/sdks
 !.yarn/versions
 uprn_mangle/frontend/.yarn/install-state.gz
+uprn_mangle/data/raw-csv-full
