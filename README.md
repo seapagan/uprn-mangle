@@ -36,10 +36,10 @@ All work is being done in a new branch `develop` and will be merged back to
 `main` when ready. Release `0.1.0` on GitHub is the last version of the original
 legacy project if anyone is interested.
 
-For a start, the UPRN import process was VERY memory intensie and slow. It took
-over 12-15Gb of memory and several hours to import the full Scotland data. I
-have now reduced this to around 2Gb, though I still need to check the timing
-changes - it is still pretty slow but that is alot of data.
+For a start, the UPRN import process was VERY memory intensive and slow. It took
+over 12-15Gb of memory and many hours to import the full Scotland data. I have
+now reduced this to around 2Gb, though I still need to check the timing changes,
+it is still pretty slow but that is a lot of data.
 
 Dependency management and virtual-environment control is now taken care of by
 `Poetry` which is a much better fit for the project. I have also added
