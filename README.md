@@ -7,7 +7,7 @@
 THIS README IS IN THE PROCESS OF BEING UPDATED.
 
 <!-- TOC start -->
-- [Update 26th August 2022](#update-26th-august-2022)
+- [Update 28th May 2024](#update-28th-may-2024)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [UPRN Data](#uprn-data)
@@ -27,20 +27,35 @@ by address and return the UPRN and links for Google maps and OpenStreetMap.
 - Backend and mangle scripts in [Django][django] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 26th August 2022
+## Update 28th May 2024
 
-The Backend and Frontend are going through a rewrite and tidy right now but the
-`main` branch is untouched at the moment so is still usable (but slooooow).
+The entire project is going through a major rewrite. The original project was
+started in 2022 and was a bit of a mess. I have learned a lot since then and
+can improve the codebase significantly.
 
-I have updated to use the latest Django 4 and React 18 while improving the
-configuration of development tooling such as Formatters and Linters for both
-Python and React.
+All work is being done in a new branch `develop` and will be merged back to
+`main` when ready. Release `0.1.0` on GitHub is the last version of the original
+legacy project if anyone is interested.
 
-I am working to optimize the management command to mangle and import the CSV
-files as it is massively memory-hungry - using the entire Scotland dataset as an
-example, it will crash on less than 12GB (Physical + Swap) usable memory. This
-memory use is a priority to fix, likely at the expense of further increasing the
-time to process the files.
+For a start, the UPRN import process was VERY memory intensie and slow. It took
+over 12-15Gb of memory and several hours to import the full Scotland data. I
+have now reduced this to around 2Gb, though I still need to check the timing
+changes - it is still pretty slow but that is alot of data.
+
+Dependency management and virtual-environment control is now taken care of by
+`Poetry` which is a much better fit for the project. I have also added
+`pre-commit` hooks to ensure code quality and formatting. The latter two are now
+handled completely by `Ruff`, while `Mypy` is used for type checking.
+
+I have also replaced the original `Django` and `Django Rest Framework` with
+`FastAPI` and `SQLAlchemy 2`. This is a much better fit for the project.
+Database access is Async, and the pagination is blindingly fast.
+
+The Frontend still needs work. It will still be in `React` but I'll update to
+the latest version and move away from `CRA` to a faster `Vite`-based setup.
+
+Note that all the documentation below is for the original project and will be
+updated once the new version is ready to merge.
 
 ## Installation
 
@@ -149,7 +164,7 @@ This project is under the
 [MIT](https://choosealicense.com/licenses/mit/) license.
 
 ```pre
-Copyright (c) 2022 Grant Ramsay
+Copyright (c) 2022-2024 Grant Ramsay
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
