@@ -4,7 +4,6 @@ import re
 from typing import cast
 
 import pandas as pd
-from rich import print as rprint
 from rich.console import Console
 from rich.panel import Panel
 from sqlalchemy import Engine, Table
