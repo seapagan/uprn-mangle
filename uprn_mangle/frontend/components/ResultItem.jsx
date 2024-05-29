@@ -8,15 +8,15 @@ import MapLink from "./MapLink";
 import "../css/resultitem.css";
 
 const ResultItem = ({ result }) => {
-  const GoogleURL = `https://www.google.com/maps/dir/?api=1&destination=${result.LATITUDE},${result.LONGITUDE}`;
-  const OSMapsURL = `https://osmaps.ordnancesurvey.co.uk/${result.LATITUDE},${result.LONGITUDE},15/pin`;
+  const GoogleURL = `https://www.google.com/maps/dir/?api=1&destination=${result.latitude},${result.longitude}&maptype=satellite`;
+  const OSMapsURL = `https://osmaps.ordnancesurvey.co.uk/${result.latitude},${result.longitude},15/pin`;
 
   return (
     <div className="result-container">
       <div className="result-details">
-        <div className="result uprn">{result.UPRN}</div>
+        <div className="result uprn">{result.uprn}</div>
         <div className="result address">
-          <div className="result address-main">{result.FULL_ADDRESS}</div>
+          <div className="result address-main">{result.full_address}</div>
           <div className="result address-extra">Extra Stuff</div>
         </div>
 

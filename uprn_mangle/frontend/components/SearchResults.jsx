@@ -10,14 +10,14 @@ const SearchResults = ({ searchString }) => {
   // in here we will do the actual search, using the 'searchString' variable
   // passed into us.
 
-  const baseURL = "/api/v2/";
+  const baseURL = "http://127.0.0.1:8000/api/v2/";
 
-  const [searchResults, setSearchResults] = useState({ results: [] });
+  const [searchResults, setSearchResults] = useState({ addresses: [] });
   const [searchURL, setSearchURL] = useState("");
 
   useEffect(() => {
     if (searchString) {
-      setSearchURL(`${baseURL}search/?q=${encodeURI(searchString)}`);
+      setSearchURL(`${baseURL}search?q=${encodeURI(searchString)}`);
     }
   }, [searchString]);
 
@@ -25,7 +25,8 @@ const SearchResults = ({ searchString }) => {
     if (searchURL) {
       fetch(searchURL)
         .then((response) => response.json())
-        .then((data) => setSearchResults(data));
+        .then((data) => setSearchResults(data))
+        .catch((error) => console.error("Error fetching data:", error));
     }
   }, [searchURL]);
 
@@ -40,7 +41,6 @@ const SearchResults = ({ searchString }) => {
       /> */}
       <div className="search-results-container">
         <ResultHeader />
-        {searchResults && console.log(searchResults)}
         {searchResults.addresses.map((result, index) => (
           <ResultItem key={index} result={result} />
         ))}
