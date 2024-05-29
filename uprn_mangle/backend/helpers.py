@@ -5,6 +5,8 @@ from typing import cast
 
 import pandas as pd
 from rich import print as rprint
+from rich.console import Console
+from rich.panel import Panel
 from sqlalchemy import Engine, Table
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -28,18 +30,19 @@ def extract_record_type(filename: str) -> int:
     raise ValueError(msg)
 
 
-def show_header(text_list: list[str], width: int = 80) -> None:
-    """Show a section Header with an arbitrary number of lines.
-
-    Args:
-        text_list (list): A list of Strings to be shown, one per line
-        width (int, optional): Width to make the box. Defaults to 50.
-    """
-    divider = "-" * (width - 2)
-    rprint("\n[green]/" + divider + "\\")
-    for line in text_list:
-        rprint("[green]|" + line.center((width - 2), " ") + "|")
-    rprint("[green]\\" + divider + "/")
+def show_header(title: str, text_list: list[str]) -> None:
+    """Show a header panel using Rich.panel."""
+    console = Console(width=80)
+    panel = Panel(
+        "\n".join(text_list),
+        title="[b][blue]UPRN Import[/b]",
+        subtitle=f"[blue]{title}",
+        title_align="left",
+        subtitle_align="left",
+        padding=(1, 2),
+        style="green",
+    )
+    console.print(panel)
 
 
 def generate_full_address(address: AddressCreate) -> str:
