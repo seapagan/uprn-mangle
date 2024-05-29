@@ -159,16 +159,17 @@ class MangleUPRN:
         ) -> None:
             """Convert a dask dataframe to parquet with a progress bar."""
             with ProgressBar():
-                ddf.to_parquet(filename, **kwargs)
+                ddf.to_parquet(filename, overwrite=True, **kwargs)
 
         def read_csv_to_parquet(
             record_num: str, usecols: list[str], dtype: dict[str, str]
         ) -> DataFrame:
             csv_path = MANGLED_DIR / code_list[record_num]
             parquet_path = csv_path.with_suffix(".parquet")
-            if not parquet_path.exists():
-                ddf = dd.read_csv(csv_path, usecols=usecols, dtype=dtype)
-                to_parquet_with_progress(ddf, parquet_path)
+            # currently we just overwrite the parquet file if it exists, but
+            # perhaps offer a choice to the user in the future.
+            ddf = dd.read_csv(csv_path, usecols=usecols, dtype=dtype)
+            to_parquet_with_progress(ddf, parquet_path)
             return cast(DataFrame, dd.read_parquet(parquet_path))
 
         # Get and convert records to Parquet format
@@ -187,15 +188,18 @@ class MangleUPRN:
             "21",
             [
                 "UPRN",
-                "LOGICAL_STATUS",
-                "BLPU_STATE",
                 "X_COORDINATE",
                 "Y_COORDINATE",
                 "LATITUDE",
                 "LONGITUDE",
-                "COUNTRY",
             ],
-            {"BLPU_STATE": "str", "LOGICAL_STATUS": "str"},
+            {
+                "UPRN": "str",
+                "LATITUDE": "string",
+                "LONGITUDE": "string",
+                "X_COORDINATE": "string",
+                "Y_COORDINATE": "string",
+            },
         )
         raw_record_28 = read_csv_to_parquet(
             "28",
@@ -209,18 +213,12 @@ class MangleUPRN:
                 "POSTCODE",
             ],
             {
+                "UPRN": "str",
                 "BUILDING_NUMBER": "str",
                 "THOROUGHFARE": "str",
                 "SUB_BUILDING_NAME": "str",
             },
         )
-        raw_record_32 = read_csv_to_parquet(
-            "32", ["UPRN", "CLASSIFICATION_CODE", "CLASS_SCHEME"], {}
-        )
-
-        filtered_record_32 = raw_record_32[
-            raw_record_32.CLASS_SCHEME.str.contains("AddressBase")
-        ]
 
         rprint(" -> Reading the UPRN <-> USRN reference file")
         cross_ref_file = CROSSREF_DIR / CROSSREF_NAME
@@ -253,15 +251,16 @@ class MangleUPRN:
         merged_usrn = dd.read_parquet(MANGLED_DIR / "merged_usrn.parquet")
 
         rprint(" -> Concatenating data")
-        chunk1 = dd.concat(
-            [
-                raw_record_28,
-                raw_record_21,
-                filtered_record_32.drop(columns=["CLASS_SCHEME"]),
-            ]
+        chunk1 = dd.merge(
+            raw_record_28,
+            raw_record_21,
+            how="inner",
+            on="UPRN",
         )
         to_parquet_with_progress(chunk1, MANGLED_DIR / "chunk1.parquet")
         chunk1 = dd.read_parquet(MANGLED_DIR / "chunk1.parquet")
+
+        chunk1.head()
 
         rprint(" -> Merging all data to one dataframe")
 
@@ -289,8 +288,8 @@ class MangleUPRN:
             raw_record_15,
             raw_record_21,
             raw_record_28,
-            raw_record_32,
-            filtered_record_32,
+            # raw_record_32,
+            # filtered_record_32,
         )
 
         del cross_ref, merged_usrn, chunk1, final_output
