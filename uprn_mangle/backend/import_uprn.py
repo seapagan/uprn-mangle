@@ -70,14 +70,17 @@ class MangleUPRN:
         work with, separate files for each record type.
         """
         show_header(
-            ["Phase 1", "Extract the required codes from the Raw Files"]
+            title="Phase 1",
+            text_list=[
+                "Extract the required codes from the Raw Files",
+            ],
         )
 
         # Loop through the header CSV files and make a list of the codes and
         # filenames.
         header_files: list[Path] = sorted(HEADER_DIR.glob("*.csv"))
 
-        rprint(f"\n -> Found {len(header_files)} header files")
+        rprint(f" -> Found {len(header_files)} header files")
         rprint("\n -> Deleting any existing mangled files...")
 
         # Delete the current *.csv files in the mangled directory
@@ -140,7 +143,7 @@ class MangleUPRN:
     # ------------------------------------------------------------------------ #
     def phase_two(self) -> None:
         """Run phase 2 : Format as we need and export to CSV for next stage."""
-        show_header(["Phase2", "Consolidate data"])
+        show_header(title="Phase2", text_list=["Consolidate data"])
 
         # first we need to get a list of the sorted files.
         mangled_files = sorted(MANGLED_DIR.glob("*.csv"))
@@ -301,7 +304,8 @@ class MangleUPRN:
     def phase_three(self) -> None:
         """Read in the prepared CSV file and then store it in our DB."""
         show_header(
-            ["Phase3", "Load to database", "This may take a LONG time!!"]
+            title="Phase3",
+            text_list=["Load to database", "This may take a LONG time!!"],
         )
 
         # drop the existing table if it exists.
