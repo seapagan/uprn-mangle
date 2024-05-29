@@ -1,12 +1,15 @@
 import { useState } from "react";
-import "./App.css";
+import "../css/app.css";
+import Header from "./Header";
+import Search from "./Search";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <h1>UPRN Mangle frontend.</h1>
+      <Header />
+      <Search />
     </>
   );
 }

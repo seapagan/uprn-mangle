@@ -1,0 +1,41 @@
+.btn {
+  color: black;
+  background-color: hsl(60, 20%, 90%);
+  /* border: 1px solid hsl(60, 20%, 70%); */
+  border: 1px solid #aaa;
+  /* below needs to be important to overrule the normalize */
+  outline: none !important;
+  padding: 0.3em 1em;
+  border-radius: 0.3em;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:focus {
+  background-color: hsl(60, 20%, 80%);
+  box-shadow: 0 0 5px 0 hsl(60, 20%, 70%);
+}
+
+.btn.btn-search,
+.btn.btn-nav {
+  margin-left: 5px;
+}
+
+.btn.btn-nav:first-child {
+  margin-left: 0;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  color: gray;
+  box-shadow: none;
+  background-color: inherit;
+}
+
+@media (max-width: 480px) {
+  /* hide the page links on mobile devices */
+  .btn.btn-search {
+    width: 30%;
+    align-self: center;
+  }
+}
