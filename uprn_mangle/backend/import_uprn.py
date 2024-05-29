@@ -192,6 +192,7 @@ class MangleUPRN:
                 "Y_COORDINATE",
                 "LATITUDE",
                 "LONGITUDE",
+                "COUNTRY",
             ],
             {
                 "UPRN": "str",
@@ -259,8 +260,6 @@ class MangleUPRN:
         )
         to_parquet_with_progress(chunk1, MANGLED_DIR / "chunk1.parquet")
         chunk1 = dd.read_parquet(MANGLED_DIR / "chunk1.parquet")
-
-        chunk1.head()
 
         rprint(" -> Merging all data to one dataframe")
 
@@ -356,10 +355,7 @@ class MangleUPRN:
                         "THOROUGHFARE": "str",
                         "POST_TOWN": "str",
                         "POSTCODE": "str",
-                        "LOGICAL_STATUS": "str",
-                        "BLPU_STATE": "str",
                         "COUNTRY": "str",
-                        "CLASSIFICATION_CODE": "str",
                         "USRN": "str",
                         "STREET_DESCRIPTION": "str",
                         "LOCALITY": "str",

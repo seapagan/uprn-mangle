@@ -14,14 +14,11 @@ class AddressCreate(BaseModel):
     post_town: str = ""
     postcode: str = ""
     administrative_area: str = ""
-    logical_status: str = ""
-    blpu_state: str = ""
     x_coordinate: float = 0.0
     y_coordinate: float = 0.0
     latitude: float = 0.0
     longitude: float = 0.0
     country: str = ""
-    classification_code: str = ""
     usrn: str = ""
     street_description: str = ""
     locality: str = ""
@@ -40,6 +37,4 @@ class UPRNResponse(BaseModel):
     y_coordinate: float
     latitude: float
     longitude: float
-    country: str
-    classification_code: str
     street_description: str
