@@ -136,7 +136,7 @@ class MangleUPRN:
             for file_handle in output_file_handles.values():
                 file_handle.close()
 
-        rprint("\n -> Phase 1 completed")
+        rprint("\n -> Phase 1 completed\n")
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 2                                 #
@@ -296,6 +296,8 @@ class MangleUPRN:
 
         del cross_ref, merged_usrn, chunk1, final_output
         gc.collect()
+
+        rprint("\n -> Phase 2 completed\n")
 
     # ------------------------------------------------------------------------ #
     #                                  Phase 3                                 #
