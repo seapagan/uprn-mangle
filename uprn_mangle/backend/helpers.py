@@ -45,13 +45,13 @@ def show_header(text_list: list[str], width: int = 80) -> None:
 def generate_full_address(address: AddressCreate) -> str:
     """Generate full address by concatenating specific fields."""
     fields = [
-        address.sub_building_name.strip(),
-        address.building_name.strip(),
+        address.sub_building_name.strip().title(),
+        address.building_name.strip().title(),
         address.building_number.strip(),
-        address.thoroughfare.strip(),
-        address.post_town.strip(),
+        address.thoroughfare.strip().title(),
+        address.post_town.strip().title(),
         address.postcode.strip(),
-        address.administrative_area.strip(),
+        address.administrative_area.strip().title(),
     ]
     return ", ".join([field for field in fields if field])
 
@@ -73,14 +73,11 @@ def create_address(session: Session, address: AddressCreate) -> Address | None:
         post_town=address.post_town,
         postcode=address.postcode,
         administrative_area=address.administrative_area,
-        logical_status=address.logical_status,
-        blpu_state=address.blpu_state,
         x_coordinate=address.x_coordinate,
         y_coordinate=address.y_coordinate,
         latitude=address.latitude,
         longitude=address.longitude,
         country=address.country,
-        classification_code=address.classification_code,
         usrn=address.usrn,
         street_description=address.street_description,
         locality=address.locality,
