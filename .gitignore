@@ -259,3 +259,4 @@ uprn_mangle/backend/.dask_temp
 uprn_mangle/frontend/.yarn/install-state.gz
 uprn_mangle/data/raw-csv-full
 uprn_mangle/data/raw-csv-small
+sql_data
