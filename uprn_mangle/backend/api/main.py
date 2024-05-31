@@ -33,6 +33,9 @@ add_pagination(app)
 
 if __name__ == "__main__":
     host = urlparse(settings.api_base_url).hostname
+    if not host:
+        msg = "Bad api_base_url setting, please check the config.toml file."
+        raise SystemExit(msg)
     uvicorn.run(
         "uprn_mangle.backend.api.main:app",
         reload=True,
