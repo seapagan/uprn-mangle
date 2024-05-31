@@ -1,4 +1,8 @@
 [uprn_mangle]
+api_base_url = "http://localhost"
+api_port = 8000
+api_prefix = "/api/v1"
+
 db_user = "addressbase"
 db_password = "mysecurepassword"
 db_name = "addressbase"
