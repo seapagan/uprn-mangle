@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import "../css/searchbox.css";
 
@@ -19,7 +19,7 @@ const SearchBox = ({ setSearchString }) => {
 
   return (
     <div>
-      <form className="search-box-wrapper">
+      <form name="search-form" className="search-box-wrapper">
         <input
           autoFocus={true}
           className="input"
@@ -27,6 +27,7 @@ const SearchBox = ({ setSearchString }) => {
           placeholder="Search the Address Database"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          name="search-box"
         />
 
         <div className="nav-button-group">

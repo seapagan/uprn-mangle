@@ -1,5 +1,3 @@
-import React from "react";
-
 import "../css/maplink.css";
 
 const MapLink = ({ Link, Icon, Lat, Lon }) => {
