@@ -9,20 +9,26 @@ import "../css/searchresults.css";
 const SearchResults = ({ searchString }) => {
   // in here we will do the actual search, using the 'searchString' variable
   // passed into us.
+
   const baseURL = "http://127.0.0.1:8000/api/v2/";
 
   const [searchResults, setSearchResults] = useState({ addresses: [] });
+  const [searchURL, setSearchURL] = useState("");
 
   useEffect(() => {
     if (searchString) {
-      const searchURL = `${baseURL}search?q=${encodeURI(searchString)}`;
+      setSearchURL(`${baseURL}search?q=${encodeURI(searchString)}`);
+    }
+  }, [searchString]);
 
+  useEffect(() => {
+    if (searchURL) {
       fetch(searchURL)
         .then((response) => response.json())
         .then((data) => setSearchResults(data))
         .catch((error) => console.error("Error fetching data:", error));
     }
-  }, [searchString]);
+  }, [searchURL]);
 
   return (
     <div>
