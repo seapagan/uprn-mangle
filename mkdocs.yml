@@ -1,0 +1,57 @@
+site_name: Sifaka
+site_url: https://uprn.grantramsay.dev
+
+copyright: © 2022-2024 Grant Ramsay (Seapagan)
+
+repo_url: https://github.com/seapagan/uprn-mangle
+repo_name: seapagan/uprn-mangle
+
+# default to using the material theme
+theme:
+  name: material
+  palette:
+    primary: light-blue
+    accent: blue
+  features:
+    - navigation.footer
+    - content.code.copy
+    - content.code.annotate
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.prune
+    - navigation.top
+    - toc.follow
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/seapagan
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/gnramsay-dev
+
+# default plugins here are to minify the html, css and js plus enable the search
+# plugin. Adjust to your liking.
+plugins:
+  - search
+  - minify:
+      minify_html: true
+      minify_css: true
+      minify_js: true
+      htmlmin_opts:
+        remove_comments: true
+        remove_empty_space: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      linenums: false
+      auto_title: false
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Introduction: index.md

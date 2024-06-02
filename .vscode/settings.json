@@ -1,0 +1,80 @@
+{
+  "[javascriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.tabSize": 2
+  },
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "autoDocstring.startOnNewLine": true,
+  "beautify.language": {
+    "html": ["htm", "html", "django-html"]
+  },
+  "css.customData": ["./.vscode/custom.css-data.json"],
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "emmet.includeLanguages": {
+    "django-html": "html",
+    "jinja-html": "html"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "files.associations": {
+    "*.js": "javascriptreact",
+    "**/*.html": "html",
+    "**/*.tpl": "jinja",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements",
+    "**/templates/**/*": "django-txt",
+    "**/templates/**/*.html": "jinja-html"
+  },
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.cache": true,
+    "**/.mypy_cache": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true
+  },
+  "git.alwaysSignOff": true,
+  "git.enableCommitSigning": true,
+  "html.format.indentHandlebars": true,
+  "html.format.templating": true,
+  "markdownlint.ignore": ["CHANGELOG.md"],
+  "material-icon-theme.languages.associations": {
+    "jinja-html": "django"
+  },
+  "mypy-type-checker.args": ["--strict"],
+  "mypy-type-checker.importStrategy": "useBundled",
+  "mypy-type-checker.reportingScope": "workspace",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoImportUserSymbols": true,
+  "python.analysis.extraPaths": [],
+  "python.analysis.indexing": true,
+  "python.analysis.stubPath": "/home/seapagan/stubs",
+  "python.analysis.typeCheckingMode": "off",
+  "python.languageServer": "Pylance",
+  "python.pythonPath": "./.venv/bin/python",
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "ruff.fixAll": false,
+  "ruff.organizeImports": true,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook",
+    "file:/**/*.parquet": "jupyter-data-wrangler"
+  }
+}
