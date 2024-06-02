@@ -95,7 +95,7 @@ ipykernel = "^6.29.4"
 # setup PoeThePoet tasks
 pre.cmd = "pre-commit run --all-files"
 pre.help = "Run pre-commit checks"
-mypy.cmd = "mypy --config-file pyproject.toml uprn_mangle/**/*.py tests/**/*.py --strict"
+mypy.cmd = "mypy --config-file pyproject.toml uprn_mangle/backend/**/*.py tests/**/*.py --strict"
 mypy.help = "Run mypy checks"
 format.cmd = "ruff format ."
 format.help = "Format code with Ruff"
@@ -184,6 +184,7 @@ keep-runtime-typing = true
 plugins = ["pydantic.mypy"]
 disallow_untyped_defs = true
 python_version = "3.10"
+exclude = ["uprn_mangle/frontend"]
 
 [[tool.mypy.overrides]]
 disable_error_code = ["method-assign", "no-untyped-def", "attr-defined"]

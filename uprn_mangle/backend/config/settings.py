@@ -17,6 +17,20 @@ class Settings(TOMLSettings):
     db_port: str = "5432"
     db_table: str = "addressbase"
 
+    api_base_url: str = ""
+    api_port: int = 8000
+    api_prefix: str = ""
+
+    def __post_init__(self) -> None:
+        """Make sure that the api_base_url is not blank."""
+        super().__post_init__()
+        if not self.api_base_url:
+            rprint(
+                "\n[red] -> The api_base_url setting is blank, please set it "
+                "in the '[b]config.toml[/b]' file and try again.\n"
+            )
+            raise SystemExit
+
 
 def get_settings() -> Settings:
     """Get the settings."""
