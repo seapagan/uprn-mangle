@@ -11,7 +11,7 @@
 - [Installation](#installation)
   - [UPRN Data](#uprn-data)
   - [Python](#python)
-- [React](#react)
+  - [React](#react)
 - [Contributing to this project](#contributing-to-this-project)
 - [License](#license)
 
@@ -147,7 +147,7 @@ Finally, if this completes successfully, you can start the backend server:
 python uprn_mangle/backend/api/main.py
 ```
 
-## React
+### React
 
 Change to the `uprn_mangle/frontend` folder and run the following commands:
 
