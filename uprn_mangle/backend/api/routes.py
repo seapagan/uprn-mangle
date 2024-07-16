@@ -1,31 +1,19 @@
 """Define the API routes for the application."""
 
 from collections.abc import Sequence
-from typing import TypeVar
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from fastapi_pagination.customization import (
-    CustomizedPage,
-    UseFieldsAliases,
-    UseParamsFields,
-)
 from fastapi_pagination.ext.sqlalchemy import paginate
-from fastapi_pagination.links import Page
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from uprn_mangle.backend.api.pagination import Pagination
 from uprn_mangle.backend.database import get_db
 from uprn_mangle.backend.models import Address
 from uprn_mangle.backend.schemas import UPRNResponse
 
-T = TypeVar("T")
-
 router = APIRouter()
-
-Pagination = CustomizedPage[
-    Page[T], UseParamsFields(size=20), UseFieldsAliases(items="addresses")
-]
 
 
 @router.get("/")
