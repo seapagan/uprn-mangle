@@ -1,0 +1,19 @@
+.header-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  margin: auto;
+  font-size: 1.5rem;
+  justify-content: center;
+}
+
+.header-text {
+  font-family: "Bangers", sans-serif;
+  font-variant: small-caps;
+  font-size: 3rem;
+  -webkit-text-fill-color: #eee;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+  text-shadow: 3px 3px lightgray;
+}
