@@ -64,10 +64,10 @@ the values to match your setup. Make sure to put the correct database details
 in.
 
 You can change the `api_prefix` to place the API at a different URL. The default
-is `/api/v2/` so the API will be available at `http://localhost:8000/api/v2/`. 
+is `/api/v2/` so the API will be available at `http://localhost:8000/api/v2/`.
 
 > [!NOTE]
-> The frontend is currently hard-coded to look for the API at the above URL. 
+> The frontend is currently hard-coded to look for the API at the above URL.
 > If you change this, you will need to update the frontend code.
 
 ```toml
@@ -88,10 +88,10 @@ db_table = "addressbase"
 ## Installation
 
 On your local machine, you need a working copy of [Python][python] and
-[Nodejs][nodejs]. I recommend you use [Pyenv][pyenv] to manage your Python 
+[Nodejs][nodejs]. I recommend you use [Pyenv][pyenv] to manage your Python
 versions.
 
-Use `Poetry` to manage the Python dependencies and `Yarn` or `npm` for the 
+Use `Poetry` to manage the Python dependencies and `Yarn` or `npm` for the
 JavaScript dependencies.
 
 ### UPRN Data
@@ -131,7 +131,7 @@ poetry install
 poetry shell
 ```
 
-This will install all the required Python dependencies and switch to the virtual 
+This will install all the required Python dependencies and switch to the virtual
 environment.
 
 Now, run the following command to set up the database and import the UPRN data:
@@ -141,7 +141,7 @@ python uprn_mangle/backend/import_uprn.py
 ```
 
 This last part can take a good long time and memory to complete. It is recommended
-to run this on a machine with a good amount of memory and a fast CPU. 
+to run this on a machine with a good amount of memory and a fast CPU.
 
 Finally, if this completes successfully, you can start the backend server:
 

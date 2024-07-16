@@ -44,7 +44,7 @@ website](https://python-poetry.org/docs/#installation).
 
 The frontend is built using [React](https://reactjs.org/). You will need to have
 [Node.js](https://nodejs.org/) installed on your machine. You can download this
-from the [official website](https://nodejs.org/en/download/). I prefer to use 
+from the [official website](https://nodejs.org/en/download/). I prefer to use
 [yarn](https://yarnpkg.com/) as the package manager, but you can use `npm` if
 you prefer.
 
@@ -95,8 +95,8 @@ using the auto-generated `requirements-dev.txt` file:
 pip install -r requirements-dev.txt
 ```
 
-However, [Poetry](https://python-poetry.org/) is the recommended (and only 
-supported) way of developing this project and is tightly integrated with the 
+However, [Poetry](https://python-poetry.org/) is the recommended (and only
+supported) way of developing this project and is tightly integrated with the
 code and tools.
 
 ### Frontend
@@ -115,8 +115,8 @@ also use `npm` if you prefer.
 I am quite strict about linting and code formatting and have set up a number of
 pre-commit hooks and tasks to ensure that the code meets the required standards.
 
-For the backend, Use the `poe ruff`, `poe format` and `poe mypy` tasks 
-regularly. If you use VSCode, install the `Ruff` and`MyPy` extensions and set 
+For the backend, Use the `poe ruff`, `poe format` and `poe mypy` tasks
+regularly. If you use VSCode, install the `Ruff` and`MyPy` extensions and set
 them to run on save. The included `.vscode` folder has the settings for this.
 
 There are no tasks set up yet for the frontend, but please use `eslint`
@@ -273,7 +273,7 @@ Here are some guidelines to follow when contributing to `upnr_mangle`:
   [Google Docstring
   Spec](https://google.github.io/styleguide/pyguide.html#381-docstrings) though
   at this time is a bit slack on listing the Args and Returns. I will be adding
-  these in as I go along so feel free to add them in if you are contributing 
+  these in as I go along so feel free to add them in if you are contributing
   :smile:.
 - If you add or change any functionality, please update the documentation
   accordingly.
