@@ -30,23 +30,20 @@ const Pager = ({ searchResults, setSearchURL }) => {
   // no pager needed for a single page of results...
   if (totalPages < 2) return null;
 
-  // this is a hack for now
-  const urlPrefix = "http://127.0.0.1:8000";
-
   // otherwise return the pager...
   return (
     <div className="pager-container">
       <button // 'First'
         disabled={currentPage == 1 ? true : false}
         className="btn btn-nav"
-        onClick={() => setSearchURL(urlPrefix + links.first)}
+        onClick={() => setSearchURL(links.first)}
       >
         &lt;&lt; First
       </button>
       <button // 'Previous'
         disabled={!links.prev ? true : false}
         className="btn btn-nav"
-        onClick={() => setSearchURL(urlPrefix + links.prev)}
+        onClick={() => setSearchURL(links.prev)}
       >
         &lt; Previous
       </button>
@@ -67,7 +64,7 @@ const Pager = ({ searchResults, setSearchURL }) => {
         disabled={!links.next ? true : false}
         className="btn btn-nav"
         onClick={() => {
-          setSearchURL(urlPrefix + links.next);
+          setSearchURL(links.next);
         }}
       >
         Next &gt;
@@ -75,7 +72,7 @@ const Pager = ({ searchResults, setSearchURL }) => {
       <button // 'Last'
         disabled={currentPage == totalPages ? true : false}
         className="btn btn-nav"
-        onClick={() => setSearchURL(urlPrefix + links.last)}
+        onClick={() => setSearchURL(links.last)}
       >
         Last &gt;&gt;
       </button>

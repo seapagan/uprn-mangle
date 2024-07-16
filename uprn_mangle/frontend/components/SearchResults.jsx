@@ -32,20 +32,14 @@ const SearchResults = ({ searchString }) => {
 
   return (
     <div>
-      {searchResults && <Pager searchResults={searchResults} setSearchURL={setSearchURL} />}
+      {<Pager searchResults={searchResults} setSearchURL={setSearchURL} />}
       <div className="search-results-container">
         <ResultHeader />
         {searchResults.addresses.map((result, index) => (
           <ResultItem key={index} result={result} />
         ))}
       </div>
-      {/* <Pager
-        baseURL={baseURL}
-        searchResults={searchResults}
-        searchString={searchString}
-        searchURL={searchURL}
-        setSearchURL={setSearchURL}
-      /> */}
+      {<Pager searchResults={searchResults} setSearchURL={setSearchURL} />}
     </div>
   );
 };

@@ -2,13 +2,13 @@
 
 from collections.abc import Sequence
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from uprn_mangle.backend.api.pagination import Pagination
+from uprn_mangle.backend.api.pagination import Pagination, fix_links
 from uprn_mangle.backend.database import get_db
 from uprn_mangle.backend.models import Address
 from uprn_mangle.backend.schemas import UPRNResponse
@@ -24,7 +24,9 @@ async def root() -> dict[str, str]:
 
 @router.get("/search", response_model=Pagination[UPRNResponse])
 async def search(
-    q: str | None = None, session: AsyncSession = Depends(get_db)
+    request: Request,
+    q: str | None = None,
+    session: AsyncSession = Depends(get_db),
 ) -> JSONResponse | Sequence[Address]:
     """Search for an address in the UPRN database.
 
@@ -39,4 +41,7 @@ async def search(
         Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    return await paginate(session, query)  # type: ignore[no-any-return]
+    page_result = await paginate(session, query)
+    page_result.links = fix_links(request, page_result.links)
+
+    return page_result
