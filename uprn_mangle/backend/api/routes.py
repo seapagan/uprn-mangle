@@ -1,7 +1,5 @@
 """Define the API routes for the application."""
 
-from collections.abc import Sequence
-
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -27,7 +25,7 @@ async def search(
     request: Request,
     q: str | None = None,
     session: AsyncSession = Depends(get_db),
-) -> JSONResponse | Sequence[Address]:
+) -> Pagination[UPRNResponse] | JSONResponse:
     """Search for an address in the UPRN database.
 
     Returns a list of addresses that match the search term.
@@ -41,7 +39,7 @@ async def search(
         Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    page_result = await paginate(session, query)
+    page_result: Pagination[UPRNResponse] = await paginate(session, query)
     page_result.links = fix_links(request, page_result.links)
 
     return page_result
