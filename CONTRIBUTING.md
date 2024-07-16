@@ -19,6 +19,8 @@ started, or even pair on a PR.
 
 ## Prerequisites
 
+### Backend
+
 Since this is a [Python](https://www.python.org/) project, you will need to
 have Python installed on your machine. You can download the latest version of
 Python from the [official website](https://www.python.org/downloads/) or using
@@ -37,6 +39,15 @@ We also use [Poetry](https://python-poetry.org/) to manage our dependencies. You
 should have this installed as well. You can install Poetry by following the
 instructions on the [Poetry
 website](https://python-poetry.org/docs/#installation).
+
+### Frontend
+
+The frontend is built using [React](https://reactjs.org/). You will need to have
+[Node.js](https://nodejs.org/) installed on your machine. You can download this
+from the [official website](https://nodejs.org/en/download/). I prefer to use 
+[yarn](https://yarnpkg.com/) as the package manager, but you can use `npm` if
+you prefer.
+
 
 ## Getting Started
 
@@ -59,6 +70,8 @@ To get started, follow these steps:
 
 Run the following command to install the required dependencies:
 
+### Backend
+
 ```console
 poetry install
 ```
@@ -73,7 +86,7 @@ From here you can start working on the project. If you are using an IDE such as
 VSCode or PyCharm, you can set the use their Python interpreter setting to use
 the virtual environment that has just been created.
 
-### Using Pip
+#### Using Pip
 
 If you prefer to use `pip` instead of `poetry`, you can install the dependencies
 using the auto-generated `requirements-dev.txt` file:
@@ -82,18 +95,32 @@ using the auto-generated `requirements-dev.txt` file:
 pip install -r requirements-dev.txt
 ```
 
-However, [Poetry](https://python-poetry.org/){:target="_blank"} is the
-recommended (and only supported) way of developing this project and is tightly
-integrated with the code and tools.
+However, [Poetry](https://python-poetry.org/) is the recommended (and only 
+supported) way of developing this project and is tightly integrated with the 
+code and tools.
+
+### Frontend
+
+Change to the `uprn_mangle/frontend` folder and run the following commands:
+
+```console
+yarn install
+```
+
+This will install all the required JavaScript dependencies. As noted, you can
+also use `npm` if you prefer.
 
 ## Linting
 
 I am quite strict about linting and code formatting and have set up a number of
 pre-commit hooks and tasks to ensure that the code meets the required standards.
 
-Use the `poe ruff`, `poe format` and `poe mypy` tasks regularly. If you use
-VSCode, install the `Ruff` and`MyPy` extensions and set them to run on save. The
-included `.vscode` folder has the settings for this.
+For the backend, Use the `poe ruff`, `poe format` and `poe mypy` tasks 
+regularly. If you use VSCode, install the `Ruff` and`MyPy` extensions and set 
+them to run on save. The included `.vscode` folder has the settings for this.
+
+There are no tasks set up yet for the frontend, but please use `eslint`
+manually to check the code.
 
 ### Install Git Pre-Commit hooks
 
@@ -246,7 +273,8 @@ Here are some guidelines to follow when contributing to `upnr_mangle`:
   [Google Docstring
   Spec](https://google.github.io/styleguide/pyguide.html#381-docstrings) though
   at this time is a bit slack on listing the Args and Returns. I will be adding
-  these in as I go along so feel free to add them in if you are contributing :smile:.
+  these in as I go along so feel free to add them in if you are contributing 
+  :smile:.
 - If you add or change any functionality, please update the documentation
   accordingly.
 - Use [GitHub issues](https://github.com/seapagan/uprn-mangle/issues) to report
