@@ -4,43 +4,39 @@
 [![CodeQL](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/codeql-analysis.yml)
 [![Dependency Review](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/seapagan/uprn-mangle/actions/workflows/dependency-review.yml)
 
-THIS README IS IN THE PROCESS OF BEING UPDATED.
+<!-- vim-markdown-toc GFM -->
 
-<!-- TOC start -->
-- [Update 28th May 2024](#update-28th-may-2024)
+- [Update 16th July 2024](#update-16th-july-2024)
+- [Setup](#setup)
 - [Installation](#installation)
-- [Database Setup](#database-setup)
-- [UPRN Data](#uprn-data)
-- [Setup and run the Backend](#setup-and-run-the-backend)
-- [Setup and run the Frontend](#setup-and-run-the-frontend)
+    - [UPRN Data](#uprn-data)
+    - [Python](#python)
+- [React](#react)
 - [Contributing to this project](#contributing-to-this-project)
 - [License](#license)
-<!-- TOC end -->
+
+<!-- vim-markdown-toc -->
 
 This project is a (work in progress) tool to take the Ordnance Survey '[Address
 Base Premium][abp]' data and mangle it into a more usable form.
 
-The data is then loaded into a database and provided as an API (Using Django).
+The data is then loaded into a database and provided as an API (Using FastAPI).
 Finally, a Frontend web app (written in React JS) will allow searching this data
 by address and return the UPRN and links for Google maps and OpenStreetMap.
 
-- Backend and mangle scripts in [Django][django] (Python)
+- Backend and mangle scripts in [FastAPI][fastapi] (Python)
 - Basic Frontend in [React][react] (JavaScript)
 
-## Update 28th May 2024
+## Update 16th July 2024
 
-The entire project is going through a major rewrite. The original project was
+The entire project has just had a major rewrite. The original project was
 started in 2022 and was a bit of a mess. I have learned a lot since then and
 can improve the codebase significantly.
 
-All work is being done in a new branch `develop` and will be merged back to
-`main` when ready. Release `0.1.0` on GitHub is the last version of the original
-legacy project if anyone is interested.
-
-For a start, the UPRN import process was VERY memory intensie and slow. It took
-over 12-15Gb of memory and many hours to import the full Scotland data. I
-have now reduced this to around 2Gb, though I still need to check the timing
-changes - it is still pretty slow but that is alot of data.
+For a start, the UPRN import process was VERY memory intensive and slow. It took
+over 12-15Gb of memory and many hours to import the full Scotland data. I have
+now reduced this to around 2Gb, though I still need to check the timing changes,
+it is still pretty slow but that is a lot of data.
 
 Dependency management and virtual-environment control is now taken care of by
 `Poetry` which is a much better fit for the project. I have also added
@@ -51,44 +47,54 @@ I have also replaced the original `Django` and `Django Rest Framework` with
 `FastAPI` and `SQLAlchemy 2`. This is a much better fit for the project.
 Database access is Async, and the pagination is blindingly fast.
 
-The Frontend still needs work. It will still be in `React` but I'll update to
-the latest version and move away from `CRA` to a faster `Vite`-based setup.
+The Frontend has been updated to use `Vite` instead of `Create React App`. This
+is a much faster and more modern build tool.
 
-Note that all the documentation below is for the original project and will be
-updated once the new version is ready to merge.
+## Setup
+
+You will need a PostgreSQL database set up, with a user, password, and
+dedicated database. The user should have full access to the specified database;
+It is good practice to create a specific Postgresql user that only has access
+to this database.
+
+All setup for this project is done in the `config.toml` file in the root folder.
+
+An `example-config.toml` file is provided. Copy this to `config.toml` and edit
+the values to match your setup. Make sure to put the correct database details
+in.
+
+You can change the `api_prefix` to place the API at a different URL. The default
+is `/api/v2/` so the API will be available at `http://localhost:8000/api/v2/`. 
+
+> [!NOTE]
+> The frontend is currently hard-coded to look for the API at the above URL. 
+> If you change this, you will need to update the frontend code.
+
+```toml
+[uprn_mangle]
+api_base_url = "http://localhost"
+api_port = 8000
+api_prefix = "/api/v2"
+
+db_user = "addressbase"
+db_password = "mysecurepassword"
+db_name = "addressbase"
+db_host = "localhost"
+db_port = "5432"
+db_table = "addressbase"
+```
+
 
 ## Installation
 
 On your local machine, you need a working copy of [Python][python] and
-[Nodejs][nodejs]. I recommend you also set up a local VirtualEnv specific to
-this application. For example, if you use [Pyenv][pyenv] (highly
-recommended), you can use its inbuilt VirtualEnv feature. Then, Clone or
-download the repository to your local machine and switch to this new directory.
+[Nodejs][nodejs]. I recommend you use [Pyenv][pyenv] to manage your Python 
+versions.
 
-## Database Setup
+Use `Poetry` to manage the Python dependencies and `Yarn` or `npm` for the 
+JavaScript dependencies.
 
-You will also need a PostgreSQL database set up, with a user, password, and
-dedicated database, with the correct settings input to the `.env` file. The user
-should have full access to the specified database; It is good practice to create
-a specific Postgresql user that only has access to this database.
-
-You can copy then rename the [.env.example](backend/.env.example) file to `.env`
-and add your database connection settings.
-
-```ini
-# set up Database Users. We will be using Postgresql and this should already
-# exist with the correct user and password
-UPRN_DB_USER='mickey'
-UPRN_DB_PASSWORD='mouse'
-# actual database name for the UPRN data...
-UPRN_DB_NAME='addressbase_db'
-UPRN_DB_HOST='localhost'
-UPRN_DB_PORT='5432'
-# name of the table in the database that contains the UPRN data...
-UPRN_DB_TABLE='addressbase'
-```
-
-## UPRN Data
+### UPRN Data
 
 The data used for this project comes from the `AddressBase Premium` ( noted as
 `ABP` from now on) by [Ordnance Survey][os]. APB is a commercial product, but
@@ -114,38 +120,54 @@ We also need several other data files that are provided for free by OS on their
      download the latest from OS [here][headers]. Download this file and replace
      all the existing CVS files in the `backend/data/header-files/` folder with
      those  in the zip file
-  3. Finally, run the following command to process the raw data and add it to
-     the database: `python manage.py import_uprn`
 
-Part 3 above can take a good long time and memory. I recommend you close any
-applications you are not using and reboot your system before starting. If you
-are developing remotely using VSCode Remote SSH or similar, close VSCode and run
-from a plain terminal.
 
-## Setup and run the Backend
+### Python
 
-   1. Change to the **backend** directory in your terminal and run `pip install
-      -r requirements.txt`. This command installs all the required dependencies.
-   2. Generate a new secret key, and add it to the `.env` file above. Go to
-      <https://djecrety.ir/> to generate a good one.
-   3. In the same terminal and still in the **backend** directory, run
-      `python manage.py migrate`
-   4. Finally, run `python manage.py runserver`
+From the root folder, run the following commands:
 
-The Back-end API will now be available at `http://localhost:8000/api/v1/`
+```bash
+poetry install
+poetry shell
+```
 
-## Setup and run the Frontend
+This will install all the required Python dependencies and switch to the virtual 
+environment.
 
-   1. In a terminal, change to the **frontend** directory and run `yarn` or
-      (`npm install` if you prefer. I will use Yarn throughout, you can
-      substitute with NPM if that is your preference). This command installs all
-      the needed React.JS dependencies.
-   2. Once complete, run `yarn start` to run the frontend.
+Now, run the following command to set up the database and import the UPRN data:
 
-You can now access the Front-end at `http://localhost:3000`
+```bash
+python uprn_mangle/backend/import_uprn.py
+```
 
-Running the Backend/Frontend from your terminal is good enough for development,
-but use standard practices to run and harden the system for any production use.
+This last part can take a good long time and memory to complete. It is recommended
+to run this on a machine with a good amount of memory and a fast CPU. 
+
+Finally, if this completes successfully, you can start the backend server:
+
+```bash
+python uprn_mangle/backend/api/main.py
+```
+
+## React
+
+Change to the `uprn_mangle/frontend` folder and run the following commands:
+
+```bash
+yarn install
+yarn dev
+```
+
+You can also use `npm` if you prefer. This will install all the required
+JavaScript dependencies and start the frontend server. You should leave this
+running too.
+
+You can now access the Front-end at `http://localhost:5173`
+
+> [!IMPORTANT]
+> The above is only useful for development and testing purposes. For production
+> use, you should use a proper web server and reverse proxy setup.
+
 
 ## Contributing to this project
 
@@ -188,7 +210,7 @@ SOFTWARE.
 [python]: https://www.python.org/
 [nodejs]: https://nodejs.org/
 [pyenv]: https://github.com/pyenv/pyenv/
-[django]: https://www.djangoproject.com/
+[fastapi]: https://fastapi.tiangolo.com/
 [react]: https://reactjs.org/
 
 [os]: https://www.ordnancesurvey.co.uk/
