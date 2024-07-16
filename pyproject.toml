@@ -132,6 +132,11 @@ changelog.help = "Generate a CHANGELOG.md file"
 plugins.md014.enabled = false
 plugins.md046.enabled = false
 
+[tool.pymarkdown.plugins.md013]
+line-length = 80
+code_blocks = false
+images = false
+
 [tool.ruff]
 line-length = 80
 lint.select = ["ALL"] # we are being very strict!
