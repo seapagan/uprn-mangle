@@ -27,6 +27,8 @@ Everything in this section will be included in the next official release.
 
 **New Features**
 
+- Take uvicorn server settings from `config.toml` ([#264](https://github.com/seapagan/uprn-mangle/pull/264)) by [seapagan](https://github.com/seapagan)
+- Add nicer panels between Phases and tidy up the spacing. ([#261](https://github.com/seapagan/uprn-mangle/pull/261)) by [seapagan](https://github.com/seapagan)
 - Add the API functionality (using FastAPI) ([#255](https://github.com/seapagan/uprn-mangle/pull/255)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 3 - rewrite from scratch ([#249](https://github.com/seapagan/uprn-mangle/pull/249)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 2, use parquet files to reduce memory usage ([#247](https://github.com/seapagan/uprn-mangle/pull/247)) by [seapagan](https://github.com/seapagan)
@@ -34,8 +36,15 @@ Everything in this section will be included in the next official release.
 - Refactor app to use `Poetry` and start optimizing Phase 1 & 2 ([#227](https://github.com/seapagan/uprn-mangle/pull/227)) by [seapagan](https://github.com/seapagan)
 - Try to tidy and optimize the CSV conversion stage. ([#82](https://github.com/seapagan/uprn-mangle/pull/82)) by [seapagan](https://github.com/seapagan)
 
+**Bug Fixes**
+
+- Fix missing geolocation in final output ([#259](https://github.com/seapagan/uprn-mangle/pull/259)) by [seapagan](https://github.com/seapagan)
+
 **Refactoring**
 
+- Migrate frontend to vite ([#262](https://github.com/seapagan/uprn-mangle/pull/262)) by [seapagan](https://github.com/seapagan)
+- Rename table columns to lowercase ([#258](https://github.com/seapagan/uprn-mangle/pull/258)) by [seapagan](https://github.com/seapagan)
+- Update the Frontend ([#256](https://github.com/seapagan/uprn-mangle/pull/256)) by [seapagan](https://github.com/seapagan)
 - Refactor the layout for database access and models ([#252](https://github.com/seapagan/uprn-mangle/pull/252)) by [seapagan](https://github.com/seapagan)
 - Refactor and tidy the overall code ([#250](https://github.com/seapagan/uprn-mangle/pull/250)) by [seapagan](https://github.com/seapagan)
 
