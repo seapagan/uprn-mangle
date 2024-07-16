@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-// import Pager from "./Pager";
+import Pager from "./Pager";
 import ResultHeader from "./ResultHeader";
 import ResultItem from "./ResultItem";
 
@@ -32,13 +32,7 @@ const SearchResults = ({ searchString }) => {
 
   return (
     <div>
-      {/* <Pager
-        baseURL={baseURL}
-        searchResults={searchResults}
-        searchString={searchString}
-        searchURL={searchURL}
-        setSearchURL={setSearchURL}
-      /> */}
+      {searchResults && <Pager searchResults={searchResults} setSearchURL={setSearchURL} />}
       <div className="search-results-container">
         <ResultHeader />
         {searchResults.addresses.map((result, index) => (
