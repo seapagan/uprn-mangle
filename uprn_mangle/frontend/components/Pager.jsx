@@ -24,7 +24,14 @@ const Pager = ({ searchResults, setSearchURL }) => {
       }
     }
 
-    return Array.from({ length: howMany }, (x, index) => index + startValue);
+    return Array.from({ length: howMany }, (_, index) => index + startValue);
+  };
+
+  const updatePageQueryParam = (url, newPage) => {
+    const urlObj = new URL(url);
+    urlObj.searchParams.set("page", newPage);
+
+    return urlObj.toString();
   };
 
   // no pager needed for a single page of results...
@@ -53,7 +60,7 @@ const Pager = ({ searchResults, setSearchURL }) => {
             key={page}
             disabled={isCurrentPage(page)}
             className="btn pager-link"
-            // onClick={() => setSearchURL(getPageLink(page))}
+            onClick={() => setSearchURL(updatePageQueryParam(links.self, page))}
           >
             {page}
           </button>
