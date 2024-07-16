@@ -5,24 +5,13 @@
 
 version: 2
 updates:
-  # - package-ecosystem: "npm"
-  #   directory: "/uprn-mangle/frontend"
-  #   schedule:
-  #     interval: "weekly"
-  #   open-pull-requests-limit: 10
   - package-ecosystem: "npm"
-    directory: "/uprn-mangle/frontend"
-    target-branch: "develop"
+    directory: "/uprn_mangle/frontend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
-  # - package-ecosystem: "pip"
-  #   directory: "/uprn-mangle/backend"
-  #   schedule:
-  #     interval: "weekly"
   - package-ecosystem: "pip"
-    directory: "/uprn-mangle/backend"
-    target-branch: "develop"
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
