@@ -48,7 +48,6 @@ from the [official website](https://nodejs.org/en/download/). I prefer to use
 [yarn](https://yarnpkg.com/) as the package manager, but you can use `npm` if
 you prefer.
 
-
 ## Getting Started
 
 Before you start contributing, please make sure you have read and understood our

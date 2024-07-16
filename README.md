@@ -9,8 +9,8 @@
 - [Update 16th July 2024](#update-16th-july-2024)
 - [Setup](#setup)
 - [Installation](#installation)
-    - [UPRN Data](#uprn-data)
-    - [Python](#python)
+  - [UPRN Data](#uprn-data)
+  - [Python](#python)
 - [React](#react)
 - [Contributing to this project](#contributing-to-this-project)
 - [License](#license)
@@ -84,7 +84,6 @@ db_port = "5432"
 db_table = "addressbase"
 ```
 
-
 ## Installation
 
 On your local machine, you need a working copy of [Python][python] and
@@ -120,7 +119,6 @@ We also need several other data files that are provided for free by OS on their
      download the latest from OS [here][headers]. Download this file and replace
      all the existing CVS files in the `backend/data/header-files/` folder with
      those  in the zip file
-
 
 ### Python
 
@@ -167,7 +165,6 @@ You can now access the Front-end at `http://localhost:5173`
 > [!IMPORTANT]
 > The above is only useful for development and testing purposes. For production
 > use, you should use a proper web server and reverse proxy setup.
-
 
 ## Contributing to this project
 
