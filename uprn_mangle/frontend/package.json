@@ -28,7 +28,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.12",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^15.8.0",
+    "globals": "^15.9.0",
     "vite": "^5.3.6"
   },
   "packageManager": "yarn@4.3.1"
