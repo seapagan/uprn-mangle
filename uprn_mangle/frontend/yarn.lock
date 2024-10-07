@@ -2020,7 +2020,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.4.12"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
-    globals: "npm:^15.9.0"
+    globals: "npm:^15.10.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-icons: "npm:^5.3.0"
@@ -2161,10 +2161,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^15.9.0":
-  version: 15.9.0
-  resolution: "globals@npm:15.9.0"
-  checksum: 10c0/de4b553e412e7e830998578d51b605c492256fb2a9273eaeec6ec9ee519f1c5aa50de57e3979911607fd7593a4066420e01d8c3d551e7a6a236e96c521aee36c
+"globals@npm:^15.10.0":
+  version: 15.10.0
+  resolution: "globals@npm:15.10.0"
+  checksum: 10c0/fef8f320e88f01f1492fef1b04b056908e1f6726eeaffe3bca03247237300c2d86e71585ee641b62ba71460a6eaff0d6ca7fca284e61bd1b3f833c7ad68b160a
   languageName: node
   linkType: hard
 
