@@ -11,7 +11,7 @@ dependencies = [
   "asyncpg ==0.30.0",
   "dask[dataframe,distributed] == 2024.9.0",
   "fastapi == 0.111.1",
-  "fastapi-pagination == 0.12.26",
+  "fastapi-pagination ==0.12.32",
   "pandas == 2.2.2",
   "psycopg2 ==2.9.10",
   "python-dotenv == 1.0.1",
