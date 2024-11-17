@@ -49,7 +49,7 @@ idna==3.10
 importlib-metadata==8.5.0 ; python_full_version < '3.12'
 iniconfig==2.0.0
 ipykernel==6.29.5
-ipython==8.26.0
+ipython==8.29.0
 jedi==0.19.2
 jinja2==3.1.4
 jsmin==3.0.1
