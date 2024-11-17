@@ -127,7 +127,7 @@ regex==2024.11.6
 requests==2.32.3
 rich==13.7.1
 rtoml==0.11.0
-ruff==0.6.5
+ruff==0.7.4
 shellingham==1.5.4
 simple-toml-settings==0.8.0
 six==1.16.0
