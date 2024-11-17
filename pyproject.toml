@@ -13,7 +13,7 @@ dependencies = [
   "fastapi == 0.111.1",
   "fastapi-pagination == 0.12.26",
   "pandas == 2.2.2",
-  "psycopg2 == 2.9.9",
+  "psycopg2 ==2.9.10",
   "python-dotenv == 1.0.1",
   "rich == 13.7.1",
   "simple-toml-settings == 0.8.0",
