@@ -5,8 +5,8 @@ anyio==4.6.2.post1
 application-properties==0.8.2
 appnope==0.1.4 ; platform_system == 'Darwin'
 asttokens==2.4.1
-async-timeout==5.0.1 ; python_full_version < '3.12'
-asyncpg==0.29.0
+async-timeout==5.0.1 ; python_full_version < '3.11'
+asyncpg==0.30.0
 babel==2.16.0
 certifi==2024.8.30
 cffi==1.17.1
