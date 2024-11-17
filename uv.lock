@@ -437,7 +437,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/59/1b/ae231e1f9a8e1f970
 
 [[package]]
 name = "dask"
-version = "2024.9.0"
+version = "2024.11.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -449,9 +449,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "toolz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/95/87/fb3194f41431b7b27eea595a5ad21bdcad2adc7ee67bbde4630e65b53e8c/dask-2024.9.0.tar.gz", hash = "sha256:bfbe5b6c3b7937426539be27029800178ce63cea4da8d7e7de836a98384aa1d6", size = 10147596 }
+sdist = { url = "https://files.pythonhosted.org/packages/9d/a1/6d06c4cc93349377a9f318f2ebff5b637e6ffee373e38f363123b4b1afa7/dask-2024.11.2.tar.gz", hash = "sha256:9a72bee3f149ff89bc492340d4bcba33d5dd3e3a9d471d2b4b3872f2d71ddaae", size = 10688567 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bd/d2/1940b6362cf7785bcd63c152ce59a59e9413153e077cfba9192cb97eb1fd/dask-2024.9.0-py3-none-any.whl", hash = "sha256:ceede9cfd418178a01ec3d11a0cde3f46678bd4a292ba84b57bbb401ce3f1cb8", size = 1257299 },
+    { url = "https://files.pythonhosted.org/packages/2a/72/33ff765a07913cb5061baa94718f3a17003aa29adc89642a68c295d47582/dask-2024.11.2-py3-none-any.whl", hash = "sha256:6115c4b76015e8d9d9c2922b6a0a1c850e283fb7fee74eebbd2e28e9c117c30d", size = 1265299 },
 ]
 
 [package.optional-dependencies]
@@ -466,16 +466,16 @@ distributed = [
 
 [[package]]
 name = "dask-expr"
-version = "1.1.14"
+version = "1.1.19"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dask" },
     { name = "pandas" },
     { name = "pyarrow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/d6/172a7bfc714fe16343dbe88aa5ca96570e0fef06f5a7150a53ab05a76fe5/dask_expr-1.1.14.tar.gz", hash = "sha256:c67c0c190d933e253f85674da71615f23ed8ba08f3abcc0cd160080643feb40a", size = 222107 }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/b0/a0c1050ee70be7a0274529b15edacea769c395b392edb1925118937fdb7c/dask_expr-1.1.19.tar.gz", hash = "sha256:5c8a50924bf6718bb630d58f11311e3d928c7037af913e096fa0eb3f0a493b9f", size = 223876 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f6/11/d758ed9f1e9d6917402c475a8512b0a0204873226479d47cc440e50404ec/dask_expr-1.1.14-py3-none-any.whl", hash = "sha256:86a59c51a84d88b6a653f5b4e2c578213a349a963206dcd29219e4826560ada2", size = 242616 },
+    { url = "https://files.pythonhosted.org/packages/e9/57/e7996529256b13009fa8f4c34d1d7229755cc7d2b054aa43edb6ca655578/dask_expr-1.1.19-py3-none-any.whl", hash = "sha256:b2931c20241a3bc1978ccccc4b8a2f7b27b15bb85ce89fec04595bc5bcf20cf5", size = 244456 },
 ]
 
 [[package]]
@@ -535,7 +535,7 @@ wheels = [
 
 [[package]]
 name = "distributed"
-version = "2024.9.0"
+version = "2024.11.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -554,9 +554,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "zict" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/3c/24e5ef98069061a76c5ed78b19f30bd2d1027b1d34a462baa39ef4fe2820/distributed-2024.9.0.tar.gz", hash = "sha256:cb5f76ff230fc2249b15b0a66da46982e23249e5d8389c16dfe427e598b71c57", size = 1112850 }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/b5/f8b27f48694c11721e2bbed4eadfcc5fe399a083ee449113b2a2fcd962b6/distributed-2024.11.2.tar.gz", hash = "sha256:60e430ab9d438102535f342521bc2673db08fcd373a4474b042caf9fe9fcf990", size = 1113817 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a0/15/3746074e6a20e87de78c61fe8eb63a70ad01cf37f0ef1a8611fd7f9e5701/distributed-2024.9.0-py3-none-any.whl", hash = "sha256:d3a6407efffd3ab70a7f3a068be0f15c7ba36adc4fc666ed3d3505ced2c79cbe", size = 1020293 },
+    { url = "https://files.pythonhosted.org/packages/f0/24/312287ead487290c13e62f6d987e59eb0e22b8088b3539dfe6f4062a8370/distributed-2024.11.2-py3-none-any.whl", hash = "sha256:a455ae031689aee151172b3492de5dd637b67531720619c171df988974985cdf", size = 1022680 },
 ]
 
 [[package]]
@@ -2590,7 +2590,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "asyncpg", specifier = "==0.30.0" },
-    { name = "dask", extras = ["dataframe", "distributed"], specifier = "==2024.9.0" },
+    { name = "dask", extras = ["dataframe", "distributed"], specifier = "==2024.11.2" },
     { name = "fastapi", specifier = "==0.115.5" },
     { name = "fastapi-pagination", specifier = "==0.12.32" },
     { name = "pandas", specifier = "==2.2.2" },
