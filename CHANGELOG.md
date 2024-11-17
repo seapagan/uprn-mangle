@@ -5,25 +5,23 @@ project since the first release, with the latest changes at the top.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased](https://github.com/seapagan/uprn-mangle/tree/HEAD)
-
 
 These are the changes that have been merged to the repository since the last
 release. If you want to try out these changes, you can install the latest
 version from the main branch by running:
 
 ```console
-$ pip install git+https://github.com/seapagan/github-changelog-md
+pip install git+https://github.com/seapagan/github-changelog-md
 ```
 
 or, if using poetry:
 
 ```console
-$ poetry add git+https://github.com/seapagan/github-changelog-md
+poetry add git+https://github.com/seapagan/github-changelog-md
 ```
-Everything in this section will be included in the next official release.
 
+Everything in this section will be included in the next official release.
 
 **New Features**
 
@@ -79,7 +77,7 @@ Everything in this section will be included in the next official release.
 - Bump @testing-library/react from 13.4.0 to 14.0.0 in /frontend ([#159](https://github.com/seapagan/uprn-mangle/pull/159)) by [dependabot[bot]](https://github.com/apps/dependabot)
 - Update newrelic requirement from <8.5.0,>=7.2.2 to >=7.2.2,<8.8.0 in /backend ([#158](https://github.com/seapagan/uprn-mangle/pull/158)) by [dependabot[bot]](https://github.com/apps/dependabot)
 - Update pytest-xdist requirement from <3.1.0,>=2.4.0 to >=2.4.0,<3.3.0 in /backend ([#153](https://github.com/seapagan/uprn-mangle/pull/153)) by [dependabot[bot]](https://github.com/apps/dependabot)
-- *and 64 more dependency updates*
+- _and 64 more dependency updates_
 
 ---
-*This changelog was generated using [github-changelog-md](http://changelog.seapagan.net/) by [Seapagan](https://github.com/seapagan)*
+_This changelog was generated using [github-changelog-md](http://changelog.seapagan.net/) by [Seapagan](https://github.com/seapagan)_

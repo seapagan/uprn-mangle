@@ -1,7 +1,7 @@
 
 # Contributing to UPRN Mangle
 
-Thank you for your interest in contributing to `uprn_mangle`! We welcome
+Thank you for your interest in contributing to `uprn-mangle`! We welcome
 all contributions, big or small.
 
 If you are not sure where to start, please take a look at the [open
@@ -17,9 +17,16 @@ I you would like to contribute to the code, but find the requirements below a
 bit daunting, please feel free to open a discussion and I can help you get
 started, or even pair on a PR.
 
-## Prerequisites
+Currently, development is done primary on **Linux**, but I will also try to test
+on **Windows** and **Mac OS X** when possible. If you are using a different
+platform and find any issues, please let me know. I welcome any contributions,
+on any platform!
 
-### Backend
+If you have any issues developing on a particular platform, please let me know
+and I will try to help you out. I am also open to suggestions for improving the
+development process and documentation.
+
+## Prerequisites
 
 Since this is a [Python](https://www.python.org/) project, you will need to
 have Python installed on your machine. You can download the latest version of
@@ -35,18 +42,34 @@ Mac OS X. For Windows, you can use the
 [here](https://github.com/pyenv-win/pyenv-win#installation ) for installation
 instructions.
 
-We also use [Poetry](https://python-poetry.org/) to manage our dependencies. You
-should have this installed as well. You can install Poetry by following the
-instructions on the [Poetry
-website](https://python-poetry.org/docs/#installation).
+- We use [uv](https://docs.astral.sh/uv/) to manage our dependencies. You should
+have this installed as well. You can install `uv` by following the instructions
+on their [website](https://docs.astral.sh/uv/getting-started/installation/).
 
-### Frontend
+`uv` can be used to actually install Python, even if you do not have it
+installed locally (either by system, pyenv or similar).
 
-The frontend is built using [React](https://reactjs.org/). You will need to have
-[Node.js](https://nodejs.org/) installed on your machine. You can download this
-from the [official website](https://nodejs.org/en/download/). I prefer to use
-[yarn](https://yarnpkg.com/) as the package manager, but you can use `npm` if
-you prefer.
+For example, to install Python 3.12 using `uv`, you can run the following command:
+
+```console
+uv python install 3.12
+```
+
+If you already have a Python version installed, uv will use this.
+
+!!! tip
+
+    If you **don't** want to have `uv` installed globally for any reason,
+    there is an auto-generated `requirements-dev.txt` file in the root of the
+    project. You can use this to install the dependencies using `pip`:
+
+    ```console
+
+    $ pip install -r requirements-dev.txt
+    ```
+
+    However, if you are going to be contributing to the project, `uv` is
+    strongly recommended as this is what we use internally and in the CI.
 
 ## Getting Started
 
@@ -69,64 +92,48 @@ To get started, follow these steps:
 
 Run the following command to install the required dependencies:
 
-### Backend
-
-```console
-poetry install
+```terminal
+uv sync
 ```
 
 You then need to activate the virtual environment:
 
-```console
-poetry shell
+```terminal
+source .venv/bin/activate
+```
+
+If you are using Windows, you can activate the virtual environment using the
+following command instead:
+
+```terminal
+.venv\Scripts\activate
 ```
 
 From here you can start working on the project. If you are using an IDE such as
 VSCode or PyCharm, you can set the use their Python interpreter setting to use
 the virtual environment that has just been created.
 
-#### Using Pip
-
-If you prefer to use `pip` instead of `poetry`, you can install the dependencies
-using the auto-generated `requirements-dev.txt` file:
-
-```console
-pip install -r requirements-dev.txt
-```
-
-However, [Poetry](https://python-poetry.org/) is the recommended (and only
-supported) way of developing this project and is tightly integrated with the
-code and tools.
-
-### Frontend
-
-Change to the `uprn_mangle/frontend` folder and run the following commands:
-
-```console
-yarn install
-```
-
-This will install all the required JavaScript dependencies. As noted, you can
-also use `npm` if you prefer.
-
 ## Linting
 
 I am quite strict about linting and code formatting and have set up a number of
 pre-commit hooks and tasks to ensure that the code meets the required standards.
 
-For the backend, Use the `poe ruff`, `poe format` and `poe mypy` tasks
-regularly. If you use VSCode, install the `Ruff` and`MyPy` extensions and set
-them to run on save. The included `.vscode` folder has the settings for this.
+### Code linting and formatting
 
-There are no tasks set up yet for the frontend, but please use `eslint`
-manually to check the code.
+We are using [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+These are set up as pre-commit hooks and can be run as below. You can also use
+the `poe ruff` and `poe format` commands to run these manually.
+
+### Type hinting
+
+All code must pass `mypy` checks. This can be run manually using the `poe mypy`
+and is part of the pre-commit hooks.
 
 ### Install Git Pre-Commit hooks
 
-Please install this if you are intending to contribute to the project. It will
-check commits locally before they are pushed up to the Repo. The GitHub CI runs
-the linting checks (and in future probably MyPy as well), and will fail if there
-are any errors.
+Please install this if you are intending to submit a PR. It will check commits
+locally before they are pushed up to the Repo. The GitHub CI runs the linting
+and mypy checks, and will fail if there are any errors.
 
 ```console
 $ pre-commit install
@@ -148,25 +155,16 @@ poe pre
 
 We are using [pytest](https://docs.pytest.org/) for testing.
 
-At the moment the test framework is set up but no tests have been written.
-I will be adding more tests as we go along - and most definitely welcome any
-contributions to this area!
-
-If you add any new features, please add tests for them. This will help me to
+If you add any new features, **please add tests for them**. This will help us to
 ensure that the code is working as expected and will prevent any regressions.
-_Currently I'm not enforcing this until we have better coverage of the code -
-**however if you break any existing tests, the CI will fail.**_
+
+GitHub Actions will run the tests on every commit and PR, **failing tests will
+block the PR from being merged**, as will any major drop in test coverage.
 
 There is a task set up to run tests:
 
 ```console
 poe test
-```
-
-And run a watcher to automatically re-run the tests when files change:
-
-```console
-poe test:watch
 ```
 
 You can also run the tests manually using the following command:
@@ -176,6 +174,8 @@ pytest
 ```
 
 The task is set up so we can automatically add other options in the future.
+Notice that both these commands will run the tests with the `--cov` option and
+show the coverage report at the end.
 
 ## Changelog
 
@@ -231,7 +231,7 @@ Check the **Markdown**:
 poe markdown
 ```
 
-Run `ruff`, `mypy` and `format` at the same time:
+Run `ruff`, `mypy`, `format` and `markdown` at the same time:
 
 ```console
 poe lint
@@ -250,8 +250,10 @@ These are to help with developing and updating the documentation.
 
 ## Guidelines
 
-Here are some guidelines to follow when contributing to `upnr_mangle`:
+Here are some guidelines to follow when contributing to `uprn-mangle`:
 
+- Do not update the version number in the `pyproject.toml` file. This will be
+  done by the maintainers when a new release is made.
 - Follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide. The
   pre-commit hooks will check for this. We are using the [Ruff
   Formatter](https://docs.astral.sh/ruff/formatter/).
@@ -276,14 +278,14 @@ Here are some guidelines to follow when contributing to `upnr_mangle`:
   :smile:.
 - If you add or change any functionality, please update the documentation
   accordingly.
-- Use [GitHub issues](https://github.com/seapagan/uprn-mangle/issues) to report
-  bugs or suggest new features.
+- Use [GitHub issues](https://github.com/seapagan/uprn-mangle/issues) to
+  report bugs or suggest new features.
 
 If you are using VSCode, there is a config file in the `.vscode` folder that
 will help you to follow these guidelines. You may need to install some
 extensions to get the most out of it. I'll add a list of recommended extensions
-here soon. The `Python`, `MyPy` and  `Ruff` ones are very helpful (the included
-`.vscode` folder helps configure these).
+here soon. The `Python` and `Ruff` ones are very helpful (the included `.vscode`
+folder helps configure these).
 
 ## Contact
 
