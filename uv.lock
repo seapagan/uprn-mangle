@@ -868,7 +868,7 @@ name = "importlib-metadata"
 version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp" },
+    { name = "zipp", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cd/12/33e59336dca5be0c398a7482335911a33aa0e20776128f038019f1a95f1b/importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7", size = 55304 }
 wheels = [
@@ -1499,15 +1499,15 @@ wheels = [
 
 [[package]]
 name = "pandas-stubs"
-version = "2.2.2.240603"
+version = "2.2.3.241009"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy", marker = "python_full_version < '3.13'" },
+    { name = "numpy" },
     { name = "types-pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/40/badba04e61f66611ff1fbdf85d03560ace3c7377010224f87b5657e94bdb/pandas_stubs-2.2.2.240603.tar.gz", hash = "sha256:2dcc86e8fa6ea41535a4561c1f08b3942ba5267b464eff2e99caeee66f9e4cd1", size = 102762 }
+sdist = { url = "https://files.pythonhosted.org/packages/d4/30/1ca31098512cdcfbc6ce366072848dff497880d4285281606b5895244bbc/pandas_stubs-2.2.3.241009.tar.gz", hash = "sha256:d4ab618253f0acf78a5d0d2bfd6dffdd92d91a56a69bdc8144e5a5c6d25be3b5", size = 103801 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/f9/d713f7d1dcea92031bfa9d0a26426033b02dd260cd550b995be80abe9097/pandas_stubs-2.2.2.240603-py3-none-any.whl", hash = "sha256:e08ce7f602a4da2bff5a67475ba881c39f2a4d4f7fccc1cba57c6f35a379c6c0", size = 157003 },
+    { url = "https://files.pythonhosted.org/packages/a3/be/d9ba3109c4c19a78e125f63074c4e436e447f30ece15f0ef1865e7178233/pandas_stubs-2.2.3.241009-py3-none-any.whl", hash = "sha256:3a6f8f142105a42550be677ba741ba532621f4e0acad2155c0e7b2450f114cfa", size = 157883 },
 ]
 
 [[package]]
@@ -2684,7 +2684,7 @@ dev = [
     { name = "mkdocstrings", specifier = "==0.26.1" },
     { name = "mock", specifier = "==5.1.0" },
     { name = "mypy", specifier = "==1.11.2" },
-    { name = "pandas-stubs", specifier = "==2.2.2.240603" },
+    { name = "pandas-stubs", specifier = "==2.2.3.241009" },
     { name = "poethepoet", specifier = "==0.27.0" },
     { name = "pre-commit", specifier = "==3.8.0" },
     { name = "pyfakefs", specifier = "==5.6.0" },
