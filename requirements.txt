@@ -2,8 +2,8 @@
 #    uv export --no-hashes --no-dev --no-emit-project --output-file=requirements.txt
 annotated-types==0.7.0
 anyio==4.6.2.post1
-async-timeout==5.0.1 ; python_full_version < '3.12'
-asyncpg==0.29.0
+async-timeout==5.0.1 ; python_full_version < '3.11'
+asyncpg==0.30.0
 certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
