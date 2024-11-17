@@ -35,7 +35,7 @@ dependencies = [
 dev-dependencies = [
   "cursor == 1.3.5",
   "ipython == 8.26.0",
-  "mypy == 1.11.2",
+  "mypy ==1.13.0",
   "pre-commit ==4.0.1",
   "pymarkdownlnt == 0.9.21",
   "ruff ==0.7.4",
