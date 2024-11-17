@@ -647,15 +647,15 @@ wheels = [
 
 [[package]]
 name = "fastapi-pagination"
-version = "0.12.26"
+version = "0.12.32"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/f0/a107b5391bf58488a5ec5a3757d1daa947dc3cd0b174cce164c24b1b5c9c/fastapi_pagination-0.12.26.tar.gz", hash = "sha256:40b18c312ed5c3a631106c2f19bb4b8d71b1773c1d83f6ae7555071b13822845", size = 25564 }
+sdist = { url = "https://files.pythonhosted.org/packages/56/b6/b431ddef4bec5011231ac3deb2da3a334207ef110987bc4971ac40f59865/fastapi_pagination-0.12.32.tar.gz", hash = "sha256:b808b5b8af493c51d96ae0091b60532b25688cbca1350f39cb72f10d4d69a6ab", size = 26531 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/b0/283e2708c72940c5debec3f630f18c7bb2c4ddd36524a54115e7da920d2d/fastapi_pagination-0.12.26-py3-none-any.whl", hash = "sha256:b59711d162e04b9b67efbdbba388c29bad0aac69da93fefaf0a85e2bb090853d", size = 41847 },
+    { url = "https://files.pythonhosted.org/packages/83/23/0d57a0a67e3bf51b5d2d91a52c7bb7421bd8006aea694be01e37e9830901/fastapi_pagination-0.12.32-py3-none-any.whl", hash = "sha256:38e7e72abf252cbebbc1beff9081e4929762756c04959c471b2a5866bb7f0aaf", size = 42816 },
 ]
 
 [[package]]
@@ -868,7 +868,7 @@ name = "importlib-metadata"
 version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp" },
+    { name = "zipp", marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cd/12/33e59336dca5be0c398a7482335911a33aa0e20776128f038019f1a95f1b/importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7", size = 55304 }
 wheels = [
@@ -2655,7 +2655,7 @@ requires-dist = [
     { name = "asyncpg", specifier = "==0.29.0" },
     { name = "dask", extras = ["dataframe", "distributed"], specifier = "==2024.9.0" },
     { name = "fastapi", specifier = "==0.111.1" },
-    { name = "fastapi-pagination", specifier = "==0.12.26" },
+    { name = "fastapi-pagination", specifier = "==0.12.32" },
     { name = "pandas", specifier = "==2.2.2" },
     { name = "psycopg2", specifier = "==2.9.9" },
     { name = "python-dotenv", specifier = "==1.0.1" },
