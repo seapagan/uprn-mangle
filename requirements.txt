@@ -41,7 +41,7 @@ packaging==24.2
 pandas==2.2.2
 partd==1.4.2
 psutil==6.1.0
-psycopg2==2.9.9
+psycopg2==2.9.10
 pyarrow==18.0.0
 pycparser==2.22
 pydantic==2.9.2
