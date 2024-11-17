@@ -149,7 +149,7 @@ types-pytz==2024.2.0.20241003
 typing-extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3
-uvicorn==0.30.6
+uvicorn==0.32.0
 uvloop==0.21.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
 virtualenv==20.27.1
 watchdog==6.0.0
