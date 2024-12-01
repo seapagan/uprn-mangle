@@ -1776,11 +1776,11 @@ wheels = [
 
 [[package]]
 name = "pyfakefs"
-version = "5.6.0"
+version = "5.7.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/11/28/661bbbd3479b80b1185e4dfb8373fdf9191dedb9725765bcbf412ceaeb6c/pyfakefs-5.6.0.tar.gz", hash = "sha256:7a549b32865aa97d8ba6538285a93816941d9b7359be2954ac60ec36b277e879", size = 207911 }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/8c/1175b2efb6375abeae584f2ce2995abd7dfdf3276c891bc58d7c4ce4196e/pyfakefs-5.7.2.tar.gz", hash = "sha256:40da84175c5af8d9c4f3b31800b8edc4af1e74a212671dd658b21cc881c60000", size = 212401 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/66/e0/024f81edd4f3550d5227c977860379b4dba95384e0f742d280056bc80ce3/pyfakefs-5.6.0-py3-none-any.whl", hash = "sha256:1a45bba8615323ec29d65929d32dc66d7b59a1e60a02109950440edb0486c539", size = 222168 },
+    { url = "https://files.pythonhosted.org/packages/99/42/bb25fb80c2c2edc7f1bde381ab4912f4736b0409937df912f6ae7d5e4ddc/pyfakefs-5.7.2-py3-none-any.whl", hash = "sha256:e1527b0e8e4b33be52f0b024ca1deb269c73eecd68457c6b0bf608d6dab12ebd", size = 227262 },
 ]
 
 [[package]]
@@ -2661,7 +2661,7 @@ dev = [
     { name = "pandas-stubs", specifier = "==2.2.3.241009" },
     { name = "poethepoet", specifier = "==0.30.0" },
     { name = "pre-commit", specifier = "==4.0.1" },
-    { name = "pyfakefs", specifier = "==5.6.0" },
+    { name = "pyfakefs", specifier = "==5.7.2" },
     { name = "pygments", specifier = "==2.18.0" },
     { name = "pymarkdownlnt", specifier = "==0.9.21" },
     { name = "pymdown-extensions", specifier = "==10.9" },
