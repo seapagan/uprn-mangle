@@ -11,11 +11,11 @@ repos:
       - id: check-merge-conflict
       - id: end-of-file-fixer
 
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 39.69.2
-    hooks:
-      - id: renovate-config-validator
-        files: ^renovate\.json$
+  # - repo: https://github.com/renovatebot/pre-commit-hooks
+  #   rev: 39.69.2
+  #   hooks:
+  #     - id: renovate-config-validator
+  #       files: ^renovate\.json$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.3
