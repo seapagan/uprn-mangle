@@ -73,6 +73,7 @@
   "python.testing.unittestEnabled": false,
   "ruff.fixAll": false,
   "ruff.organizeImports": true,
+  "ruff.nativeServer": "on",
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook",
     "file:/**/*.parquet": "jupyter-data-wrangler"
