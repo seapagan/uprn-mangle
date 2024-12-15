@@ -5,32 +5,27 @@ project since the first release, with the latest changes at the top.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/seapagan/uprn-mangle/tree/HEAD)
 
-These are the changes that have been merged to the repository since the last
-release. If you want to try out these changes, you can install the latest
-version from the main branch by running:
+## [0.2.0](https://github.com/seapagan/uprn-mangle/releases/tag/0.2.0) (December 15, 2024)
 
-```console
-pip install git+https://github.com/seapagan/github-changelog-md
-```
+First proper release after the rewrite.
 
-or, if using poetry:
+Backend & frontend deps updated as of 15/12/24.
 
-```console
-poetry add git+https://github.com/seapagan/github-changelog-md
-```
+**Closed Issues**
 
-Everything in this section will be included in the next official release.
+- Action Required: Fix Renovate Configuration ([#472](https://github.com/seapagan/uprn-mangle/issues/472)) by [renovate[bot]](https://github.com/apps/renovate)
 
 **New Features**
 
+- Migrate from poetry to uv ([#425](https://github.com/seapagan/uprn-mangle/pull/425)) by [seapagan](https://github.com/seapagan)
 - Take uvicorn server settings from `config.toml` ([#264](https://github.com/seapagan/uprn-mangle/pull/264)) by [seapagan](https://github.com/seapagan)
 - Add nicer panels between Phases and tidy up the spacing. ([#261](https://github.com/seapagan/uprn-mangle/pull/261)) by [seapagan](https://github.com/seapagan)
 - Add the API functionality (using FastAPI) ([#255](https://github.com/seapagan/uprn-mangle/pull/255)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 3 - rewrite from scratch ([#249](https://github.com/seapagan/uprn-mangle/pull/249)) by [seapagan](https://github.com/seapagan)
 - Optimize phase 2, use parquet files to reduce memory usage ([#247](https://github.com/seapagan/uprn-mangle/pull/247)) by [seapagan](https://github.com/seapagan)
 - Add settings file ([#246](https://github.com/seapagan/uprn-mangle/pull/246)) by [seapagan](https://github.com/seapagan)
+- Re-write the project using FastAPI, speed up the mangling stage considerably and lower it's memory usage ([#228](https://github.com/seapagan/uprn-mangle/pull/228)) by [seapagan](https://github.com/seapagan)
 - Refactor app to use `Poetry` and start optimizing Phase 1 & 2 ([#227](https://github.com/seapagan/uprn-mangle/pull/227)) by [seapagan](https://github.com/seapagan)
 - Try to tidy and optimize the CSV conversion stage. ([#82](https://github.com/seapagan/uprn-mangle/pull/82)) by [seapagan](https://github.com/seapagan)
 
@@ -50,11 +45,25 @@ Everything in this section will be included in the next official release.
 
 - Add the auto-generated CHANGELOG ([#253](https://github.com/seapagan/uprn-mangle/pull/253)) by [seapagan](https://github.com/seapagan)
 
-[`Full Changelog`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD) | [`Diff`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD.diff) | [`Patch`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...HEAD.patch)
+**Dependency Updates**
+
+- Update eslint monorepo to v9.17.0 ([#487](https://github.com/seapagan/uprn-mangle/pull/487)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency react-icons to v5.4.0 ([#486](https://github.com/seapagan/uprn-mangle/pull/486)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency globals to v15.13.0 ([#485](https://github.com/seapagan/uprn-mangle/pull/485)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency eslint-plugin-react to v7.37.2 ([#484](https://github.com/seapagan/uprn-mangle/pull/484)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency eslint-plugin-import to v2.31.0 ([#483](https://github.com/seapagan/uprn-mangle/pull/483)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency @eslint/eslintrc to v3.2.0 ([#482](https://github.com/seapagan/uprn-mangle/pull/482)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency @eslint/compat to v1.2.4 ([#481](https://github.com/seapagan/uprn-mangle/pull/481)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update astral-sh/setup-uv action to v4 ([#480](https://github.com/seapagan/uprn-mangle/pull/480)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency dask to v2024.12.0 ([#479](https://github.com/seapagan/uprn-mangle/pull/479)) by [renovate[bot]](https://github.com/apps/renovate)
+- Update dependency eslint-plugin-react-refresh to v0.4.16 ([#477](https://github.com/seapagan/uprn-mangle/pull/477)) by [renovate[bot]](https://github.com/apps/renovate)
+- *and 61 more dependency updates*
+
+[`Full Changelog`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...0.2.0) | [`Diff`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...0.2.0.diff) | [`Patch`](https://github.com/seapagan/uprn-mangle/compare/0.1.0...0.2.0.patch)
 
 ## [0.1.0](https://github.com/seapagan/uprn-mangle/releases/tag/0.1.0) (June 15, 2023)
 
-**_'Legacy Release'_**
+**_Legacy Release_**
 
 **Merged Pull Requests**
 
@@ -77,7 +86,7 @@ Everything in this section will be included in the next official release.
 - Bump @testing-library/react from 13.4.0 to 14.0.0 in /frontend ([#159](https://github.com/seapagan/uprn-mangle/pull/159)) by [dependabot[bot]](https://github.com/apps/dependabot)
 - Update newrelic requirement from <8.5.0,>=7.2.2 to >=7.2.2,<8.8.0 in /backend ([#158](https://github.com/seapagan/uprn-mangle/pull/158)) by [dependabot[bot]](https://github.com/apps/dependabot)
 - Update pytest-xdist requirement from <3.1.0,>=2.4.0 to >=2.4.0,<3.3.0 in /backend ([#153](https://github.com/seapagan/uprn-mangle/pull/153)) by [dependabot[bot]](https://github.com/apps/dependabot)
-- _and 64 more dependency updates_
+- *and 64 more dependency updates*
 
 ---
-_This changelog was generated using [github-changelog-md](http://changelog.seapagan.net/) by [Seapagan](https://github.com/seapagan)_
+*This changelog was generated using [github-changelog-md](http://changelog.seapagan.net/) by [Seapagan](https://github.com/seapagan)*

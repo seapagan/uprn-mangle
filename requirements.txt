@@ -11,12 +11,12 @@ click==8.1.7
 cloudpickle==3.1.0
 colorama==0.4.6 ; platform_system == 'Windows' or sys_platform == 'win32'
 cryptography==44.0.0
-dask==2024.11.2
-dask-expr==1.1.19
+dask==2024.12.0
+dask-expr==1.1.20
 deprecated==1.2.15
-distributed==2024.11.2
+distributed==2024.12.0
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
-fastapi==0.115.5
+fastapi==0.115.6
 fastapi-pagination==0.12.32
 fsspec==2024.10.0
 github-changelog-md==0.9.5
@@ -62,12 +62,12 @@ starlette==0.41.3
 tblib==3.0.0
 toolz==1.0.0
 tornado==6.4.2
-tqdm==4.67.0
+tqdm==4.67.1
 typer==0.12.5
 typing-extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3
-uvicorn==0.32.0
+uvicorn==0.33.0
 uvloop==0.21.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
 watchfiles==1.0.3
 websockets==14.1
