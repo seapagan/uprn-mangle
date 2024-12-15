@@ -46,7 +46,7 @@ dev-dependencies = [
   "pytest-xdist == 3.6.1",
   "pytest-sugar == 1.0.0",
   "pytest-randomly ==3.16.0",
-  "pytest-reverse == 1.7.0",
+  "pytest-reverse ==1.8.0",
   "pytest-mock == 3.14.0",
   "pytest-watcher ==0.4.3",
   "mock == 5.1.0",

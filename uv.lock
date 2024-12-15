@@ -1926,14 +1926,14 @@ wheels = [
 
 [[package]]
 name = "pytest-reverse"
-version = "1.7.0"
+version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/9c/1d0988d202954f3b84b812c0456945029a24d76066c4d5c182b0dfe1090a/pytest_reverse-1.7.0.tar.gz", hash = "sha256:f943e5b9d253267569fd7ad237afc56b3e98ce9f6d2f6f3bb487b8c759e214fe", size = 4622 }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/5d/f1177a7ee9d104ec9f3067fc15ee21ce4b71b6d23ba827a08f4c51c39b30/pytest_reverse-1.8.0.tar.gz", hash = "sha256:eb72ffd57cc91061e837b1d2c4522bfda58eaa83fc97147fd90f7929160e97ab", size = 4438 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0a/d5/bd87faf152c7beb98cc63ac73437ddad9ecb46a6b0f1a0ed70fff13f2d23/pytest_reverse-1.7.0-py3-none-any.whl", hash = "sha256:37e83daac57eea3fb1cb718aa9ccdf9ca2ea8ac3645cb5bccf1c7ae25a8ad1d2", size = 4178 },
+    { url = "https://files.pythonhosted.org/packages/53/e2/efa8261ea453103b8360d1313ca6578e3cdff2c76c9edd1ea99827175426/pytest_reverse-1.8.0-py3-none-any.whl", hash = "sha256:e31a2d0b51f2f8b6162aed268f853851f55c62ac445041a032740e985b0bc8c8", size = 4119 },
 ]
 
 [[package]]
@@ -2669,7 +2669,7 @@ dev = [
     { name = "pytest-cov", specifier = "==6.0.0" },
     { name = "pytest-mock", specifier = "==3.14.0" },
     { name = "pytest-randomly", specifier = "==3.16.0" },
-    { name = "pytest-reverse", specifier = "==1.7.0" },
+    { name = "pytest-reverse", specifier = "==1.8.0" },
     { name = "pytest-sugar", specifier = "==1.0.0" },
     { name = "pytest-watcher", specifier = "==0.4.3" },
     { name = "pytest-xdist", specifier = "==3.6.1" },
