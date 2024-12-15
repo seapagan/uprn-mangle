@@ -19,7 +19,7 @@ dependencies = [
   "simple-toml-settings == 0.8.0",
   "sqlalchemy ==2.0.36",
   "tqdm ==4.67.1",
-  "uvicorn[standard] ==0.32.0",
+  "uvicorn[standard] ==0.33.0",
 ]
 
 
