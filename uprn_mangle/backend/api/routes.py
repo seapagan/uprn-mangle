@@ -1,5 +1,7 @@
 """Define the API routes for the application."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -23,8 +25,8 @@ async def root() -> dict[str, str]:
 @router.get("/search", response_model=Pagination[UPRNResponse])
 async def search(
     request: Request,
+    session: Annotated[AsyncSession, Depends(get_db)],
     q: str | None = None,
-    session: AsyncSession = Depends(get_db),
 ) -> Pagination[UPRNResponse] | JSONResponse:
     """Search for an address in the UPRN database.
 
