@@ -12,7 +12,8 @@
   "enabled": true,
   "enabledManagers": [
     "pep621",
-    "github-actions"
+    "github-actions",
+    "npm"
   ],
   "ignoreDeps": []
 }
