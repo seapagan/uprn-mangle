@@ -18,7 +18,7 @@ dependencies = [
   "rich ==13.9.4",
   "simple-toml-settings == 0.8.0",
   "sqlalchemy ==2.0.36",
-  "tqdm ==4.67.0",
+  "tqdm ==4.67.1",
   "uvicorn[standard] ==0.32.0",
 ]
 
