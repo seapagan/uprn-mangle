@@ -11,10 +11,10 @@ click==8.1.7
 cloudpickle==3.1.0
 colorama==0.4.6 ; platform_system == 'Windows' or sys_platform == 'win32'
 cryptography==44.0.0
-dask==2024.12.0
-dask-expr==1.1.20
+dask==2024.12.1
+dask-expr==1.1.21
 deprecated==1.2.15
-distributed==2024.12.0
+distributed==2024.12.1
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
 fastapi==0.115.6
 fastapi-pagination==0.12.32
