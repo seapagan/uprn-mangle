@@ -33,7 +33,7 @@ execnet==2.1.1
 executing==2.1.0
 faker==33.1.0
 fastapi==0.115.6
-fastapi-pagination==0.12.32
+fastapi-pagination==0.12.33
 filelock==3.16.1
 fsspec==2024.10.0
 ghp-import==2.1.0
