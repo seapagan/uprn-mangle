@@ -3,7 +3,7 @@
 annotated-types==0.7.0
 anyio==4.7.0
 application-properties==0.8.2
-appnope==0.1.4 ; platform_system == 'Darwin'
+appnope==0.1.4 ; sys_platform == 'darwin'
 asttokens==3.0.0
 async-timeout==5.0.1 ; python_full_version < '3.11'
 asyncpg==0.30.0
@@ -33,7 +33,7 @@ execnet==2.1.1
 executing==2.1.0
 faker==33.1.0
 fastapi==0.115.6
-fastapi-pagination==0.12.32
+fastapi-pagination==0.12.34
 filelock==3.16.1
 fsspec==2024.10.0
 ghp-import==2.1.0
