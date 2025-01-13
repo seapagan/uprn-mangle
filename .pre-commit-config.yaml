@@ -18,7 +18,7 @@ repos:
   #       files: ^renovate\.json$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.3
+    rev: v0.9.1
     hooks:
       - id: ruff
         name: "lint with ruff"
@@ -26,7 +26,7 @@ repos:
         name: "format with ruff"
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.13.0" # Use the sha / tag you want to point at
+    rev: "v1.14.1" # Use the sha / tag you want to point at
     hooks:
       - id: mypy
         name: "run mypy"
@@ -35,7 +35,7 @@ repos:
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.5.9
+    rev: 0.5.18
     hooks:
       # Update the uv lockfile
       - id: uv-lock
