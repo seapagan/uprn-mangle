@@ -9,7 +9,7 @@ cffi==1.17.1
 charset-normalizer==3.4.0
 click==8.1.7
 cloudpickle==3.1.0
-colorama==0.4.6 ; platform_system == 'Windows' or sys_platform == 'win32'
+colorama==0.4.6 ; sys_platform == 'win32'
 cryptography==44.0.0
 dask==2024.12.1
 dask-expr==1.1.21
@@ -17,7 +17,7 @@ deprecated==1.2.15
 distributed==2024.12.1
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
 fastapi==0.115.6
-fastapi-pagination==0.12.32
+fastapi-pagination==0.12.34
 fsspec==2024.10.0
 github-changelog-md==0.9.5
 greenlet==3.1.1 ; (python_full_version < '3.13' and platform_machine == 'AMD64') or (python_full_version < '3.13' and platform_machine == 'WIN32') or (python_full_version < '3.13' and platform_machine == 'aarch64') or (python_full_version < '3.13' and platform_machine == 'amd64') or (python_full_version < '3.13' and platform_machine == 'ppc64le') or (python_full_version < '3.13' and platform_machine == 'win32') or (python_full_version < '3.13' and platform_machine == 'x86_64')
