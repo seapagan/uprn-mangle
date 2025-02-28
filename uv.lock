@@ -2357,15 +2357,14 @@ wheels = [
 
 [[package]]
 name = "simple-toml-settings"
-version = "0.8.0"
+version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "github-changelog-md" },
     { name = "rtoml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/19/58/0d5f2f639e7e64db3263c5783c62fe2ecb33bc3716dd1aa65ee212f3e30b/simple_toml_settings-0.8.0.tar.gz", hash = "sha256:a04b65ea9ad2d32a18f34ccd4139f7c68b1f38988b582e03c4de65e60c4ff2b5", size = 8340 }
+sdist = { url = "https://files.pythonhosted.org/packages/23/8a/c7b8d61a635be56fec000a673e2696ba5fccbc893a6c5bafdc8516ae248c/simple_toml_settings-0.9.0.tar.gz", hash = "sha256:64070c7e011c007e41b73455c309a514c9ccec6a4581ee46a6af643e5dbf00d6", size = 105798 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/2e/c20f225d89fdcda862118741136fc4751080b2e0ae5a0b52f4a85309f627/simple_toml_settings-0.8.0-py3-none-any.whl", hash = "sha256:924f0be9ad926685716e10e09416a49572bfc9d554bfeba69a0d94bf0efce4c2", size = 8305 },
+    { url = "https://files.pythonhosted.org/packages/69/da/23380ea62d22c06b6ff2a485fa701c8bf0243e6f4a1ef70e82fcc3b8867a/simple_toml_settings-0.9.0-py3-none-any.whl", hash = "sha256:943ef93223085fde9016b3d8b3f2eb04e346df58449bc1c9de32358191559d20", size = 8364 },
 ]
 
 [[package]]
@@ -2687,7 +2686,7 @@ requires-dist = [
     { name = "psycopg2", specifier = "==2.9.10" },
     { name = "python-dotenv", specifier = "==1.0.1" },
     { name = "rich", specifier = "==13.9.4" },
-    { name = "simple-toml-settings", specifier = "==0.8.0" },
+    { name = "simple-toml-settings", specifier = "==0.9.0" },
     { name = "sqlalchemy", specifier = "==2.0.37" },
     { name = "tqdm", specifier = "==4.67.1" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.34.0" },
