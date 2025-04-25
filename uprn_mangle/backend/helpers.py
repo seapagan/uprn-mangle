@@ -104,4 +104,4 @@ def process_chunk(session: Session, chunk: pd.DataFrame) -> None:
 
 def drop_table(engine: Engine) -> None:
     """Drop the addressbase table if it exists."""
-    Base.metadata.drop_all(engine, tables=[cast(Table, Address.__table__)])
+    Base.metadata.drop_all(engine, tables=[cast("Table", Address.__table__)])
