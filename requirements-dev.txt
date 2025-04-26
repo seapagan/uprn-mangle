@@ -88,8 +88,10 @@ executing==2.1.0
     # via stack-data
 faker==33.1.0
 fastapi==0.115.12
-    # via uprn-mangle
-fastapi-pagination==0.12.34
+    # via
+    #   fastapi-pagination
+    #   uprn-mangle
+fastapi-pagination==0.13.1
     # via uprn-mangle
 filelock==3.16.1
     # via virtualenv
