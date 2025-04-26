@@ -87,7 +87,7 @@ execnet==2.1.1
 executing==2.1.0
     # via stack-data
 faker==33.1.0
-fastapi==0.115.10
+fastapi==0.115.12
     # via uprn-mangle
 fastapi-pagination==0.12.34
     # via uprn-mangle
