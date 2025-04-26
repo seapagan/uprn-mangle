@@ -301,7 +301,7 @@ python-dateutil==2.9.0.post0
     #   ghp-import
     #   jupyter-client
     #   pandas
-python-dotenv==1.0.1
+python-dotenv==1.1.0
     # via
     #   uprn-mangle
     #   uvicorn
