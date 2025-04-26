@@ -33,8 +33,10 @@ distributed==2025.4.1
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
     # via anyio
 fastapi==0.115.12
-    # via uprn-mangle
-fastapi-pagination==0.12.34
+    # via
+    #   fastapi-pagination
+    #   uprn-mangle
+fastapi-pagination==0.13.1
     # via uprn-mangle
 fsspec==2024.10.0
     # via dask
