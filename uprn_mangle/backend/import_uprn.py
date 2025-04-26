@@ -173,7 +173,7 @@ class MangleUPRN:
             # perhaps offer a choice to the user in the future.
             ddf = dd.read_csv(csv_path, usecols=usecols, dtype=dtype)
             to_parquet_with_progress(ddf, parquet_path)
-            return cast(DataFrame, dd.read_parquet(parquet_path))
+            return cast("DataFrame", dd.read_parquet(parquet_path))
 
         # Get and convert records to Parquet format
         raw_record_15 = read_csv_to_parquet(
