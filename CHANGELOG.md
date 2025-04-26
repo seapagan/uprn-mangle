@@ -5,7 +5,6 @@ project since the first release, with the latest changes at the top.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [0.2.0](https://github.com/seapagan/uprn-mangle/releases/tag/0.2.0) (December 15, 2024)
 
 First proper release after the rewrite.
@@ -63,7 +62,7 @@ Backend & frontend deps updated as of 15/12/24.
 
 ## [0.1.0](https://github.com/seapagan/uprn-mangle/releases/tag/0.1.0) (June 15, 2023)
 
-**_Legacy Release_**
+***Legacy Release***
 
 **Merged Pull Requests**
 
