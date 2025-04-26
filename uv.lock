@@ -438,7 +438,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/59/1b/ae231e1f9a8e1f970
 
 [[package]]
 name = "dask"
-version = "2025.2.0"
+version = "2025.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -450,9 +450,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "toolz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/55/30/ba2d373923cad0e069b50bf27115745fba4fb0a4f53cee7002582cb5cec7/dask-2025.2.0.tar.gz", hash = "sha256:89c87125d04d28141eaccc4794164ce9098163fd22d8ad943db48f8d4c815460", size = 10781637, upload_time = "2025-02-13T23:03:52.193Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/62/07d1dadcfa41c9f5584aa1ab10f4042d2cdb2c6655b123800d9f30185b71/dask-2025.4.1.tar.gz", hash = "sha256:3b4b5d6e29d858c48339a5b9a99c39f11cb44111d3836d77ff32da51e0f51243", size = 10963890, upload_time = "2025-04-25T20:39:32.07Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/4a/738ec3dac7e767c1ba6fbb6ecb908ceda66a1b2f4ee967bc03800fb07630/dask-2025.2.0-py3-none-any.whl", hash = "sha256:f0fdeef6ceb0a06569d456c9e704f220f7f54e80f3a6ea42ab98cea6bc642b6e", size = 1393839, upload_time = "2025-02-13T23:03:39.423Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/12/f9effea5fe2bebfdd8b0d9c857f798382afacd57dc1cd0e9ce21e66c1bc2/dask-2025.4.1-py3-none-any.whl", hash = "sha256:aacbb0a9667856fe58385015efd64aca22f0c0b2c5e1b5e633531060303bb4be", size = 1471761, upload_time = "2025-04-25T20:39:20.725Z" },
 ]
 
 [package.optional-dependencies]
@@ -522,7 +522,7 @@ wheels = [
 
 [[package]]
 name = "distributed"
-version = "2025.2.0"
+version = "2025.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -541,9 +541,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "zict" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a4/92/7ed81ced4d9301d79696c4f25a874371cf4ecd90aac5137f807870c290f1/distributed-2025.2.0.tar.gz", hash = "sha256:84e8e3a9290db805250cd8f0b46416b8e3e32c8088ffa778d8a21ea1e2c1cac3", size = 1111668, upload_time = "2025-02-13T23:03:45.628Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/4f/d986640b5f72a35e0e5751de8802e43a603221425969be5a3d0c4b65e55c/distributed-2025.4.1.tar.gz", hash = "sha256:d5c76d8d407c8c9529f3a205754536099479013e29c198f492c46f2d9dcecfb9", size = 1109277, upload_time = "2025-04-25T20:39:25.693Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/a8/fec2e908b32a1b7868bd4c6144ac12ce1eb22460e18d6a2f093da2a8283d/distributed-2025.2.0-py3-none-any.whl", hash = "sha256:368462084be47092d0a835f6c64c9b852da64dc88302b76d5f93bd5131228c67", size = 1018389, upload_time = "2025-02-13T23:03:41.883Z" },
+    { url = "https://files.pythonhosted.org/packages/df/33/b956f0dc74b292ea3d206a45467fde838f005b64123a729898a6390a291a/distributed-2025.4.1-py3-none-any.whl", hash = "sha256:3a7834451b04ef059928045eab6ff6d88ad7bcfd48adc99403127d9a6818b5fa", size = 1015226, upload_time = "2025-04-25T20:39:22.516Z" },
 ]
 
 [[package]]
@@ -2669,7 +2669,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "asyncpg", specifier = "==0.30.0" },
-    { name = "dask", extras = ["dataframe", "distributed"], specifier = "==2025.2.0" },
+    { name = "dask", extras = ["dataframe", "distributed"], specifier = "==2025.4.1" },
     { name = "fastapi", specifier = "==0.115.10" },
     { name = "fastapi-pagination", specifier = "==0.12.34" },
     { name = "pandas", specifier = "==2.2.3" },
