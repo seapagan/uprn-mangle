@@ -48,7 +48,7 @@ idna==3.10
     # via anyio
 importlib-metadata==8.5.0 ; python_full_version < '3.12'
     # via dask
-jinja2==3.1.6
+jinja2==3.1.4
     # via distributed
 locket==1.0.0
     # via
