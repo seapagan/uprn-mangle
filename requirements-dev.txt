@@ -335,7 +335,7 @@ requests==2.32.3
     # via
     #   mkdocs-material
     #   pygithub
-rich==13.9.4
+rich==14.0.0
     # via
     #   github-changelog-md
     #   typer
