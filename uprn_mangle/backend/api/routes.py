@@ -42,6 +42,6 @@ async def search(
     )
 
     page_result: Pagination[UPRNResponse] = await paginate(session, query)
-    page_result.links = fix_links(request, page_result.links)  # type: ignore
+    page_result.links = fix_links(request, page_result.links)
 
     return page_result
