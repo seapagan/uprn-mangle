@@ -24,11 +24,11 @@ colorama==0.4.6 ; sys_platform == 'win32'
     #   click
     #   tqdm
     #   uvicorn
-dask==2025.2.0
+dask==2025.4.1
     # via
     #   distributed
     #   uprn-mangle
-distributed==2025.2.0
+distributed==2025.4.1
     # via dask
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
     # via anyio
