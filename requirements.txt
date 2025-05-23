@@ -126,7 +126,7 @@ toolz==1.0.0
     #   dask
     #   distributed
     #   partd
-tornado==6.5.1
+tornado==6.4.2
     # via distributed
 tqdm==4.67.1
     # via uprn-mangle
