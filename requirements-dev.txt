@@ -333,7 +333,7 @@ pyzmq==26.4.0
     # via
     #   ipykernel
     #   jupyter-client
-requests==2.32.4
+requests==2.32.3
     # via
     #   mkdocs-material
     #   pygithub
