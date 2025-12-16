@@ -92,7 +92,7 @@ fastapi==0.115.12
     # via uprn-mangle
 fastapi-pagination==0.12.34
     # via uprn-mangle
-filelock==3.20.1
+filelock==3.18.0
     # via virtualenv
 fsspec==2025.3.2
     # via dask
