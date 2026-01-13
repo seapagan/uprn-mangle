@@ -436,7 +436,7 @@ uvicorn==0.34.2
     # via uprn-mangle
 uvloop==0.21.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
     # via uvicorn
-virtualenv==20.30.0
+virtualenv==20.36.1
     # via pre-commit
 watchdog==6.0.0
     # via
