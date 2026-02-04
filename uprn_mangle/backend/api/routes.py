@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
-from fastapi_pagination.ext.sqlalchemy import paginate
+from fastapi_pagination.ext.sqlalchemy import apaginate
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,7 +41,7 @@ async def search(
         Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    page_result: Pagination[UPRNResponse] = await paginate(session, query)
+    page_result: Pagination[UPRNResponse] = await apaginate(session, query)
     page_result.links = fix_links(request, page_result.links)
 
     return page_result
