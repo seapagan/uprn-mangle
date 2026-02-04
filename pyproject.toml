@@ -24,15 +24,13 @@ dependencies = [
 
 
 [project.urls]
-# customize the below URLs to point to your own GitHub repo. These will be
-# shown on [Pypi.org](https://pypi.org/) if you are creating a public package.
 "Repository" = "https://github.com/seapagan/uprn-mangle"
 "Pull Requests" = "https://github.com/seapagan/uprn-mangle/pulls"
 "Bug Tracker" = "https://github.com/seapagan/uprn-mangle/issues"
 "Changelog" = "https://github.com/seapagan/uprn-mangle/blob/main/CHANGELOG.md"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "cursor >= 1.3.5",
   "ipython >=8.29.0",
   "mypy >=1.13.0",
@@ -68,8 +66,12 @@ dev-dependencies = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.9,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "uprn_mangle"
+module-root = ""
 
 
 # Configure dev dependencies
