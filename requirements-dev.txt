@@ -87,8 +87,10 @@ executing==2.2.0
     # via stack-data
 faker==37.1.0
 fastapi==0.128.1
-    # via uprn-mangle
-fastapi-pagination==0.12.34
+    # via
+    #   fastapi-pagination
+    #   uprn-mangle
+fastapi-pagination==0.15.9
     # via uprn-mangle
 fsspec==2025.3.2
     # via dask

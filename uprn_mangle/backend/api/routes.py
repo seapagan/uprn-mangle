@@ -1,6 +1,6 @@
 """Define the API routes for the application."""
 
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -40,4 +40,4 @@ async def search(
         Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    return await apaginate(session, query)
+    return cast("Pagination[UPRNResponse]", await apaginate(session, query))
