@@ -286,7 +286,7 @@ pygments==2.19.1
 pyjwt==2.10.1
     # via pygithub
 pymarkdownlnt==0.9.29
-pymdown-extensions==10.14.3
+pymdown-extensions==10.16.1
     # via
     #   mkdocs-material
     #   mkdocstrings
