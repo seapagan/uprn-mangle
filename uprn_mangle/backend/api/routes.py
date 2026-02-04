@@ -1,14 +1,14 @@
 """Define the API routes for the application."""
 
-from typing import Annotated
+from typing import Annotated, cast
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from fastapi_pagination.ext.sqlalchemy import paginate
+from fastapi_pagination.ext.sqlalchemy import apaginate
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from uprn_mangle.backend.api.pagination import Pagination, fix_links
+from uprn_mangle.backend.api.pagination import Pagination
 from uprn_mangle.backend.database import get_db
 from uprn_mangle.backend.models import Address
 from uprn_mangle.backend.schemas import UPRNResponse
@@ -24,7 +24,6 @@ async def root() -> dict[str, str]:
 
 @router.get("/search", response_model=Pagination[UPRNResponse])
 async def search(
-    request: Request,
     session: Annotated[AsyncSession, Depends(get_db)],
     q: str | None = None,
 ) -> Pagination[UPRNResponse] | JSONResponse:
@@ -41,7 +40,4 @@ async def search(
         Address.tsv.op("@@")(func.plainto_tsquery("english", q))
     )
 
-    page_result: Pagination[UPRNResponse] = await paginate(session, query)
-    page_result.links = fix_links(request, page_result.links)
-
-    return page_result
+    return cast("Pagination[UPRNResponse]", await apaginate(session, query))
